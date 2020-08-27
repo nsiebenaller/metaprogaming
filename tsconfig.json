@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "target": "es5",
+        "jsx": "react",
+        "sourceMap": true,
+        "outDir": "./dist/",
+        "skipLibCheck": true,
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": false
+    },
+    "include": [
+        "types/**/*.d.ts",
+        "./src/client/types/index.d.ts",
+        "./src/client/*"
+    ]
+}
