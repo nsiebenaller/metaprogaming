@@ -4,8 +4,10 @@
   "description": "Meta Pro Gaming Site",
   "main": "src/server/index.js",
   "scripts": {
+    "prebuild": "npm i",
     "build": "webpack --mode production",
-    "start": "npm run build && node src/server/index.js",
+    "prestart": "npm run build",
+    "start": "node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
