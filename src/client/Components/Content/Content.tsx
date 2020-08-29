@@ -1,55 +1,41 @@
 import React from "react";
-import fortnite from "../../Assets/fortnite.jpg";
-import league from "../../Assets/league.jpg";
-import madden from "../../Assets/madden.jpg";
-import overwatch from "../../Assets/overwatch.jpeg";
-import valorant from "../../Assets/valorant.jpg";
+import {
+    BrowserRouter as Router,
+    Route,
+    RouteComponentProps,
+} from "react-router-dom";
 import TopBar from "./TopBar/TopBar";
+import { Game, Team } from "../../types/types";
+import MainPage from "./MainPage/MainPage";
+import GamePage from "./GamePage/GamePage";
 
-export default function Content() {
+interface Props {
+    selectedDivision: string;
+    games: Array<Game>;
+    teams: Array<Team>;
+}
+export default function Content(props: Props) {
     return (
         <div className="content">
             <TopBar />
-            <h1>Divisions</h1>
-            <div className={"division-row"}>
-                <DivisionTitle division={1} />
-                <div className={"img-carousel"}>
-                    <img className={"game-img"} src={fortnite} />
-                    <img className={"game-img"} src={league} />
-                    <img className={"game-img"} src={madden} />
-                    <img className={"game-img"} src={overwatch} />
-                    <img className={"game-img"} src={valorant} />
-                </div>
-            </div>
-            <div className={"division-row"}>
-                <DivisionTitle division={2} />
-                <div className={"img-carousel"}>
-                    <img className={"game-img"} src={fortnite} />
-                    <img className={"game-img"} src={league} />
-                    <img className={"game-img"} src={madden} />
-                    <img className={"game-img"} src={overwatch} />
-                    <img className={"game-img"} src={valorant} />
-                </div>
-            </div>
-            <div className={"division-row"}>
-                <DivisionTitle division={3} />
-                <div className={"img-carousel"}>
-                    <img className={"game-img"} src={fortnite} />
-                    <img className={"game-img"} src={league} />
-                    <img className={"game-img"} src={madden} />
-                    <img className={"game-img"} src={overwatch} />
-                    <img className={"game-img"} src={valorant} />
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function DivisionTitle({ division }: any) {
-    return (
-        <div className={"division-title"}>
-            <div>NECC East</div>
-            <div>Division {division}</div>
+            <Router>
+                <Route
+                    path={"/"}
+                    exact
+                    component={(routerProps: RouteComponentProps) => (
+                        <MainPage {...props} {...routerProps} />
+                    )}
+                ></Route>
+                <Route
+                    path={"/game/:game"}
+                    component={(routerProps: RouteComponentProps) => (
+                        <GamePage
+                            selectedDivision={props.selectedDivision}
+                            {...routerProps}
+                        />
+                    )}
+                />
+            </Router>
         </div>
     );
 }

@@ -1,0 +1,43 @@
+.bracket-container {
+    .bracket {
+        display: flex;
+    }
+}
+
+.bracket-left {
+    width: 200px;
+    height: 60px;
+    margin-right: 20px;
+    position: relative;
+    background: grey;
+}
+.bracket-left:before {
+    content: "";
+    position: absolute;
+    right: -20px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-left: 20px solid grey;
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+}
+
+.bracket-right {
+    width: 200px;
+    height: 60px;
+    margin-left: 20px;
+    position: relative;
+    background: grey;
+}
+.bracket-right:before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-right: 20px solid grey;
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+}

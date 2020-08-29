@@ -10,6 +10,7 @@ const outputDirectory = "dist";
 module.exports = {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
     output: {
+        publicPath: "/",
         path: path.join(__dirname, outputDirectory),
         filename: "./js/[name].bundle.js",
     },
@@ -69,19 +70,29 @@ module.exports = {
     },
     devServer: {
         port: 3001,
-        open: true,
+        historyApiFallback: {
+            index: "./public/",
+            disableDotRule: true,
+        },
         proxy: {
-            "/api": "http://localhost:3000",
+            "/images": "http://localhost:3000",
+        },
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":
+                "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers":
+                "X-Requested-With, content-type, Authorization",
         },
     },
     plugins: [
         new CleanWebpackPlugin([outputDirectory]),
         new webpack.HotModuleReplacementPlugin(),
-        new HtmlWebpackPlugin({
-            template: "./public/index.html",
-            favicon: "./public/favicon.ico",
-            title: "Meta Pro Gaming",
-        }),
+        // new HtmlWebpackPlugin({
+        //     template: "./public/index.html",
+        //     favicon: "./public/favicon.ico",
+        //     title: "Meta Pro Gaming",
+        // }),
         new MiniCssExtractPlugin({
             filename: "./css/[name].css",
             chunkFilename: "./css/[id].css",

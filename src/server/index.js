@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000; // set our port
 
+app.use(express.static("public"));
 app.use(express.static("dist"));
 app.get("/", (req, res) => {
     console.log("sending index.html");
