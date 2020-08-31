@@ -26,11 +26,6 @@ export default function SidePanel({ selectedDivision, changeDivision }: Props) {
                 selectedDivision={selectedDivision}
                 changeDivision={changeDivision}
             />
-            <DivisionItem
-                division={"Division 3"}
-                selectedDivision={selectedDivision}
-                changeDivision={changeDivision}
-            />
         </div>
     );
 }

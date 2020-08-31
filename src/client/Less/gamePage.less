@@ -1,43 +1,86 @@
-.bracket-container {
-    .bracket {
-        display: flex;
+@bracket-color: #90a4ae;
+
+.game-page {
+    .game-title {
+        font-size: 2.75em;
+        font-weight: bold;
     }
-}
+    .game-division {
+        font-size: 1.25em;
+        padding-bottom: 20px;
+        border-bottom: 1px solid @grey-300;
+        margin-bottom: 20px;
+    }
 
-.bracket-left {
-    width: 200px;
-    height: 60px;
-    margin-right: 20px;
-    position: relative;
-    background: grey;
-}
-.bracket-left:before {
-    content: "";
-    position: absolute;
-    right: -20px;
-    bottom: 0;
-    width: 0;
-    height: 0;
-    border-left: 20px solid grey;
-    border-top: 30px solid transparent;
-    border-bottom: 30px solid transparent;
-}
+    .match-title {
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .match-list {
+        > * {
+            margin-bottom: 20px;
+        }
+    }
 
-.bracket-right {
-    width: 200px;
-    height: 60px;
-    margin-left: 20px;
-    position: relative;
-    background: grey;
-}
-.bracket-right:before {
-    content: "";
-    position: absolute;
-    left: -20px;
-    bottom: 0;
-    width: 0;
-    height: 0;
-    border-right: 20px solid grey;
-    border-top: 30px solid transparent;
-    border-bottom: 30px solid transparent;
+    .bracket-container {
+        .date {
+            color: @grey-600;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .bracket {
+            display: flex;
+        }
+    }
+
+    .bracket-left {
+        width: 200px;
+        height: 60px;
+        margin-right: 20px;
+        position: relative;
+        background: @bracket-color;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .bracket-left:before {
+        content: "";
+        position: absolute;
+        right: -20px;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 20px solid @bracket-color;
+        border-top: 30px solid transparent;
+        border-bottom: 30px solid transparent;
+    }
+
+    .bracket-divider {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .bracket-right {
+        width: 200px;
+        height: 60px;
+        margin-left: 20px;
+        position: relative;
+        background: @bracket-color;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .bracket-right:before {
+        content: "";
+        position: absolute;
+        left: -20px;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-right: 20px solid @bracket-color;
+        border-top: 30px solid transparent;
+        border-bottom: 30px solid transparent;
+    }
 }

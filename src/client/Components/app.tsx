@@ -20,12 +20,14 @@ export default class App extends React.Component<{}, State> {
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         // Fetch Games for conference
-        this.setState({ games: games });
+        const gameList = (await populateImages(games)) as Array<Game>;
+        this.setState({ games: gameList });
 
         // Fetch Teams for conference
-        this.setState({ teams: teams });
+        const teamList = (await populateImages(teams)) as Array<Team>;
+        this.setState({ teams: teamList });
     }
 
     changeDivision = (selectedDivision: string) => {
@@ -47,4 +49,25 @@ export default class App extends React.Component<{}, State> {
             </div>
         );
     }
+}
+
+interface ImageRef {
+    image: string;
+    [key: string]: any;
+}
+async function populateImages(
+    objects: Array<ImageRef>
+): Promise<Array<ImageRef>> {
+    const promises: Array<Promise<string>> = [];
+    objects.forEach((g) => {
+        promises.push(
+            new Promise(async (resolve: (value?: string) => void) => {
+                const raw = await fetch(g.image);
+                const blob = await raw.blob();
+                resolve(URL.createObjectURL(blob));
+            })
+        );
+    });
+    const images = await Promise.all(promises);
+    return objects.map((g, i) => ({ ...g, imageSrc: images[i] }));
 }

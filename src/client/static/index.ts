@@ -1,4 +1,80 @@
-import { Game, Team } from "../types/types";
+import { Game, Team, Match } from "../types/types";
+
+const DateOf = (days: number) => {
+    var date = new Date();
+    date.setDate(date.getDate() + days);
+    return date;
+};
+export const matches: Array<Match> = [
+    {
+        id: 1,
+        teams: [
+            {
+                id: 1,
+                name: "Bay Path University",
+                image: "/images/mascot-1.jpeg",
+            },
+            {
+                id: 2,
+                name: "Becker College",
+                image: "/images/mascot-2.jpeg",
+            },
+        ],
+        date: DateOf(1),
+        winner: null,
+    },
+    {
+        id: 1,
+        teams: [
+            {
+                id: 1,
+                name: "Bay Path University",
+                image: "/images/mascot-1.jpeg",
+            },
+            {
+                id: 2,
+                name: "Becker College",
+                image: "/images/mascot-2.jpeg",
+            },
+        ],
+        date: DateOf(3),
+        winner: null,
+    },
+    {
+        id: 1,
+        teams: [
+            {
+                id: 1,
+                name: "Bay Path University",
+                image: "/images/mascot-1.jpeg",
+            },
+            {
+                id: 2,
+                name: "Becker College",
+                image: "/images/mascot-2.jpeg",
+            },
+        ],
+        date: DateOf(4),
+        winner: null,
+    },
+    {
+        id: 1,
+        teams: [
+            {
+                id: 1,
+                name: "Bay Path University",
+                image: "/images/mascot-1.jpeg",
+            },
+            {
+                id: 2,
+                name: "Becker College",
+                image: "/images/mascot-2.jpeg",
+            },
+        ],
+        date: DateOf(7),
+        winner: null,
+    },
+];
 
 export const teams: Array<Team> = [
     {
