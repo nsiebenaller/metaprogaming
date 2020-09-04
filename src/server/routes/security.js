@@ -8,6 +8,7 @@ const secret = process.env.SECRET || "secret"; // set secret for jwt
 module.exports = (router) => {
     router.route("/login").post(async (req, res) => {
         const { username, password } = req.body;
+        if (!username || !password) return res.send({ success: false });
 
         const user = await db.User.findOne({ where: { username } });
         if (!user) return res.send({ success: false });

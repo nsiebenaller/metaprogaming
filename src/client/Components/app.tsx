@@ -4,6 +4,7 @@ import SidePanel from "./SidePanel/SidePanel";
 import Content from "./Content/Content";
 import { Game, Team } from "../types/types";
 import { games, teams } from "../static/index";
+import RouterContextWrapper from "./Router";
 
 interface State {
     selectedDivision: string;
@@ -36,17 +37,19 @@ export default class App extends React.Component<{}, State> {
 
     render() {
         return (
-            <div className="app">
-                <SidePanel
-                    selectedDivision={this.state.selectedDivision}
-                    changeDivision={this.changeDivision}
-                />
-                <Content
-                    selectedDivision={this.state.selectedDivision}
-                    games={this.state.games}
-                    teams={this.state.teams}
-                />
-            </div>
+            <RouterContextWrapper>
+                <div className="app">
+                    <SidePanel
+                        selectedDivision={this.state.selectedDivision}
+                        changeDivision={this.changeDivision}
+                    />
+                    <Content
+                        selectedDivision={this.state.selectedDivision}
+                        games={this.state.games}
+                        teams={this.state.teams}
+                    />
+                </div>
+            </RouterContextWrapper>
         );
     }
 }

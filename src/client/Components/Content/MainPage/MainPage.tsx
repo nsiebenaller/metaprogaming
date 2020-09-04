@@ -1,10 +1,9 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
 import GameImage from "./GameImage";
 import TeamImage from "./TeamImage";
 import { Game, Team } from "../../../types/types";
 
-interface Props extends RouteComponentProps {
+interface Props {
     selectedDivision: string;
     games: Array<Game>;
     teams: Array<Team>;

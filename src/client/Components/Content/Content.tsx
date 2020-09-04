@@ -1,13 +1,10 @@
 import React from "react";
-import {
-    BrowserRouter as Router,
-    Route,
-    RouteComponentProps,
-} from "react-router-dom";
+import { Route, RouteComponentProps } from "react-router-dom";
 import TopBar from "./TopBar/TopBar";
 import { Game, Team } from "../../types/types";
-import MainPage from "./MainPage/MainPage";
+import LoginPage from "./LoginPage/LoginPage";
 import GamePage from "./GamePage/GamePage";
+import MainPage from "./MainPage/MainPage";
 
 interface Props {
     selectedDivision: string;
@@ -17,25 +14,24 @@ interface Props {
 export default function Content(props: Props) {
     return (
         <div className="content">
-            <TopBar />
-            <Router>
-                <Route
-                    path={"/"}
-                    exact
-                    component={(routerProps: RouteComponentProps) => (
-                        <MainPage {...props} {...routerProps} />
-                    )}
-                ></Route>
+            <Route path={"/"} component={TopBar} />
+            <div className="content-main">
+                <Route path={"/"} exact>
+                    <MainPage {...props} />
+                </Route>
                 <Route
                     path={"/game/:game"}
-                    component={(routerProps: RouteComponentProps) => (
+                    component={({ match }: any) => (
                         <GamePage
                             selectedDivision={props.selectedDivision}
-                            {...routerProps}
+                            match={match}
                         />
                     )}
                 />
-            </Router>
+                <Route path={"/login"}>
+                    <LoginPage />
+                </Route>
+            </div>
         </div>
     );
 }

@@ -75,6 +75,7 @@ module.exports = {
             disableDotRule: true,
         },
         proxy: {
+            "/api": "http://localhost:3000",
             "/images": "http://localhost:3000",
         },
         headers: {
