@@ -24,8 +24,8 @@ module.exports = (router) => {
         res.cookie("meta_token", token);
         res.send({ success: true });
     });
-    router.route("/check").get(tokenChecker, async (req, res) => {
-        res.send({ verified: true });
+    router.route("/check").get(async (req, res) => {
+        res.send({ ...verifyToken(req) });
     });
 };
 
@@ -47,6 +47,24 @@ function revokeToken() {
         secret,
         { expiresIn: "1d" }
     );
+}
+
+function verifyToken(req) {
+    const token = req.cookies.meta_token;
+    if (!token) return { verified: false };
+    const verifiedToken = jwt.verify(token, secret);
+    if (!verifiedToken) return { verified: false };
+    const { exp, revoked } = verifiedToken;
+    if (!exp) return { verified: false };
+
+    // Check revoked
+    if (revoked) return { verified: false };
+
+    // Check expired
+    const now = new Date().getTime();
+    const expire = parseInt(exp * 1000);
+    if (expire < now) return { verified: false };
+    return { verified: true, username: verifiedToken.username };
 }
 
 function compare(text, hash) {

@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "PlayerId",
                 sourceKey: "id",
             });
-            Team.belongsToMany(models.Team, {
+            Team.belongsToMany(models.Match, {
                 as: "matches",
                 through: "TeamMatches",
                 foreignKey: "TeamId",
@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     Team.init(
         {
             name: DataTypes.STRING,
+            image: DataTypes.STRING,
         },
         {
             sequelize,

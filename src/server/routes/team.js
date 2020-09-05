@@ -5,19 +5,41 @@ module.exports = (router) => {
     router
         .route("/Team")
         .get(async (req, res) => {
-            const teams = await db.Team.findAll({
-                include: [
-                    {
-                        model: db.Player,
-                        as: "players",
-                        through: { attributes: [] },
-                    },
-                ],
-            });
+            const { id } = req.query;
+            let teams = [];
+
+            if (!id) {
+                teams = await db.Team.findAll({
+                    include: [
+                        {
+                            model: db.Player,
+                            as: "players",
+                            through: { attributes: [] },
+                        },
+                    ],
+                });
+            } else {
+                teams = await db.Team.findAll({
+                    where: { id },
+                    include: [
+                        {
+                            model: db.Player,
+                            as: "players",
+                            through: { attributes: [] },
+                        },
+                    ],
+                });
+            }
+
             res.json(teams);
         })
         .post(tokenChecker, async (req, res) => {
-            const result = await db.Team.create(req.body);
+            await db.Team.create(req.body);
             res.json({ success: true });
+        })
+        .patch(tokenChecker, async (req, res) => {
+            const { id, ...teamProps } = req.body;
+            await db.Team.update(teamProps, { where: { id } });
+            res.json({ success: true, id });
         });
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import MatchItem from "./MatchItem";
-import { Match } from "../../../types/types";
-import { matches } from "../../../static/index";
+import { Match, Game } from "../../../types/types";
 import { connectContext } from "../../Context";
 
 interface Props {
@@ -10,20 +10,40 @@ interface Props {
 }
 export default function GamePage({ selectedDivision, match }: Props) {
     const context = connectContext()!;
-    const { game } = match.params;
+    const gameId = parseInt(match.params.gameId);
 
     const [matchList, setMatchList] = useState<Array<Match>>([]);
+    const [game, setGame] = useState<Game>();
     useEffect(() => {
-        setMatchList(matches);
+        // Find Game
+        const selectedGame = context.games.find((g) => g.id === gameId);
+        setGame(selectedGame);
+
+        // Find matches for game
+        const DivisionId = selectedDivision === "Division 1" ? 1 : 2;
+        axios
+            .get("/api/GameMatches", {
+                params: { GameId: gameId, DivisionId },
+            })
+            .then(({ data }) => {
+                setMatchList(data);
+            });
     }, []);
+
+    matchList.sort((a: Match, b: Match) => {
+        const aD = new Date(a.date);
+        const bD = new Date(b.date);
+        return aD.getTime() - bD.getTime();
+    });
 
     return (
         <div className={"game-page"}>
-            <div className={"game-title"}>{game}</div>
+            <div className={"game-title"}>{game ? game.name : ""}</div>
             <div className={"game-division"}>{selectedDivision}</div>
             {/*<!-- -->*/}
             <div className={"match-title"}>MATCH SCHEDULE</div>
             <div className={"match-list"}>
+                {matchList.length === 0 && <span>no matches scheduled</span>}
                 {matchList.map((match, idx) => (
                     <MatchItem key={idx} match={match} />
                 ))}

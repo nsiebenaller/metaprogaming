@@ -17,8 +17,9 @@ module.exports = (router) => {
             res.json({ success: true });
         })
         .delete(tokenChecker, async (req, res) => {
+            const { PlayerId, TeamId } = req.query;
             const team = await db.Team.findOne({
-                where: { id: req.body.TeamId },
+                where: { id: TeamId },
                 include: [
                     {
                         model: db.Player,
@@ -29,7 +30,7 @@ module.exports = (router) => {
             });
             if (!team) return res.json({ success: false });
             const player = await db.Player.findOne({
-                where: { id: req.body.PlayerId },
+                where: { id: PlayerId },
                 include: [
                     {
                         model: db.Team,

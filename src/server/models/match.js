@@ -21,12 +21,16 @@ module.exports = (sequelize, DataTypes) => {
                 sourceKey: "id",
                 onDelete: "CASCADE",
             });
+            Match.belongsTo(models.Game);
+            Match.belongsTo(models.Division);
         }
     }
     Match.init(
         {
             date: DataTypes.DATE,
             type: DataTypes.STRING,
+            GameId: DataTypes.INTEGER,
+            DivisionId: DataTypes.INTEGER,
         },
         {
             sequelize,

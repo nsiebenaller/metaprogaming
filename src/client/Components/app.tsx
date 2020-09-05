@@ -1,57 +1,42 @@
 import React from "react";
+import axios from "axios";
 import "../Less/app.less";
 import SidePanel from "./SidePanel/SidePanel";
 import Content from "./Content/Content";
 import { Game, Team } from "../types/types";
-import { games, teams } from "../static/index";
-import RouterContextWrapper from "./Router";
+import { connectContext } from "./Context";
 
-interface State {
-    selectedDivision: string;
-    games: Array<Game>;
-    teams: Array<Team>;
-}
-export default class App extends React.Component<{}, State> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            selectedDivision: "Division 1",
-            games: [],
-            teams: [],
-        };
+export default function App() {
+    const context = connectContext()!;
+    const [selectedDivision, changeDivision] = React.useState("Division 1");
+
+    React.useEffect(() => {
+        onMount();
+    }, []);
+    async function onMount() {
+        const { data: securityCheck } = await axios.get("/api/check");
+        const user = securityCheck.verified ? securityCheck.username : null;
+
+        const requests = [axios.get("/api/Game"), axios.get("/api/Team")];
+        const [{ data: games }, { data: teams }] = await Promise.all(requests);
+        const imageRequests = [populateImages(games), populateImages(teams)];
+        const [gameList, teamList] = await Promise.all(imageRequests);
+        context.setProperty({
+            games: gameList as Array<Game>,
+            teams: teamList as Array<Team>,
+            user,
+        });
     }
 
-    async componentDidMount() {
-        // Fetch Games for conference
-        const gameList = (await populateImages(games)) as Array<Game>;
-        this.setState({ games: gameList });
-
-        // Fetch Teams for conference
-        const teamList = (await populateImages(teams)) as Array<Team>;
-        this.setState({ teams: teamList });
-    }
-
-    changeDivision = (selectedDivision: string) => {
-        this.setState({ selectedDivision });
-    };
-
-    render() {
-        return (
-            <RouterContextWrapper>
-                <div className="app">
-                    <SidePanel
-                        selectedDivision={this.state.selectedDivision}
-                        changeDivision={this.changeDivision}
-                    />
-                    <Content
-                        selectedDivision={this.state.selectedDivision}
-                        games={this.state.games}
-                        teams={this.state.teams}
-                    />
-                </div>
-            </RouterContextWrapper>
-        );
-    }
+    return (
+        <div className="app">
+            <SidePanel
+                selectedDivision={selectedDivision}
+                changeDivision={changeDivision}
+            />
+            <Content selectedDivision={selectedDivision} />
+        </div>
+    );
 }
 
 interface ImageRef {
@@ -67,7 +52,8 @@ async function populateImages(
             new Promise(async (resolve: (value?: string) => void) => {
                 const raw = await fetch(g.image);
                 const blob = await raw.blob();
-                resolve(URL.createObjectURL(blob));
+                const url = URL.createObjectURL(blob);
+                resolve(url.toString());
             })
         );
     });

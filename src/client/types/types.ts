@@ -10,6 +10,7 @@ export interface Team {
     name: string;
     image: string;
     imageSrc?: string;
+    players?: Array<Player>;
 }
 
 export interface Match {
@@ -17,4 +18,11 @@ export interface Match {
     teams: Array<Team>;
     date: Date;
     winner: number | null;
+}
+
+export interface Player {
+    createdAt: string;
+    id: number;
+    name: string;
+    updatedAt: string;
 }

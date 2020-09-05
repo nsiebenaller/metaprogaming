@@ -1,4 +1,4 @@
-@bracket-color: #90a4ae;
+@bracket-color: #cfd8dc;
 
 .game-page {
     .game-title {
@@ -33,26 +33,25 @@
         }
     }
 
-    .bracket-left {
+    .bracket-match {
         width: 200px;
-        height: 60px;
-        margin-right: 20px;
+        height: 40px;
         position: relative;
         background: @bracket-color;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
-    }
-    .bracket-left:before {
-        content: "";
-        position: absolute;
-        right: -20px;
-        bottom: 0;
-        width: 0;
-        height: 0;
-        border-left: 20px solid @bracket-color;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
+        border: 1px solid #607d8b;
+        padding: 10px;
+        > * {
+            margin-right: 10px;
+        }
+        img {
+            max-height: 30px;
+            width: 30px;
+            border-radius: 50px;
+            background: white;
+        }
     }
 
     .bracket-divider {
@@ -60,27 +59,5 @@
         align-items: center;
         margin-left: 20px;
         margin-right: 20px;
-    }
-
-    .bracket-right {
-        width: 200px;
-        height: 60px;
-        margin-left: 20px;
-        position: relative;
-        background: @bracket-color;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .bracket-right:before {
-        content: "";
-        position: absolute;
-        left: -20px;
-        bottom: 0;
-        width: 0;
-        height: 0;
-        border-right: 20px solid @bracket-color;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
     }
 }

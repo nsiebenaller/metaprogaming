@@ -2,13 +2,14 @@ import React from "react";
 import GameImage from "./GameImage";
 import TeamImage from "./TeamImage";
 import { Game, Team } from "../../../types/types";
+import { connectContext } from "../../Context";
 
 interface Props {
     selectedDivision: string;
-    games: Array<Game>;
-    teams: Array<Team>;
 }
-export default function MainPage({ selectedDivision, games, teams }: Props) {
+export default function MainPage({ selectedDivision }: Props) {
+    const context = connectContext()!;
+    const { games, teams } = context;
     return (
         <div>
             <h1>{selectedDivision}</h1>

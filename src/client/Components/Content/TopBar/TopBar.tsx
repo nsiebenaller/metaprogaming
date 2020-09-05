@@ -9,8 +9,11 @@ interface Props {}
 export default function TopBar(props: Props) {
     const context = connectContext()!;
 
-    const login = async () => {
+    const login = () => {
         context.history.push("/login");
+    };
+    const createMatch = () => {
+        context.history.push("/Match/new");
     };
 
     const back = () => {
@@ -29,6 +32,9 @@ export default function TopBar(props: Props) {
                     <ArrowForward fontSize="small" />
                 </Button>
             </ButtonGroup>
+            {context.user && (
+                <Button onClick={createMatch}>Create Match</Button>
+            )}
             {context.user && <div>Current User: {context.user}</div>}
             {!context.user && (
                 <React.Fragment>

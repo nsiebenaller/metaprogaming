@@ -7,7 +7,7 @@ interface Props {
 }
 export default function GameImage({ game }: Props) {
     const context = connectContext()!;
-    const redirect = () => context.history.push(`/game/${game.name}`);
+    const redirect = () => context.history.push(`/game/${game.id}`);
 
     return (
         <div className={"game"} onClick={redirect}>
