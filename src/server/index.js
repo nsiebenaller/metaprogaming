@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 const buildRouter = require("./routes");
 
@@ -27,7 +28,8 @@ buildRouter(router);
 app.use("/api", router);
 
 app.get("*", (req, res) => {
-    res.sendFile("/dist/index.html");
+    const index = path.join(__dirname, "..", "..", "public", "index.html");
+    res.sendFile(index);
 });
 
 // START THE SERVER -------------------------------
