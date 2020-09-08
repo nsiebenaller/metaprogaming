@@ -1,12 +1,12 @@
 export interface Game {
-    id: Number;
+    id: number;
     name: string;
     image: string;
     imageSrc?: string;
 }
 
 export interface Team {
-    id: Number;
+    id: number;
     name: string;
     image: string;
     imageSrc?: string;
@@ -15,7 +15,10 @@ export interface Team {
 
 export interface Match {
     id: number;
-    teams: Array<Team>;
+    firstTeam: Team;
+    firstTeamScore: number;
+    secondTeam: Team;
+    secondTeamScore: number;
     date: Date;
     winner: number | null;
 }
@@ -24,5 +27,21 @@ export interface Player {
     createdAt: string;
     id: number;
     name: string;
+    gamerTag: string;
+    discord: string;
     updatedAt: string;
+}
+
+export interface Week {
+    id: number;
+    name: string;
+    start: Date;
+    end: Date;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export enum Side {
+    LEFT,
+    RIGHT,
 }

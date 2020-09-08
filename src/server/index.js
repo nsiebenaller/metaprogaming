@@ -14,10 +14,6 @@ app.use(express.static("public"));
 app.use(express.static("dist"));
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-    res.sendFile("/dist/index.html");
-});
-
 // ROUTES FOR OUR API
 const router = express.Router();
 
@@ -29,6 +25,10 @@ router.use((req, res, next) => {
 // REGISTER OUR ROUTES -------------------------------
 buildRouter(router);
 app.use("/api", router);
+
+app.get("*", (req, res) => {
+    res.sendFile("/dist/index.html");
+});
 
 // START THE SERVER -------------------------------
 app.listen(port);

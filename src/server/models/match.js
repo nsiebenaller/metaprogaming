@@ -9,17 +9,13 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Match.belongsToMany(models.Team, {
-                as: "teams",
-                through: "TeamMatches",
-                foreignKey: {
-                    name: "MatchId",
-                    allowNull: false,
-                },
-                foreignKeyConstraint: true,
-                otherKey: "TeamId",
-                sourceKey: "id",
-                onDelete: "CASCADE",
+            Match.belongsTo(models.Team, {
+                as: "firstTeam",
+                foreignKey: "FirstTeamId",
+            });
+            Match.belongsTo(models.Team, {
+                as: "secondTeam",
+                foreignKey: "SecondTeamId",
             });
             Match.belongsTo(models.Game);
             Match.belongsTo(models.Division);
@@ -31,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             GameId: DataTypes.INTEGER,
             DivisionId: DataTypes.INTEGER,
+            FirstTeamId: DataTypes.INTEGER,
+            SecondTeamId: DataTypes.INTEGER,
+            firstTeamScore: DataTypes.INTEGER,
+            secondTeamScore: DataTypes.INTEGER,
         },
         {
             sequelize,

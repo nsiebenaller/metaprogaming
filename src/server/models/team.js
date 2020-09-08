@@ -23,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "MatchId",
                 sourceKey: "id",
             });
+            Team.belongsToMany(models.SubConference, {
+                as: "subconference",
+                through: "TeamSubConferences",
+                foreignKey: "TeamId",
+                otherKey: "SubConferenceId",
+                sourceKey: "id",
+            });
         }
     }
     Team.init(

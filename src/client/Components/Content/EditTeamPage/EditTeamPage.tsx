@@ -1,10 +1,14 @@
 import React from "react";
 import axios from "axios";
-import Button from "@material-ui/core/Button";
-import { TextField } from "ebrap-ui";
+import { TextField, Button } from "ebrap-ui";
 import { Team, Player } from "../../../types/types";
 import PlayerItem from "./PlayerItem";
 
+const initNewPlayer = {
+    name: "",
+    gamerTag: "",
+    discord: "",
+};
 const loadingTeam: Team = {
     id: -1,
     image: "",
@@ -20,7 +24,13 @@ export default function EditTeamPage({ match }: Props) {
     const [team, setTeam] = React.useState<Team>(loadingTeam);
     const setName = (name: string) => setTeam({ ...team, name });
 
-    const [newPlayer, setNewPlayer] = React.useState("");
+    const [newPlayer, setNewPlayer] = React.useState(initNewPlayer);
+    const setPlayerName = (name: string) =>
+        setNewPlayer({ ...newPlayer, name });
+    const setGamerTag = (gamerTag: string) =>
+        setNewPlayer({ ...newPlayer, gamerTag });
+    const setDiscord = (discord: string) =>
+        setNewPlayer({ ...newPlayer, discord });
 
     React.useEffect(() => {
         onMount();
@@ -51,9 +61,13 @@ export default function EditTeamPage({ match }: Props) {
             PlayerId: data.id,
             TeamId: teamId,
         });
-        setNewPlayer("");
+        setNewPlayer(initNewPlayer);
         onMount();
     };
+
+    if (team && team.players) {
+        team.players.sort((a: Player, b: Player) => a.id - b.id);
+    }
 
     return (
         <div>
@@ -76,13 +90,30 @@ export default function EditTeamPage({ match }: Props) {
                         refreshTeam={onMount}
                     />
                 ))}
-            <div>
+            <div className="player-item">
                 <TextField
                     label={"New Player"}
-                    value={newPlayer}
-                    onChange={setNewPlayer}
+                    value={newPlayer.name}
+                    onChange={setPlayerName}
                 />
-                <Button onClick={createPlayer}>Create</Button>
+                <TextField
+                    label={"Gamer Tag"}
+                    value={newPlayer.gamerTag}
+                    onChange={setGamerTag}
+                />
+                <TextField
+                    label={"Discord"}
+                    value={newPlayer.discord}
+                    onChange={setDiscord}
+                />
+                <Button
+                    onClick={createPlayer}
+                    variant="outlined"
+                    color="blue-500"
+                    topPad
+                >
+                    Create
+                </Button>
             </div>
         </div>
     );

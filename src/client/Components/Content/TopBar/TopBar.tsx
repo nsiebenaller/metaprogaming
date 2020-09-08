@@ -15,6 +15,9 @@ export default function TopBar(props: Props) {
     const createMatch = () => {
         context.history.push("/Match/new");
     };
+    const editWeeks = () => {
+        context.history.push("/Weeks/edit");
+    };
 
     const back = () => {
         if (context.location.pathname === "/") return;
@@ -32,6 +35,7 @@ export default function TopBar(props: Props) {
                     <ArrowForward fontSize="small" />
                 </Button>
             </ButtonGroup>
+            {context.user && <Button onClick={editWeeks}>Edit Seasons</Button>}
             {context.user && (
                 <Button onClick={createMatch}>Create Match</Button>
             )}

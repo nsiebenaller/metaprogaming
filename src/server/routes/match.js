@@ -7,21 +7,21 @@ module.exports = (router) => {
         .get(async (req, res) => {
             const { id } = req.query;
 
-            let matches = [];
-            if (!id) {
-                matches = await db.Match.findAll();
-            } else {
-                matches = await db.Match.findAll({
-                    where: { id },
-                    include: [
-                        {
-                            model: db.Team,
-                            as: "teams",
-                            through: { attributes: [] },
-                        },
-                    ],
-                });
-            }
+            const whereClause = id ? { where: { id } } : {};
+
+            const matches = await db.Match.findAll({
+                ...whereClause,
+                include: [
+                    {
+                        model: db.Team,
+                        as: "firstTeam",
+                    },
+                    {
+                        model: db.Team,
+                        as: "secondTeam",
+                    },
+                ],
+            });
 
             res.json(matches);
         })
@@ -35,11 +35,6 @@ module.exports = (router) => {
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {
-            const match = await db.Match.findOne({
-                where: { id: req.query.id },
-            });
-            if (!match) return res.json({ success: false });
-            match.setTeams([]);
             await db.Match.destroy({ where: { id: req.query.id } });
             res.json({ success: true });
         });

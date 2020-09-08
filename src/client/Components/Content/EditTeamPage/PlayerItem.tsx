@@ -1,8 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Player } from "../../../types/types";
-import { TextField } from "ebrap-ui";
-import Button from "@material-ui/core/Button";
+import { TextField, Button } from "ebrap-ui";
 
 interface Props {
     player: Player;
@@ -12,6 +11,10 @@ interface Props {
 export default function PlayerItem({ player, teamId, refreshTeam }: Props) {
     const [currentPlayer, setPlayer] = React.useState(player);
     const setName = (name: string) => setPlayer({ ...currentPlayer, name });
+    const setGamerTag = (gamerTag: string) =>
+        setPlayer({ ...currentPlayer, gamerTag });
+    const setDiscord = (discord: string) =>
+        setPlayer({ ...currentPlayer, discord });
 
     const save = async () => {
         const { data } = await axios.patch("/api/Player", currentPlayer);
@@ -31,11 +34,25 @@ export default function PlayerItem({ player, teamId, refreshTeam }: Props) {
         <div className="player-item">
             <TextField
                 label={"Player"}
-                value={currentPlayer.name}
+                value={currentPlayer.name || ""}
                 onChange={setName}
             />
-            <Button onClick={save}>Save</Button>
-            <Button onClick={remove}>Remove</Button>
+            <TextField
+                label={"Gamer Tag"}
+                value={currentPlayer.gamerTag || ""}
+                onChange={setGamerTag}
+            />
+            <TextField
+                label={"Discord"}
+                value={currentPlayer.discord || ""}
+                onChange={setDiscord}
+            />
+            <Button topPad onClick={save} variant="outlined" color="blue-500">
+                Save
+            </Button>
+            <Button topPad onClick={remove} variant="outlined" color="red-500">
+                Remove
+            </Button>
         </div>
     );
 }

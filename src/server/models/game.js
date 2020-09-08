@@ -13,6 +13,17 @@ module.exports = (sequelize, DataTypes) => {
                 as: "matches",
                 foreignKey: "GameId",
             });
+            Game.belongsToMany(models.Player, {
+                as: "players",
+                through: "PlayerGames",
+                foreignKey: "GameId",
+                otherKey: "PlayerId",
+                sourceKey: "id",
+            });
+            Game.hasMany(models.Week, {
+                foreignKey: "GameId",
+                as: "weeks",
+            });
         }
     }
     Game.init(

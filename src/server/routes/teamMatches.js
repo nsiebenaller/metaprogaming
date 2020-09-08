@@ -5,25 +5,20 @@ module.exports = (router) => {
     router
         .route("/TeamMatches")
         .post(tokenChecker, async (req, res) => {
-            const team = await db.Team.findOne({
-                where: { id: req.body.TeamId },
-            });
-            if (!team) return res.json({ success: false });
-            const match = await db.Match.findOne({
-                where: { id: req.body.MatchId },
-            });
-            if (!match) return res.json({ success: false });
-            await match.addTeams(team);
+            const { FirstTeamId, SecondTeamId, MatchId } = req.body;
+            await db.Match.update(
+                { FirstTeamId, SecondTeamId },
+                { where: { id: MatchId } }
+            );
             res.json({ success: true });
         })
         .delete(tokenChecker, async (req, res) => {
             const { MatchId } = req.query;
             if (!MatchId) return res.json({ success: false });
-            const match = await db.Match.findOne({
-                where: { id: MatchId },
-            });
-            if (!match) return res.json({ success: false });
-            await match.setTeams([]);
+            await db.Match.update(
+                { FirstTeamId: null, SecondTeamId: null },
+                { where: { id: MatchId } }
+            );
             res.json({ success: true });
         });
 };

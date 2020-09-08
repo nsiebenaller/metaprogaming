@@ -7,6 +7,8 @@ import MainPage from "./MainPage/MainPage";
 import NewMatchPage from "./NewMatchPage/NewMatchPage";
 import EditMatchPage from "./EditMatchPage/EditMatchPage";
 import EditTeamPage from "./EditTeamPage/EditTeamPage";
+import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
+import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
 
 interface Props {
     selectedDivision: string;
@@ -44,6 +46,18 @@ export default function Content(props: Props) {
                     path={"/Team/edit/:teamId"}
                     component={({ match }: any) => (
                         <EditTeamPage match={match} />
+                    )}
+                />
+                <Route path={"/Weeks/edit"} exact>
+                    <EditWeeksPage selectedDivision={props.selectedDivision} />
+                </Route>
+                <Route
+                    path={"/Season/:gameId"}
+                    component={({ match }: any) => (
+                        <CreateSeasonPage
+                            match={match}
+                            selectedDivision={props.selectedDivision}
+                        />
                     )}
                 />
             </div>

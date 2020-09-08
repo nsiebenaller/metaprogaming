@@ -9,14 +9,18 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Division.belongsTo(models.Division);
+            Division.belongsTo(models.SubConference);
             Division.hasMany(models.Match, { foreignKey: "DivisionId" });
+            Division.hasMany(models.Week, {
+                foreignKey: "DivisionId",
+                as: "weeks",
+            });
         }
     }
     Division.init(
         {
             name: DataTypes.STRING,
-            ConferenceId: DataTypes.INTEGER,
+            SubConferenceId: DataTypes.INTEGER,
         },
         {
             sequelize,

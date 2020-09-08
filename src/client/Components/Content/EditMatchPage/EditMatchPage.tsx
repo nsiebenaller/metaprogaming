@@ -43,10 +43,10 @@ export default function EditMatchPage({ match }: Props) {
         const division =
             currentMatch.DivisionId === 1 ? "Division 1" : "Division 2";
         const date = new Date(currentMatch.date);
-        const team1 =
-            currentMatch.teams.length >= 2 ? currentMatch.teams[0].name : "";
-        const team2 =
-            currentMatch.teams.length >= 2 ? currentMatch.teams[1].name : "";
+        const team1 = currentMatch.firstTeam ? currentMatch.firstTeam.name : "";
+        const team2 = currentMatch.secondTeam
+            ? currentMatch.secondTeam.name
+            : "";
 
         if (game) setGame(game.name);
         setType(type);
@@ -82,15 +82,11 @@ export default function EditMatchPage({ match }: Props) {
             return window.alert("error creating game");
         }
         const request1 = {
-            TeamId: teamA.id,
+            FirstTeamId: teamA.id,
+            SecondTeamId: teamB.id,
             MatchId: response.id,
         };
         await axios.post("/api/TeamMatches", request1);
-        const request2 = {
-            TeamId: teamB.id,
-            MatchId: response.id,
-        };
-        await axios.post("/api/TeamMatches", request2);
         window.alert("Success!");
     };
 

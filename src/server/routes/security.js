@@ -1,6 +1,6 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { tokenChecker } = require("../tokenChecker");
 
 const secret = process.env.SECRET || "secret"; // set secret for jwt
