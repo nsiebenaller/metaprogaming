@@ -42,15 +42,11 @@ export default function NewMatchPage() {
             return window.alert("error creating game");
         }
         const request1 = {
-            TeamId: teamA.id,
+            FirstTeamId: teamA.id,
+            SecondTeamId: teamB.id,
             MatchId: response.id,
         };
         await axios.post("/api/TeamMatches", request1);
-        const request2 = {
-            TeamId: teamB.id,
-            MatchId: response.id,
-        };
-        await axios.post("/api/TeamMatches", request2);
         window.alert("Success!");
     };
 
