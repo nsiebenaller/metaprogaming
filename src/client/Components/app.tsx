@@ -5,10 +5,10 @@ import SidePanel from "./SidePanel/SidePanel";
 import Content from "./Content/Content";
 import { Game, Team } from "../types/types";
 import { connectContext } from "./Context";
+import { sortConferences } from "../utils/sort";
 
 export default function App() {
     const context = connectContext()!;
-    const [selectedDivision, changeDivision] = React.useState("Division 1");
 
     React.useEffect(() => {
         onMount();
@@ -17,24 +17,37 @@ export default function App() {
         const { data: securityCheck } = await axios.get("/api/check");
         const user = securityCheck.verified ? securityCheck.username : null;
 
-        const requests = [axios.get("/api/Game"), axios.get("/api/Team")];
-        const [{ data: games }, { data: teams }] = await Promise.all(requests);
+        const requests = [
+            axios.get("/api/Game"),
+            axios.get("/api/Team"),
+            axios.get("/api/Conference"),
+        ];
+        const [
+            { data: games },
+            { data: teams },
+            { data: conferences },
+        ] = await Promise.all(requests);
         const imageRequests = [populateImages(games), populateImages(teams)];
         const [gameList, teamList] = await Promise.all(imageRequests);
+
+        sortConferences(conferences);
+        const selectedSubConference = conferences[0].subconferences[0];
+        const selectedDivision = selectedSubConference.divisions[0];
+
         context.setProperty({
             games: gameList as Array<Game>,
             teams: teamList as Array<Team>,
+            conferences,
+            selectedDivision,
+            selectedSubConference,
             user,
         });
     }
 
     return (
         <div className="app">
-            <SidePanel
-                selectedDivision={selectedDivision}
-                changeDivision={changeDivision}
-            />
-            <Content selectedDivision={selectedDivision} />
+            <SidePanel />
+            <Content />
         </div>
     );
 }

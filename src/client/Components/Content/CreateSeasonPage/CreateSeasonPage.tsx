@@ -6,11 +6,12 @@ import Axios from "axios";
 
 interface Props {
     match: any;
-    selectedDivision: string;
 }
 export default function CreateSeasonPage(props: Props) {
     const context = connectContext()!;
+    const { selectedDivision, selectedSubConference } = context;
     const gameId = parseInt(props.match.params.gameId);
+    const DivisionId = (selectedDivision && selectedDivision.id) || null;
 
     const [game, setGame] = React.useState<Game | undefined>();
     const [numWeeks, setNumWeeks] = React.useState<number>(10);
@@ -35,12 +36,14 @@ export default function CreateSeasonPage(props: Props) {
                 start: start,
                 end: nextweek(start),
                 GameId: gameId,
-                DivisionId: props.selectedDivision === "Division 1" ? 1 : 2,
+                DivisionId,
             };
             requests.push(Axios.post("/api/Week", data));
             start = nextweek(start);
         }
         await Promise.all(requests);
+        window.alert("success!");
+        context.history.goBack();
     };
 
     if (!game) return null;
@@ -48,7 +51,8 @@ export default function CreateSeasonPage(props: Props) {
         <div>
             <h1>Create Season</h1>
             <h4>
-                {game.name} {props.selectedDivision}
+                {game.name} {selectedDivision && selectedDivision.name}{" "}
+                {selectedSubConference && selectedSubConference.name}
             </h4>
             <TextField
                 value={numWeeks}

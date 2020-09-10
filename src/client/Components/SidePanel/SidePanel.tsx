@@ -3,17 +3,28 @@ import logo from "../../Assets/logo.png";
 import neccLogo from "../../Assets/necc-logo-2.png";
 import DivisionItem from "./DivisionItem";
 import { connectContext } from "../Context";
+import { SubConference, Division } from "../../types/types";
+import { sortConference } from "../../utils/sort";
 
-interface Props {
-    selectedDivision: string;
-    changeDivision: (changeDivision: string) => void;
-}
-export default function SidePanel({ selectedDivision, changeDivision }: Props) {
+interface Props {}
+export default function SidePanel(props: Props) {
     const context = connectContext()!;
+
+    let shouldDisplay = true;
+    if (context.conferences.length === 0) shouldDisplay = false;
+    const neccConference = context.conferences[0];
 
     const goHome = () => {
         context.history.push("/");
     };
+
+    const changeDivision = (subconference: SubConference) => (
+        division: Division
+    ) => {
+        context.setSelectedDivision(division, subconference);
+    };
+
+    sortConference(neccConference);
 
     return (
         <div className="side-panel">
@@ -23,16 +34,28 @@ export default function SidePanel({ selectedDivision, changeDivision }: Props) {
             <div className={"conference-item active"}>
                 <img className={"conference-logo"} src={neccLogo} />
             </div>
-            <DivisionItem
-                division={"Division 1"}
-                selectedDivision={selectedDivision}
-                changeDivision={changeDivision}
-            />
-            <DivisionItem
-                division={"Division 2"}
-                selectedDivision={selectedDivision}
-                changeDivision={changeDivision}
-            />
+            {shouldDisplay &&
+                neccConference.subconferences &&
+                neccConference.subconferences.map(
+                    (sub: SubConference, idx: number) => (
+                        <div key={idx} className="subconference-header">
+                            <b>{sub.name}</b>
+                            {sub.divisions &&
+                                sub.divisions.map(
+                                    (division: Division, idx: number) => (
+                                        <DivisionItem
+                                            key={idx}
+                                            division={division}
+                                            selectedDivision={
+                                                context.selectedDivision
+                                            }
+                                            changeDivision={changeDivision(sub)}
+                                        />
+                                    )
+                                )}
+                        </div>
+                    )
+                )}
         </div>
     );
 }

@@ -5,11 +5,12 @@ import { Game, Week } from "../../../types/types";
 import Axios from "axios";
 import WeekItem from "./WeekItem";
 
-interface Props {
-    selectedDivision: string;
-}
+interface Props {}
 export default function EditWeeksPage(props: Props) {
     const context = connectContext()!;
+    const { selectedDivision, selectedSubConference } = context;
+    const DivisionId = (selectedDivision && selectedDivision.id) || null;
+
     const [gameId, setGame] = React.useState<number | undefined>();
     const [weeks, setWeeks] = React.useState(new Array<Week>());
 
@@ -19,7 +20,7 @@ export default function EditWeeksPage(props: Props) {
         const { data: weeks } = await Axios.get("/api/Week", {
             params: {
                 GameId,
-                DivisionId: props.selectedDivision === "Division 1" ? 1 : 2,
+                DivisionId,
             },
         });
         setWeeks(weeks);
@@ -34,14 +35,14 @@ export default function EditWeeksPage(props: Props) {
         if (context && context.games.length > 0) {
             selectGame(context.games[0].id)();
         }
-    }, [context.games]);
+    }, [context.games, context.selectedDivision]);
 
     const removeSeason = async () => {
         if (!gameId) return;
         await Axios.delete("/api/Week", {
             params: {
                 GameId: gameId,
-                DivisionId: props.selectedDivision === "Division 1" ? 1 : 2,
+                DivisionId,
             },
         });
         findWeeks(gameId);
@@ -54,7 +55,8 @@ export default function EditWeeksPage(props: Props) {
         <div>
             <h1>Edit Season</h1>
             <h2>
-                {currentGameName} {props.selectedDivision}
+                {currentGameName} {selectedDivision && selectedDivision.name}{" "}
+                {selectedSubConference && selectedSubConference.name}
             </h2>
             <h4>Select a Game:</h4>
             {context.games.map((game: Game, idx: number) =>
@@ -73,7 +75,7 @@ export default function EditWeeksPage(props: Props) {
                 <div>
                     <div>
                         No current season for {currentGameName}{" "}
-                        {props.selectedDivision}
+                        {selectedDivision && selectedDivision.name}
                     </div>
                     <br />
                     <Button color={"blue-500"} onClick={createSeason}>

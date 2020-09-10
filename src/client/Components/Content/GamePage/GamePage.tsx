@@ -7,13 +7,13 @@ import { connectContext } from "../../Context";
 import Axios from "axios";
 
 interface Props {
-    selectedDivision: string;
     match: any;
 }
-export default function GamePage({ selectedDivision, match }: Props) {
+export default function GamePage({ match }: Props) {
     const context = connectContext()!;
+    const { selectedDivision } = context;
     const gameId = parseInt(match.params.gameId);
-    const DivisionId = selectedDivision === "Division 1" ? 1 : 2;
+    const DivisionId = (selectedDivision && selectedDivision.id) || null;
 
     const [matchList, setMatchList] = useState<Array<Match>>([]);
     const [game, setGame] = useState<Game>();
@@ -58,7 +58,6 @@ export default function GamePage({ selectedDivision, match }: Props) {
     React.useEffect(() => {
         if (!selectedWeek) return;
 
-        console.log(selectedWeek);
         if (selectedWeek.value === "All") {
             return setWeekMatches(matchList);
         }
@@ -90,7 +89,9 @@ export default function GamePage({ selectedDivision, match }: Props) {
     return (
         <div className={"game-page"}>
             <div className={"game-title"}>{game ? game.name : ""}</div>
-            <div className={"game-division"}>{selectedDivision}</div>
+            <div className={"game-division"}>
+                {selectedDivision && selectedDivision.name}
+            </div>
             {/*<!-- -->*/}
             <div className={"match-title"}>MATCH SCHEDULE</div>
 

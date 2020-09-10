@@ -10,25 +10,18 @@ import EditTeamPage from "./EditTeamPage/EditTeamPage";
 import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
 import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
 
-interface Props {
-    selectedDivision: string;
-}
+interface Props {}
 export default function Content(props: Props) {
     return (
         <div className="content">
             <Route path={"/"} component={TopBar} />
             <div className="content-main">
                 <Route path={"/"} exact>
-                    <MainPage {...props} />
+                    <MainPage />
                 </Route>
                 <Route
                     path={"/game/:gameId"}
-                    component={({ match }: any) => (
-                        <GamePage
-                            selectedDivision={props.selectedDivision}
-                            match={match}
-                        />
-                    )}
+                    component={({ match }: any) => <GamePage match={match} />}
                 />
                 <Route path={"/login"}>
                     <LoginPage />
@@ -49,15 +42,12 @@ export default function Content(props: Props) {
                     )}
                 />
                 <Route path={"/Weeks/edit"} exact>
-                    <EditWeeksPage selectedDivision={props.selectedDivision} />
+                    <EditWeeksPage />
                 </Route>
                 <Route
                     path={"/Season/:gameId"}
                     component={({ match }: any) => (
-                        <CreateSeasonPage
-                            match={match}
-                            selectedDivision={props.selectedDivision}
-                        />
+                        <CreateSeasonPage match={match} />
                     )}
                 />
             </div>
