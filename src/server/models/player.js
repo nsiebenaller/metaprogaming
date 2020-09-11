@@ -23,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "GameId",
                 sourceKey: "id",
             });
+            Player.belongsToMany(models.Role, {
+                as: "roles",
+                through: "PlayerRoles",
+                foreignKey: "PlayerId",
+                otherKey: "RoleId",
+                sourceKey: "id",
+            });
         }
     }
     Player.init(

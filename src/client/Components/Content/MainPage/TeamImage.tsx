@@ -12,6 +12,8 @@ export default function TeamImage({ team }: Props) {
     const editTeam = () => {
         if (context.user) {
             context.history.push(`/Team/edit/${team.id}`);
+        } else {
+            context.history.push(`/Team/${team.id}`);
         }
     };
 

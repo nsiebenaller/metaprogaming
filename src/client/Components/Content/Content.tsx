@@ -9,6 +9,7 @@ import EditMatchPage from "./EditMatchPage/EditMatchPage";
 import EditTeamPage from "./EditTeamPage/EditTeamPage";
 import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
 import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
+import TeamPage from "./TeamPage/TeamPage";
 
 interface Props {}
 export default function Content(props: Props) {
@@ -40,6 +41,10 @@ export default function Content(props: Props) {
                     component={({ match }: any) => (
                         <EditTeamPage match={match} />
                     )}
+                />
+                <Route
+                    path={"/Team/:teamId"}
+                    component={({ match }: any) => <TeamPage match={match} />}
                 />
                 <Route path={"/Weeks/edit"} exact>
                     <EditWeeksPage />

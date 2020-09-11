@@ -4,6 +4,8 @@ const gameMatchesRouter = require("./gameMatches");
 const matchRouter = require("./match");
 const playerRouter = require("./player");
 const playerGamesRouter = require("./playerGames");
+const playerRolesRouter = require("./playerRoles");
+const roleRouter = require("./role");
 const securityRouter = require("./security");
 const teamRouter = require("./team");
 const teamMatchesRouter = require("./teamMatches");
@@ -18,6 +20,8 @@ module.exports = (router) => {
     matchRouter(router);
     playerRouter(router);
     playerGamesRouter(router);
+    playerRolesRouter(router);
+    roleRouter(router);
     securityRouter(router);
     teamRouter(router);
     teamMatchesRouter(router);

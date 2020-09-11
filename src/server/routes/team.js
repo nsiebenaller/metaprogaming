@@ -21,6 +21,11 @@ module.exports = (router) => {
                                     as: "games",
                                     through: { attributes: [] },
                                 },
+                                {
+                                    model: db.Role,
+                                    as: "roles",
+                                    through: { attributes: [] },
+                                },
                             ],
                         },
                     ],
@@ -37,6 +42,11 @@ module.exports = (router) => {
                                 {
                                     model: db.Game,
                                     as: "games",
+                                    through: { attributes: [] },
+                                },
+                                {
+                                    model: db.Role,
+                                    as: "roles",
                                     through: { attributes: [] },
                                 },
                             ],

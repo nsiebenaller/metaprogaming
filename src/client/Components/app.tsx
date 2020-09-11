@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import "../Less/app.less";
 import SidePanel from "./SidePanel/SidePanel";
 import Content from "./Content/Content";
 import { Game, Team } from "../types/types";

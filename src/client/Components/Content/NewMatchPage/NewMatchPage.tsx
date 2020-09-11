@@ -3,6 +3,7 @@ import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { Dropdown, TextField, Datepicker } from "ebrap-ui";
 import { connectContext } from "../../Context";
+import { Division, Team } from "../../../types/types";
 
 export default function NewMatchPage() {
     const context = connectContext()!;
@@ -13,12 +14,27 @@ export default function NewMatchPage() {
     const handleType = (e: any) => setType(e);
     const [selectedDate, setDate] = React.useState(new Date());
     const handleDate = (e: any) => setDate(e);
-    const [selectedDivision, setDivision] = React.useState("");
+    const [selectedDivision, setDivision] = React.useState<any>(undefined);
     const handleDivision = (e: any) => setDivision(e);
     const [team1, setTeam1] = React.useState("");
     const handleTeam1 = (e: any) => setTeam1(e);
     const [team2, setTeam2] = React.useState("");
     const handleTeam2 = (e: any) => setTeam2(e);
+    const [divisions, setDivisions] = React.useState(new Array());
+
+    React.useEffect(() => {
+        const divs = new Array();
+        context.conferences.forEach((c) => {
+            if (!c.subconferences) return;
+            c.subconferences.forEach((s) => {
+                if (!s.divisions) return;
+                s.divisions.forEach((d) => {
+                    divs.push({ ...d, value: `${c.name} ${s.name} ${d.name}` });
+                });
+            });
+        });
+        setDivisions(divs);
+    }, [context.conferences]);
 
     const createMatch = async () => {
         const game = context.games.find((g) => g.name === selectedGame);
@@ -30,11 +46,18 @@ export default function NewMatchPage() {
         if (!teamA || !teamB) {
             return window.alert("invalid team(s)");
         }
+        if (!selectedDivision) {
+            return window.alert("invalid conference/division");
+        }
+        let DivisionId = null;
+        if (selectedDivision) {
+            DivisionId = selectedDivision.id;
+        }
 
         const request = {
             date: selectedDate,
             type: selectedType,
-            DivisionId: selectedDivision === "Division 1" ? 1 : 2,
+            DivisionId,
             GameId: game.id,
         };
         const { data: response } = await axios.post("/api/Match", request);
@@ -49,6 +72,9 @@ export default function NewMatchPage() {
         await axios.post("/api/TeamMatches", request1);
         window.alert("Success!");
     };
+
+    const allTeams = context.teams.map((t) => t.name);
+    allTeams.sort();
 
     return (
         <div>
@@ -78,10 +104,10 @@ export default function NewMatchPage() {
             />
             <br />
             <Dropdown
-                label={"Division"}
-                placeholder={"Select a Division"}
+                label={"Conference / Division"}
+                placeholder={"Select One"}
                 selected={selectedDivision}
-                options={["Division 1", "Division 2"]}
+                options={divisions}
                 onChange={handleDivision}
                 botPad
             />
@@ -90,7 +116,7 @@ export default function NewMatchPage() {
                 label={"First Team"}
                 placeholder={"Select a Team"}
                 selected={team1}
-                options={context.teams.map((t) => t.name)}
+                options={allTeams}
                 onChange={handleTeam1}
                 botPad
             />
@@ -98,7 +124,7 @@ export default function NewMatchPage() {
                 label={"Second Team"}
                 placeholder={"Select a Team"}
                 selected={team2}
-                options={context.teams.map((t) => t.name)}
+                options={allTeams}
                 onChange={handleTeam2}
                 botPad
             />

@@ -3,7 +3,9 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ArrowBack from "@material-ui/icons/ArrowBackIos";
 import ArrowForward from "@material-ui/icons/ArrowForwardIos";
+import Avatar from "@material-ui/icons/AccountCircle";
 import { connectContext } from "../../Context";
+import Axios from "axios";
 
 interface Props {}
 export default function TopBar(props: Props) {
@@ -25,6 +27,12 @@ export default function TopBar(props: Props) {
     };
     const forward = () => context.history.goForward();
 
+    const logout = async () => {
+        await Axios.get("/api/logout");
+        context.setUser(null);
+        context.history.push("/");
+    };
+
     return (
         <div className={"top-bar"}>
             <ButtonGroup className={"arrow-container"}>
@@ -39,7 +47,14 @@ export default function TopBar(props: Props) {
             {context.user && (
                 <Button onClick={createMatch}>Create Match</Button>
             )}
-            {context.user && <div>Current User: {context.user}</div>}
+            {context.user && (
+                <div className="user-container">
+                    <Avatar />
+                    <span>{context.user}</span>
+                </div>
+            )}
+            {context.user && <Button onClick={logout}>Logout</Button>}
+
             {!context.user && (
                 <React.Fragment>
                     <Button variant={"outlined"} onClick={login}>

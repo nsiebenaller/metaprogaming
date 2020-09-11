@@ -31,6 +31,7 @@ export interface Player {
     discord: string;
     updatedAt: string;
     games?: Array<Game>;
+    roles?: Array<Role>;
 }
 
 export interface Week {
@@ -66,6 +67,13 @@ export interface Division {
     updatedAt: string;
     matches: Array<Match>;
     weeks: Array<Week>;
+}
+
+export interface Role {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    name: string;
 }
 
 export enum Side {

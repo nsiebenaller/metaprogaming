@@ -39,7 +39,7 @@ export default function SidePanel(props: Props) {
                 neccConference.subconferences.map(
                     (sub: SubConference, idx: number) => (
                         <div key={idx} className="subconference-header">
-                            <b>{sub.name}</b>
+                            <b className="subconference-name">{sub.name}</b>
                             {sub.divisions &&
                                 sub.divisions.map(
                                     (division: Division, idx: number) => (

@@ -44,6 +44,7 @@ export default function GamePage({ match }: Props) {
             },
         });
         if (weeks.length > 0) {
+            weeks.sort(sortByDate);
             const newWeeks = [{ value: "All" }].concat(
                 weeks.map((x: Week) => ({ ...x, value: x.name }))
             );
@@ -124,4 +125,13 @@ export default function GamePage({ match }: Props) {
             </div>
         </div>
     );
+}
+
+function sortByDate(a: Week, b: Week) {
+    const aT = new Date(a.start).getTime();
+    const bT = new Date(b.start).getTime();
+
+    if (aT < bT) return -1;
+    if (aT > bT) return 1;
+    return 0;
 }

@@ -51,6 +51,8 @@ export default function EditWeeksPage(props: Props) {
     const currentGame = context.games.find((x) => x.id === gameId);
     const currentGameName = currentGame ? currentGame.name : "";
 
+    weeks.sort(sortByDate);
+
     return (
         <div>
             <h1>Edit Season</h1>
@@ -93,4 +95,13 @@ export default function EditWeeksPage(props: Props) {
             )}
         </div>
     );
+}
+
+function sortByDate(a: Week, b: Week) {
+    const aT = new Date(a.start).getTime();
+    const bT = new Date(b.start).getTime();
+
+    if (aT < bT) return -1;
+    if (aT > bT) return 1;
+    return 0;
 }
