@@ -1,0 +1,113 @@
+@bracket-color: #cfd8dc;
+
+.game-page {
+    .game-title {
+        font-size: 2.75em;
+        font-weight: bold;
+    }
+    .game-division {
+        font-size: 1.25em;
+        padding-bottom: 20px;
+        border-bottom: 1px solid @grey-300;
+        margin-bottom: 20px;
+    }
+
+    .match-title {
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .match-list {
+        > * {
+            margin-bottom: 20px;
+        }
+    }
+
+    .bracket-container {
+        .bracket {
+            display: flex;
+        }
+    }
+
+    .arrow-container {
+        position: relative;
+        display: flex;
+        svg {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            fill: @grey-600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            &:hover {
+                fill: black;
+            }
+        }
+        .date {
+            color: @grey-600;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        &.left {
+            justify-content: flex-end;
+        }
+        &.right {
+            justify-content: flex-start;
+        }
+    }
+
+    .bracket-match {
+        width: 230px;
+        height: 40px;
+        position: relative;
+        background: @bracket-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #607d8b;
+        padding: 10px;
+
+        .bracket-contents {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            &.right {
+                justify-content: flex-end;
+                > * {
+                    margin-left: 10px;
+                }
+            }
+            &.left {
+                justify-content: flex-start;
+                > * {
+                    margin-right: 10px;
+                }
+            }
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            .score {
+                font-weight: bold;
+                font-size: 1.5em;
+            }
+        }
+
+        img {
+            max-height: 30px;
+            width: 30px;
+            border-radius: 50px;
+            background: white;
+        }
+    }
+
+    .bracket-divider {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
