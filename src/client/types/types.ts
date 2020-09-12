@@ -21,6 +21,10 @@ export interface Match {
     secondTeamScore: number;
     date: Date;
     winner: number | null;
+    notes: string;
+    DivisionId: number;
+    GameId: number;
+    type: string;
 }
 
 export interface Player {

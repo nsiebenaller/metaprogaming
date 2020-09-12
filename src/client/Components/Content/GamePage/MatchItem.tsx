@@ -46,8 +46,11 @@ export default function MatchItem({ match, changeScore }: Props) {
                     side={Side.RIGHT}
                     changeScore={changeSecondTeamScore}
                 />
+                <div className="notes-section">{match.notes}</div>
                 {context.user && (
-                    <Button onClick={editMatch}>Edit Match</Button>
+                    <div className="btn-container">
+                        <Button onClick={editMatch}>Edit Match</Button>
+                    </div>
                 )}
             </div>
         </div>

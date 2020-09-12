@@ -57,9 +57,7 @@ export default function GamePage({ match }: Props) {
     };
 
     React.useEffect(() => {
-        if (!selectedWeek) return;
-
-        if (selectedWeek.value === "All") {
+        if (!selectedWeek || selectedWeek.value === "All") {
             return setWeekMatches(matchList);
         }
 
@@ -79,7 +77,7 @@ export default function GamePage({ match }: Props) {
                 return false;
             })
         );
-    }, [weeks, game, matchList, selectedWeek]);
+    }, [weeks, game, matchList, selectedWeek, selectedDivision]);
 
     weekMatches.sort((a: Match, b: Match) => {
         const aD = new Date(a.date);

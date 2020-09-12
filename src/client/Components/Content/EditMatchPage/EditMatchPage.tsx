@@ -1,14 +1,16 @@
 import React from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
-import { Dropdown, TextField, Datepicker } from "ebrap-ui";
+import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
+import { Conference, Match } from "../../../types/types";
 
 interface Props {
     match: any;
 }
 export default function EditMatchPage({ match }: Props) {
     const context = connectContext()!;
+    const allDivisions = getAllDivision(context.conferences);
 
     const MatchId = parseInt(match.params.matchId);
 
@@ -24,6 +26,8 @@ export default function EditMatchPage({ match }: Props) {
     const handleTeam1 = (e: any) => setTeam1(e);
     const [team2, setTeam2] = React.useState("");
     const handleTeam2 = (e: any) => setTeam2(e);
+    const [notes, setNotes] = React.useState("");
+    const handleNotes = (e: string) => setNotes(e);
 
     React.useEffect(() => {
         onMount();
@@ -35,46 +39,59 @@ export default function EditMatchPage({ match }: Props) {
         if (matches.length === 0) {
             return window.alert("invalid match");
         }
-        const currentMatch = matches[0];
+        const currentMatch: Match = matches[0];
+        const {
+            GameId,
+            DivisionId,
+            type,
+            date,
+            firstTeam,
+            secondTeam,
+            notes,
+        } = currentMatch;
 
         // Map match to state
-        const game = context.games.find((g) => g.id === currentMatch.GameId);
-        const type = currentMatch.type;
-        const division =
-            currentMatch.DivisionId === 1 ? "Division 1" : "Division 2";
-        const date = new Date(currentMatch.date);
-        const team1 = currentMatch.firstTeam ? currentMatch.firstTeam.name : "";
-        const team2 = currentMatch.secondTeam
-            ? currentMatch.secondTeam.name
-            : "";
+        const game = context.games.find((g) => g.id === GameId);
+        const division = allDivisions.find((d) => d.id === DivisionId);
+        const matchDate = new Date(date);
+        let firstTeamName = "";
+        if (firstTeam) firstTeamName = firstTeam.name;
+        let secondTeamName = "";
+        if (secondTeam) secondTeamName = secondTeam.name;
 
         if (game) setGame(game.name);
         setType(type);
-        setDivision(division);
-        setDate(date);
-        setTeam1(team1);
-        setTeam2(team2);
+        if (division) setDivision(division.value);
+        setDate(matchDate);
+        setTeam1(firstTeamName);
+        setTeam2(secondTeamName);
+        setNotes(notes || "");
     }
 
     const save = async () => {
-        await axios.delete("/api/TeamMatches", {
-            params: { MatchId },
-        });
         const game = context.games.find((g) => g.name === selectedGame);
         const teamA = context.teams.find((t) => t.name === team1);
         const teamB = context.teams.find((t) => t.name === team2);
+        const division = allDivisions.find(
+            (d) => d.value === (selectedDivision as any).value
+        );
         if (!game) {
             return window.alert("invalid game");
         }
-        if (!teamA || !teamB) {
-            return window.alert("invalid team(s)");
+        if (!division) {
+            console.log(allDivisions, selectedDivision);
+            return window.alert("invalid divsion");
         }
 
+        await axios.delete("/api/TeamMatches", {
+            params: { MatchId },
+        });
         const request = {
             id: MatchId,
             date: selectedDate,
             type: selectedType,
-            DivisionId: selectedDivision === "Division 1" ? 1 : 2,
+            notes: notes,
+            DivisionId: division.id,
             GameId: game.id,
         };
         const { data: response } = await axios.patch("/api/Match", request);
@@ -82,8 +99,8 @@ export default function EditMatchPage({ match }: Props) {
             return window.alert("error creating game");
         }
         const request1 = {
-            FirstTeamId: teamA.id,
-            SecondTeamId: teamB.id,
+            FirstTeamId: teamA ? teamA.id : null,
+            SecondTeamId: teamB ? teamB.id : null,
             MatchId: response.id,
         };
         await axios.post("/api/TeamMatches", request1);
@@ -121,7 +138,7 @@ export default function EditMatchPage({ match }: Props) {
                 label={"Division"}
                 placeholder={"Select a Division"}
                 selected={selectedDivision}
-                options={["Division 1", "Division 2"]}
+                options={allDivisions}
                 onChange={handleDivision}
                 botPad
             />
@@ -143,7 +160,31 @@ export default function EditMatchPage({ match }: Props) {
                 botPad
             />
             <br />
+            <TextArea
+                label={"Notes"}
+                value={notes}
+                onChange={handleNotes}
+                cols={80}
+            />
+            <br />
             <Button onClick={save}>Save</Button>
         </div>
     );
+}
+
+function getAllDivision(conferences: Array<Conference>): Array<any> {
+    const divisions = new Array();
+    conferences.forEach((c) => {
+        if (!c.subconferences) return;
+        c.subconferences.forEach((s) => {
+            if (!s.divisions) return;
+            s.divisions.forEach((d) => {
+                divisions.push({
+                    ...d,
+                    value: `${c.name} ${s.name} ${d.name}`,
+                });
+            });
+        });
+    });
+    return divisions;
 }

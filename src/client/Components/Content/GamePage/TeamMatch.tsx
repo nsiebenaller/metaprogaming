@@ -33,8 +33,11 @@ export default function TeamMatch({
 
     if (!team)
         return (
-            <div className="bracket-match">
-                <span>No Team</span>
+            <div className="bracket-group">
+                <div className="arrow-container" />
+                <div className="bracket-match">
+                    <span>No Team</span>
+                </div>
             </div>
         );
 
@@ -43,11 +46,7 @@ export default function TeamMatch({
             return (
                 <div className="bracket-group">
                     <div className="arrow-container left">
-                        {date && (
-                            <div className={"date"}>
-                                {new Date(date).toDateString()}
-                            </div>
-                        )}
+                        <div className={"date"}>{getDate(date)}</div>
                         {context.user && <ArrowUp onClick={increment} />}
                     </div>
 
@@ -88,4 +87,9 @@ export default function TeamMatch({
         default:
             return null;
     }
+}
+
+function getDate(date: Date | undefined) {
+    if (!date) return "";
+    return new Date(date).toDateString();
 }

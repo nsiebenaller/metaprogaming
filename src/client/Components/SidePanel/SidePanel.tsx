@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../../Assets/logo.png";
-import neccLogo from "../../Assets/necc-logo-2.png";
+import neccLogo from "../../Assets/necc-logo.png";
 import DivisionItem from "./DivisionItem";
 import { connectContext } from "../Context";
 import { SubConference, Division } from "../../types/types";

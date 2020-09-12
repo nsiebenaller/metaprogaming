@@ -30,7 +30,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "ebrap-ui": "^1.0.48",
+    "ebrap-ui": "^1.0.51",
     "express": "^4.16.3",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",

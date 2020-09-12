@@ -25,12 +25,28 @@
     .bracket-container {
         .bracket {
             display: flex;
+            .notes-section {
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-top: 22px;
+                border: 2px dashed @grey-500;
+                padding: 10px;
+                max-height: 40px;
+                max-width: 400px;
+                overflow: auto;
+            }
+            .btn-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 
     .arrow-container {
         position: relative;
         display: flex;
+        height: 22px;
         svg {
             width: 18px;
             height: 18px;

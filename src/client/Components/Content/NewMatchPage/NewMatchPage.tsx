@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
-import { Dropdown, TextField, Datepicker } from "ebrap-ui";
+import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
 import { Division, Team } from "../../../types/types";
 
@@ -21,6 +21,8 @@ export default function NewMatchPage() {
     const [team2, setTeam2] = React.useState("");
     const handleTeam2 = (e: any) => setTeam2(e);
     const [divisions, setDivisions] = React.useState(new Array());
+    const [notes, setNotes] = React.useState("");
+    const handleNotes = (e: string) => setNotes(e);
 
     React.useEffect(() => {
         const divs = new Array();
@@ -43,9 +45,6 @@ export default function NewMatchPage() {
         if (!game) {
             return window.alert("invalid game");
         }
-        if (!teamA || !teamB) {
-            return window.alert("invalid team(s)");
-        }
         if (!selectedDivision) {
             return window.alert("invalid conference/division");
         }
@@ -57,6 +56,7 @@ export default function NewMatchPage() {
         const request = {
             date: selectedDate,
             type: selectedType,
+            notes: notes,
             DivisionId,
             GameId: game.id,
         };
@@ -65,8 +65,8 @@ export default function NewMatchPage() {
             return window.alert("error creating game");
         }
         const request1 = {
-            FirstTeamId: teamA.id,
-            SecondTeamId: teamB.id,
+            FirstTeamId: teamA ? teamA.id : null,
+            SecondTeamId: teamB ? teamB.id : null,
             MatchId: response.id,
         };
         await axios.post("/api/TeamMatches", request1);
@@ -127,6 +127,13 @@ export default function NewMatchPage() {
                 options={allTeams}
                 onChange={handleTeam2}
                 botPad
+            />
+            <br />
+            <TextArea
+                label={"Notes"}
+                value={notes}
+                onChange={handleNotes}
+                cols={80}
             />
             <br />
             <Button onClick={createMatch}>Create</Button>

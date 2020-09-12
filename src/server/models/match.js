@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             date: DataTypes.DATE,
             type: DataTypes.STRING,
+            notes: DataTypes.STRING,
             GameId: DataTypes.INTEGER,
             DivisionId: DataTypes.INTEGER,
             FirstTeamId: DataTypes.INTEGER,
