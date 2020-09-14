@@ -231,7 +231,22 @@ module.exports = {
                 updatedAt: new Date(),
             },
         ];
+        const associations = [
+            {
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                SubConferenceId: 1,
+                TeamId: 1,
+            },
+            {
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                SubConferenceId: 1,
+                TeamId: 2,
+            },
+        ];
         await queryInterface.bulkInsert("Teams", teams);
+        await queryInterface.bulkInsert("TeamSubConferences", associations);
     },
 
     down: async (queryInterface, Sequelize) => {
