@@ -31,6 +31,7 @@ export default function GamePage({ match }: Props) {
     }, [selectedDivision]);
 
     const fetchMatches = async () => {
+        if (!gameId || !DivisionId) return;
         const { data } = await axios.get("/api/GameMatches", {
             params: { GameId: gameId, DivisionId },
         });
@@ -85,6 +86,15 @@ export default function GamePage({ match }: Props) {
         return aD.getTime() - bD.getTime();
     });
 
+    let startDate = undefined;
+    if (selectedWeek && selectedWeek.start) {
+        startDate = getDate(selectedWeek.start);
+    }
+    let endDate = undefined;
+    if (selectedWeek && selectedWeek.end) {
+        startDate = getDate(selectedWeek.end);
+    }
+
     return (
         <div className={"game-page"}>
             <div className={"game-title"}>{game ? game.name : ""}</div>
@@ -100,15 +110,11 @@ export default function GamePage({ match }: Props) {
                 selected={selectedWeek}
                 onChange={handleWeek}
             />
-            {selectedWeek && (
+            {selectedWeek && startDate && endDate && (
                 <div>
-                    <span>
-                        {new Date(selectedWeek.start).toLocaleDateString()}
-                    </span>
+                    <span>{startDate}</span>
                     <span> - to - </span>
-                    <span>
-                        {new Date(selectedWeek.end).toLocaleDateString()}
-                    </span>
+                    <span>{endDate}</span>
                 </div>
             )}
             <div className={"match-list"}>
@@ -132,4 +138,9 @@ function sortByDate(a: Week, b: Week) {
     if (aT < bT) return -1;
     if (aT > bT) return 1;
     return 0;
+}
+
+function getDate(date: string): string | undefined {
+    if (!date) return undefined;
+    return new Date(date).toLocaleDateString();
 }

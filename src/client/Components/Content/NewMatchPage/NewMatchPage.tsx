@@ -5,6 +5,7 @@ import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
 import { Division, Team } from "../../../types/types";
 
+const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 export default function NewMatchPage() {
     const context = connectContext()!;
 
@@ -48,16 +49,12 @@ export default function NewMatchPage() {
         if (!selectedDivision) {
             return window.alert("invalid conference/division");
         }
-        let DivisionId = null;
-        if (selectedDivision) {
-            DivisionId = selectedDivision.id;
-        }
 
         const request = {
             date: selectedDate,
             type: selectedType,
             notes: notes,
-            DivisionId,
+            DivisionId: selectedDivision.id,
             GameId: game.id,
         };
         const { data: response } = await axios.post("/api/Match", request);
@@ -75,6 +72,7 @@ export default function NewMatchPage() {
 
     const allTeams = context.teams.map((t) => t.name);
     allTeams.sort();
+    const teamOptions = ["No Team"].concat(allTeams);
 
     return (
         <div>
@@ -88,10 +86,11 @@ export default function NewMatchPage() {
                 botPad
             />
             <br />
-            <TextField
+            <Dropdown
                 label={"Type of Game"}
                 placeholder={"ex: Best of 3"}
-                value={selectedType}
+                selected={selectedType}
+                options={gameTypes}
                 onChange={handleType}
                 botPad
             />
@@ -116,7 +115,7 @@ export default function NewMatchPage() {
                 label={"First Team"}
                 placeholder={"Select a Team"}
                 selected={team1}
-                options={allTeams}
+                options={teamOptions}
                 onChange={handleTeam1}
                 botPad
             />
@@ -124,7 +123,7 @@ export default function NewMatchPage() {
                 label={"Second Team"}
                 placeholder={"Select a Team"}
                 selected={team2}
-                options={allTeams}
+                options={teamOptions}
                 onChange={handleTeam2}
                 botPad
             />

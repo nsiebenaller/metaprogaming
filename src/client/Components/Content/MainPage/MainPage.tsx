@@ -3,7 +3,7 @@ import GameImage from "./GameImage";
 import TeamImage from "./TeamImage";
 import { Game, Team, SubConference } from "../../../types/types";
 import { connectContext } from "../../Context";
-import { sortByName } from "../../../utils/sort";
+import { ByName } from "../../../utils/sort";
 
 interface Props {}
 export default function MainPage(props: Props) {
@@ -11,7 +11,7 @@ export default function MainPage(props: Props) {
     const { games, teams, selectedDivision, selectedSubConference } = context;
 
     const selectedTeams = getSelectedTeams(selectedSubConference, teams);
-    selectedTeams.sort(sortByName);
+    selectedTeams.sort(ByName);
     return (
         <div>
             <h1>{selectedDivision && selectedDivision.name}</h1>

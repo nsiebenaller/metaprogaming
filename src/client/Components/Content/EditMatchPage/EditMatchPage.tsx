@@ -1,10 +1,11 @@
 import React from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
-import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
+import { Dropdown, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
 import { Conference, Match } from "../../../types/types";
 
+const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 interface Props {
     match: any;
 }
@@ -20,7 +21,7 @@ export default function EditMatchPage({ match }: Props) {
     const handleType = (e: any) => setType(e);
     const [selectedDate, setDate] = React.useState(new Date());
     const handleDate = (e: any) => setDate(e);
-    const [selectedDivision, setDivision] = React.useState("");
+    const [selectedDivision, setDivision] = React.useState<any>(undefined);
     const handleDivision = (e: any) => setDivision(e);
     const [team1, setTeam1] = React.useState("");
     const handleTeam1 = (e: any) => setTeam1(e);
@@ -72,15 +73,11 @@ export default function EditMatchPage({ match }: Props) {
         const game = context.games.find((g) => g.name === selectedGame);
         const teamA = context.teams.find((t) => t.name === team1);
         const teamB = context.teams.find((t) => t.name === team2);
-        const division = allDivisions.find(
-            (d) => d.value === (selectedDivision as any).value
-        );
         if (!game) {
             return window.alert("invalid game");
         }
-        if (!division) {
-            console.log(allDivisions, selectedDivision);
-            return window.alert("invalid divsion");
+        if (!selectedDivision) {
+            return window.alert("invalid conference/division");
         }
 
         await axios.delete("/api/TeamMatches", {
@@ -91,7 +88,7 @@ export default function EditMatchPage({ match }: Props) {
             date: selectedDate,
             type: selectedType,
             notes: notes,
-            DivisionId: division.id,
+            DivisionId: selectedDivision.id,
             GameId: game.id,
         };
         const { data: response } = await axios.patch("/api/Match", request);
@@ -107,6 +104,10 @@ export default function EditMatchPage({ match }: Props) {
         window.alert("Success!");
     };
 
+    const allTeams = context.teams.map((t) => t.name);
+    allTeams.sort();
+    const teamOptions = ["No Team"].concat(allTeams);
+
     return (
         <div>
             <h1>Edit Match</h1>
@@ -119,10 +120,11 @@ export default function EditMatchPage({ match }: Props) {
                 botPad
             />
             <br />
-            <TextField
+            <Dropdown
                 label={"Type of Game"}
                 placeholder={"ex: Best of 3"}
-                value={selectedType}
+                selected={selectedType}
+                options={gameTypes}
                 onChange={handleType}
                 botPad
             />
@@ -147,7 +149,7 @@ export default function EditMatchPage({ match }: Props) {
                 label={"First Team"}
                 placeholder={"Select a Team"}
                 selected={team1}
-                options={context.teams.map((t) => t.name)}
+                options={teamOptions}
                 onChange={handleTeam1}
                 botPad
             />
@@ -155,7 +157,7 @@ export default function EditMatchPage({ match }: Props) {
                 label={"Second Team"}
                 placeholder={"Select a Team"}
                 selected={team2}
-                options={context.teams.map((t) => t.name)}
+                options={teamOptions}
                 onChange={handleTeam2}
                 botPad
             />
