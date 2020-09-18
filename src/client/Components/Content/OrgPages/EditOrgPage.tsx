@@ -1,8 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { TextField, Button, Multiselect } from "ebrap-ui";
-import { Team, Player, Role, Game } from "../../../types/types";
-import PlayerItem from "./PlayerItem";
+import EditPlayerItem from "./EditPlayerItem";
 import { connectContext } from "../../Context";
 
 const initNewPlayer = {
@@ -12,7 +11,7 @@ const initNewPlayer = {
     games: new Array<Game>(),
     roles: new Array<Role>(),
 };
-const loadingTeam: Team = {
+const loadingOrg: Organization = {
     id: -1,
     image: "",
     name: "loading...",
@@ -21,12 +20,12 @@ const loadingTeam: Team = {
 interface Props {
     match: any;
 }
-export default function EditTeamPage({ match }: Props) {
+export default function EditOrgPage({ match }: Props) {
     const context = connectContext()!;
-    const teamId = parseInt(match.params.teamId);
+    const orgId = parseInt(match.params.orgId);
 
-    const [team, setTeam] = React.useState<Team>(loadingTeam);
-    const setName = (name: string) => setTeam({ ...team, name });
+    const [org, setOrg] = React.useState<Organization>(loadingOrg);
+    const setName = (name: string) => setOrg({ ...org, name });
 
     const [newPlayer, setNewPlayer] = React.useState(initNewPlayer);
     const setPlayerParam = (param: string) => (value: any) =>
@@ -40,19 +39,18 @@ export default function EditTeamPage({ match }: Props) {
     async function onMount() {
         const requests = [
             axios.get("/api/Role"),
-            axios.get("/api/Team", { params: { id: teamId } }),
+            axios.get("/api/Organization", { params: { id: orgId } }),
         ];
-        const [{ data: roles }, { data: teams }] = await Promise.all(requests);
-        if (teams.length === 0) {
-            return window.alert("error fetching team");
+        const [{ data: roles }, { data: orgs }] = await Promise.all(requests);
+        if (orgs.length === 0) {
+            return window.alert("error fetching organization");
         }
-        const selectedTeam: Team = teams[0];
-        setTeam(selectedTeam);
+        setOrg(orgs[0] as Organization);
         setRoles(roles);
     }
 
     const save = async () => {
-        const { data } = await axios.patch("/api/Team", team);
+        const { data } = await axios.patch("/api/Organization", org);
         if (data.success) {
             return window.alert("success!");
         }
@@ -69,9 +67,9 @@ export default function EditTeamPage({ match }: Props) {
         let RoleIds = new Array();
         if (newPlayer.roles) RoleIds = newPlayer.roles.map(getId);
 
-        const teamRequest = {
+        const orgRequest = {
             PlayerId: data.id,
-            TeamId: teamId,
+            OrganizationId: orgId,
         };
         const gameRequest = {
             PlayerId: data.id,
@@ -82,7 +80,7 @@ export default function EditTeamPage({ match }: Props) {
             RoleIds,
         };
         const requests = [
-            axios.post("/api/TeamPlayers", teamRequest),
+            axios.post("/api/OrganizationPlayers", orgRequest),
             axios.post("/api/PlayerGames", gameRequest),
             axios.post("/api/PlayerRoles", roleRequest),
         ];
@@ -92,8 +90,8 @@ export default function EditTeamPage({ match }: Props) {
         onMount();
     };
 
-    if (team && team.players) {
-        team.players.sort((a: Player, b: Player) => a.id - b.id);
+    if (org && org.players) {
+        org.players.sort((a: Player, b: Player) => a.id - b.id);
     }
 
     let selectedGames = new Array();
@@ -107,18 +105,18 @@ export default function EditTeamPage({ match }: Props) {
 
     const allRoles = roles.map(addValue);
 
-    let teamMembers = new Array<Player>();
-    if (team.players) teamMembers = team.players;
+    let allPlayers = new Array<Player>();
+    if (org.players) allPlayers = org.players;
 
-    const [coaches, captains, players] = sortPlayers(teamMembers);
+    const [coaches, captains, players] = sortPlayers(allPlayers);
 
     return (
-        <div className="team-page">
-            <h1>Edit Team</h1>
+        <div className="org-page">
+            <h1>Edit Organization</h1>
             <div className="flex-row --right-pad-10">
                 <TextField
-                    label={"Team Name"}
-                    value={team.name}
+                    label={"Organization Name"}
+                    value={org.name || ""}
                     onChange={setName}
                     botPad
                 />
@@ -129,30 +127,30 @@ export default function EditTeamPage({ match }: Props) {
             <hr />
             <h4>Roster</h4>
             {coaches.map((player: Player, key: number) => (
-                <PlayerItem
-                    key={key}
+                <EditPlayerItem
+                    key={`coaches-${rand(key)}`}
                     player={player}
-                    teamId={teamId}
+                    orgId={orgId}
                     roles={roles}
-                    refreshTeam={onMount}
+                    refreshOrg={onMount}
                 />
             ))}
             {captains.map((player: Player, key: number) => (
-                <PlayerItem
-                    key={key}
+                <EditPlayerItem
+                    key={`captains-${rand(key)}`}
                     player={player}
-                    teamId={teamId}
+                    orgId={orgId}
                     roles={roles}
-                    refreshTeam={onMount}
+                    refreshOrg={onMount}
                 />
             ))}
             {players.map((player: Player, key: number) => (
-                <PlayerItem
-                    key={key}
+                <EditPlayerItem
+                    key={`players-${rand(key)}`}
                     player={player}
-                    teamId={teamId}
+                    orgId={orgId}
                     roles={roles}
-                    refreshTeam={onMount}
+                    refreshOrg={onMount}
                 />
             ))}
             <hr />
@@ -195,8 +193,13 @@ export default function EditTeamPage({ match }: Props) {
                     Create
                 </Button>
             </div>
+            <h4>Teams</h4>
         </div>
     );
+}
+
+function rand(key: number): string {
+    return `${key}-${Math.random() * 100}`;
 }
 
 function sortPlayers(

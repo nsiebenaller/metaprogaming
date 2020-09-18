@@ -3,13 +3,13 @@ const { tokenChecker } = require("../tokenChecker");
 
 module.exports = (router) => {
     router
-        .route("/Team")
+        .route("/Organization")
         .get(async (req, res) => {
             const { id } = req.query;
-            let teams = [];
+            let orgs = [];
 
             if (!id) {
-                teams = await db.Team.findAll({
+                orgs = await db.Organization.findAll({
                     include: [
                         {
                             model: db.Player,
@@ -31,7 +31,7 @@ module.exports = (router) => {
                     ],
                 });
             } else {
-                teams = await db.Team.findAll({
+                orgs = await db.Organization.findAll({
                     where: { id },
                     include: [
                         {
@@ -55,15 +55,15 @@ module.exports = (router) => {
                 });
             }
 
-            res.json(teams);
+            res.json(orgs);
         })
         .post(tokenChecker, async (req, res) => {
-            await db.Team.create(req.body);
+            await db.Organization.create(req.body);
             res.json({ success: true });
         })
         .patch(tokenChecker, async (req, res) => {
-            const { id, ...teamProps } = req.body;
-            await db.Team.update(teamProps, { where: { id } });
+            const { id, ...props } = req.body;
+            await db.Organization.update(props, { where: { id } });
             res.json({ success: true, id });
         });
 };

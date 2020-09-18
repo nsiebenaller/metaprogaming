@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Dropdown } from "ebrap-ui";
 import MatchItem from "./MatchItem";
-import { Match, Game, Week } from "../../../types/types";
 import { connectContext } from "../../Context";
 import Axios from "axios";
 

@@ -14,8 +14,8 @@ module.exports = (router) => {
                             as: "divisions",
                         },
                         {
-                            model: db.Team,
-                            as: "teams",
+                            model: db.Organization,
+                            as: "organizations",
                         },
                     ],
                 },

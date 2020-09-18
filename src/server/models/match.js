@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Match.belongsTo(models.Team, {
-                as: "firstTeam",
-                foreignKey: "FirstTeamId",
+            Match.belongsTo(models.Organization, {
+                as: "awayOrg",
+                foreignKey: "AwayOrganizationId",
             });
-            Match.belongsTo(models.Team, {
-                as: "secondTeam",
-                foreignKey: "SecondTeamId",
+            Match.belongsTo(models.Organization, {
+                as: "homeOrg",
+                foreignKey: "HomeOrganizationId",
             });
             Match.belongsTo(models.Game);
             Match.belongsTo(models.Division);
@@ -28,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
             notes: DataTypes.STRING,
             GameId: DataTypes.INTEGER,
             DivisionId: DataTypes.INTEGER,
-            FirstTeamId: DataTypes.INTEGER,
-            SecondTeamId: DataTypes.INTEGER,
+            AwayOrganizationId: DataTypes.INTEGER,
+            HomeOrganizationId: DataTypes.INTEGER,
             firstTeamScore: DataTypes.INTEGER,
             secondTeamScore: DataTypes.INTEGER,
         },

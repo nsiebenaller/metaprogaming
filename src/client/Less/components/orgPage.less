@@ -1,0 +1,43 @@
+.org-page {
+    .title {
+        font-size: 1.5em;
+    }
+}
+
+.player-card {
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    .title-row {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 10px;
+        .title {
+            font-size: 1.25em;
+            margin-right: 10px;
+        }
+        .roles {
+            font-style: italic;
+            color: @grey-600;
+        }
+    }
+
+    .info {
+        display: flex;
+        color: @grey-600;
+        > * {
+            margin-right: 20px;
+        }
+        .info-value {
+            color: black;
+        }
+    }
+}
+
+.edit-player-item {
+    display: flex;
+    > * {
+        margin-right: 10px;
+    }
+}

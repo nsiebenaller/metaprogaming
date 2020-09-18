@@ -3,7 +3,6 @@ import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
-import { Division, Team } from "../../../types/types";
 
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 export default function NewMatchPage() {
@@ -41,8 +40,8 @@ export default function NewMatchPage() {
 
     const createMatch = async () => {
         const game = context.games.find((g) => g.name === selectedGame);
-        const teamA = context.teams.find((t) => t.name === team1);
-        const teamB = context.teams.find((t) => t.name === team2);
+        const teamA = context.organizations.find((t) => t.name === team1);
+        const teamB = context.organizations.find((t) => t.name === team2);
         if (!game) {
             return window.alert("invalid game");
         }
@@ -62,15 +61,15 @@ export default function NewMatchPage() {
             return window.alert("error creating game");
         }
         const request1 = {
-            FirstTeamId: teamA ? teamA.id : null,
-            SecondTeamId: teamB ? teamB.id : null,
+            AwayOrganizationId: teamA ? teamA.id : null,
+            HomeOrganizationId: teamB ? teamB.id : null,
             MatchId: response.id,
         };
         await axios.post("/api/TeamMatches", request1);
         window.alert("Success!");
     };
 
-    const allTeams = context.teams.map((t) => t.name);
+    const allTeams = context.organizations.map((t) => t.name);
     allTeams.sort();
     const teamOptions = ["No Team"].concat(allTeams);
 
@@ -112,16 +111,17 @@ export default function NewMatchPage() {
             />
             <br />
             <Dropdown
-                label={"First Team"}
-                placeholder={"Select a Team"}
+                label={"Away Organization"}
+                placeholder={"Select a Organization"}
                 selected={team1}
                 options={teamOptions}
                 onChange={handleTeam1}
                 botPad
             />
+            <br />
             <Dropdown
-                label={"Second Team"}
-                placeholder={"Select a Team"}
+                label={"Home Organization"}
+                placeholder={"Select a Organization"}
                 selected={team2}
                 options={teamOptions}
                 onChange={handleTeam2}

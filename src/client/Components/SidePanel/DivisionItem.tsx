@@ -1,5 +1,4 @@
 import React from "react";
-import { Division } from "../../types/types";
 
 interface Props {
     selectedDivision: Division | undefined;

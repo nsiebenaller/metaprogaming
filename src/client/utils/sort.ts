@@ -1,5 +1,3 @@
-import { SubConference, Division, Conference, Team } from "../types/types";
-
 export function sortConferences(conferences: Array<Conference> | undefined) {
     if (!conferences) return;
     conferences.forEach((conference) => {
@@ -17,7 +15,7 @@ export function sortConference(conference: Conference | undefined) {
     }));
 }
 
-type Sortable = Conference | SubConference | Division | Team;
+type Sortable = Conference | SubConference | Division | Organization;
 export function ByName(a: Sortable, b: Sortable): number {
     if (a.name < b.name) {
         return -1;

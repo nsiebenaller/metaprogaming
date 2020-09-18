@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "ebrap-ui";
 import { connectContext } from "../../Context";
-import { Game, Week } from "../../../types/types";
 import Axios from "axios";
 import WeekItem from "./WeekItem";
 

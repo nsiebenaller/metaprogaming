@@ -7,9 +7,9 @@ const playerGamesRouter = require("./playerGames");
 const playerRolesRouter = require("./playerRoles");
 const roleRouter = require("./role");
 const securityRouter = require("./security");
-const teamRouter = require("./team");
-const teamMatchesRouter = require("./teamMatches");
-const teamPlayersRouter = require("./teamPlayers");
+const orgRouter = require("./org");
+const orgMatchesRouter = require("./orgMatches");
+const orgPlayersRouter = require("./orgPlayers");
 const userRouter = require("./user");
 const weekRouter = require("./week");
 
@@ -23,9 +23,9 @@ module.exports = (router) => {
     playerRolesRouter(router);
     roleRouter(router);
     securityRouter(router);
-    teamRouter(router);
-    teamMatchesRouter(router);
-    teamPlayersRouter(router);
+    orgRouter(router);
+    orgMatchesRouter(router);
+    orgPlayersRouter(router);
     userRouter(router);
     weekRouter(router);
 };

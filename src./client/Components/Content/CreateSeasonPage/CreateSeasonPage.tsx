@@ -1,7 +1,6 @@
 import React from "react";
 import { TextField, Datepicker, Button } from "ebrap-ui";
 import { connectContext } from "../../Context";
-import { Game } from "../../../types/types";
 import Axios from "axios";
 
 interface Props {

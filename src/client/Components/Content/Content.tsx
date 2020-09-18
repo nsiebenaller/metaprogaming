@@ -6,13 +6,11 @@ import GamePage from "./GamePage/GamePage";
 import MainPage from "./MainPage/MainPage";
 import NewMatchPage from "./NewMatchPage/NewMatchPage";
 import EditMatchPage from "./EditMatchPage/EditMatchPage";
-import EditTeamPage from "./EditTeamPage/EditTeamPage";
 import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
 import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
-import TeamPage from "./TeamPage/TeamPage";
+import OrgPages from "./OrgPages";
 
-interface Props {}
-export default function Content(props: Props) {
+export default function Content() {
     return (
         <div className="content">
             <Route path={"/"} component={TopBar} />
@@ -22,6 +20,7 @@ export default function Content(props: Props) {
                 </Route>
                 <Route
                     path={"/game/:gameId"}
+                    exact
                     component={({ match }: any) => <GamePage match={match} />}
                 />
                 <Route path={"/login"}>
@@ -32,25 +31,20 @@ export default function Content(props: Props) {
                 </Route>
                 <Route
                     path={"/Match/edit/:matchId"}
+                    exact
                     component={({ match }: any) => (
                         <EditMatchPage match={match} />
                     )}
                 />
-                <Route
-                    path={"/Team/edit/:teamId"}
-                    component={({ match }: any) => (
-                        <EditTeamPage match={match} />
-                    )}
-                />
-                <Route
-                    path={"/Team/:teamId"}
-                    component={({ match }: any) => <TeamPage match={match} />}
-                />
+                <Route path={"/Organization"}>
+                    <OrgPages />
+                </Route>
                 <Route path={"/Weeks/edit"} exact>
                     <EditWeeksPage />
                 </Route>
                 <Route
                     path={"/Season/:gameId"}
+                    exact
                     component={({ match }: any) => (
                         <CreateSeasonPage match={match} />
                     )}

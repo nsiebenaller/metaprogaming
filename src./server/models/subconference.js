@@ -14,11 +14,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "SubConferenceId",
                 as: "divisions",
             });
-            SubConference.belongsToMany(models.Team, {
-                as: "teams",
-                through: "TeamSubConferences",
+            SubConference.belongsToMany(models.Organization, {
+                as: "organizations",
+                through: "OrganizationSubConferences",
                 foreignKey: "SubConferenceId",
-                otherKey: "TeamId",
+                otherKey: "OrganizationId",
                 sourceKey: "id",
             });
         }

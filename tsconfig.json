@@ -17,9 +17,5 @@
         "isolatedModules": true,
         "noEmit": false
     },
-    "include": [
-        "types/**/*.d.ts",
-        "./src/client/types/index.d.ts",
-        "./src/client/*"
-    ]
+    "include": ["./src/client/types/index.d.ts", "./src/client/*"]
 }

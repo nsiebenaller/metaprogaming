@@ -1,18 +1,21 @@
 import React from "react";
 import ArrowUp from "@material-ui/icons/ArrowUpward";
 import ArrowDown from "@material-ui/icons/ArrowDownward";
-import { Team, Side } from "../../../types/types";
 import { connectContext } from "../../Context";
 
+enum Side {
+    LEFT,
+    RIGHT,
+}
 interface Props {
-    team?: Team;
+    org?: Organization;
     score?: number;
     side: Side;
     date?: Date;
     changeScore: (score: number) => void;
 }
-export default function TeamMatch({
-    team,
+export default function OrgMatch({
+    org,
     score,
     side,
     date,
@@ -31,7 +34,7 @@ export default function TeamMatch({
         }
     };
 
-    if (!team)
+    if (!org)
         return (
             <div className="bracket-group">
                 <div className="arrow-container" />
@@ -52,8 +55,8 @@ export default function TeamMatch({
 
                     <div className="bracket-match">
                         <div className="bracket-contents left">
-                            <img src={team.image} />
-                            <span>{team.name}</span>
+                            <img src={org.image} />
+                            <span>{org.name}</span>
                         </div>
                         <div className="score-container">
                             <span className="score">{score || 0}</span>
@@ -75,8 +78,8 @@ export default function TeamMatch({
                             <span className="score">{score || 0}</span>
                         </div>
                         <div className="bracket-contents right">
-                            <span>{team.name}</span>
-                            <img src={team.image} />
+                            <span>{org.name}</span>
+                            <img src={org.image} />
                         </div>
                     </div>
                     <div className="arrow-container right">
@@ -91,5 +94,9 @@ export default function TeamMatch({
 
 function getDate(date: Date | undefined) {
     if (!date) return "";
-    return new Date(date).toDateString();
+    return new Date(date).toLocaleDateString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
 }

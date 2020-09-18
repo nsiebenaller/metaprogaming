@@ -1,30 +1,39 @@
 import React from "react";
 import GameImage from "./GameImage";
-import TeamImage from "./TeamImage";
-import { Game, Team, SubConference } from "../../../types/types";
+import OrgImage from "./OrgImage";
 import { connectContext } from "../../Context";
 import { ByName } from "../../../utils/sort";
 
-interface Props {}
-export default function MainPage(props: Props) {
+export default function MainPage() {
     const context = connectContext()!;
-    const { games, teams, selectedDivision, selectedSubConference } = context;
+    const {
+        games,
+        organizations,
+        selectedDivision,
+        selectedSubConference,
+    } = context;
 
-    const selectedTeams = getSelectedTeams(selectedSubConference, teams);
-    selectedTeams.sort(ByName);
+    if (!selectedDivision || !selectedSubConference)
+        return <div>Loading...</div>;
+
+    const selectedOrgs = getSelectedOrgs(selectedSubConference, organizations);
+    selectedOrgs.sort(ByName);
+
     return (
-        <div>
-            <h1>{selectedDivision && selectedDivision.name}</h1>
-            <div className={"games"}>
+        <div className={"main-page"}>
+            <h1>
+                {selectedSubConference.name} {selectedDivision.name}
+            </h1>
+            <div className={"games-container"}>
                 {games.map((game: Game, idx: number) => (
                     <GameImage key={idx} game={game} />
                 ))}
             </div>
             <div>
-                <h1>Teams</h1>
-                <div className={"teams"}>
-                    {selectedTeams.map((team: Team, idx: number) => (
-                        <TeamImage key={idx} team={team} />
+                <h1>{selectedSubConference.name} Organizations</h1>
+                <div className={"orgs-container"}>
+                    {selectedOrgs.map((org: Organization, idx: number) => (
+                        <OrgImage key={idx} org={org} />
                     ))}
                 </div>
             </div>
@@ -32,11 +41,12 @@ export default function MainPage(props: Props) {
     );
 }
 
-function getSelectedTeams(
+function getSelectedOrgs(
     subconference: SubConference | undefined,
-    allTeams: Array<Team>
-): Array<Team> {
-    if (!subconference || !subconference.teams) return new Array<Team>();
-    const ids = subconference.teams.map((x) => x.id);
-    return allTeams.filter((x) => ids.includes(x.id));
+    allOrganizations: Array<Organization>
+): Array<Organization> {
+    if (!subconference || !subconference.organizations)
+        return new Array<Organization>();
+    const ids = subconference.organizations.map((x) => x.id);
+    return allOrganizations.filter((x) => ids.includes(x.id));
 }

@@ -3,7 +3,6 @@ import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { Dropdown, Datepicker, TextArea } from "ebrap-ui";
 import { connectContext } from "../../Context";
-import { Conference, Match } from "../../../types/types";
 
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 interface Props {
@@ -23,10 +22,10 @@ export default function EditMatchPage({ match }: Props) {
     const handleDate = (e: any) => setDate(e);
     const [selectedDivision, setDivision] = React.useState<any>(undefined);
     const handleDivision = (e: any) => setDivision(e);
-    const [team1, setTeam1] = React.useState("");
-    const handleTeam1 = (e: any) => setTeam1(e);
-    const [team2, setTeam2] = React.useState("");
-    const handleTeam2 = (e: any) => setTeam2(e);
+    const [awayOrg, setAwayOrg] = React.useState("");
+    const handleAwayOrg = (e: any) => setAwayOrg(e);
+    const [homeOrg, setHomeOrg] = React.useState("");
+    const handleHomeOrg = (e: any) => setHomeOrg(e);
     const [notes, setNotes] = React.useState("");
     const handleNotes = (e: string) => setNotes(e);
 
@@ -46,8 +45,8 @@ export default function EditMatchPage({ match }: Props) {
             DivisionId,
             type,
             date,
-            firstTeam,
-            secondTeam,
+            awayOrg,
+            homeOrg,
             notes,
         } = currentMatch;
 
@@ -55,24 +54,24 @@ export default function EditMatchPage({ match }: Props) {
         const game = context.games.find((g) => g.id === GameId);
         const division = allDivisions.find((d) => d.id === DivisionId);
         const matchDate = new Date(date);
-        let firstTeamName = "";
-        if (firstTeam) firstTeamName = firstTeam.name;
-        let secondTeamName = "";
-        if (secondTeam) secondTeamName = secondTeam.name;
+        let awayOrgName = "";
+        if (awayOrg) awayOrgName = awayOrg.name;
+        let homeOrgName = "";
+        if (homeOrg) homeOrgName = homeOrg.name;
 
         if (game) setGame(game.name);
         setType(type);
         if (division) setDivision(division.value);
         setDate(matchDate);
-        setTeam1(firstTeamName);
-        setTeam2(secondTeamName);
+        setAwayOrg(awayOrgName);
+        setHomeOrg(homeOrgName);
         setNotes(notes || "");
     }
 
     const save = async () => {
         const game = context.games.find((g) => g.name === selectedGame);
-        const teamA = context.teams.find((t) => t.name === team1);
-        const teamB = context.teams.find((t) => t.name === team2);
+        const away = context.organizations.find((t) => t.name === awayOrg);
+        const home = context.organizations.find((t) => t.name === homeOrg);
         if (!game) {
             return window.alert("invalid game");
         }
@@ -80,7 +79,7 @@ export default function EditMatchPage({ match }: Props) {
             return window.alert("invalid conference/division");
         }
 
-        await axios.delete("/api/TeamMatches", {
+        await axios.delete("/api/OrganizationMatches", {
             params: { MatchId },
         });
         const request = {
@@ -96,15 +95,15 @@ export default function EditMatchPage({ match }: Props) {
             return window.alert("error creating game");
         }
         const request1 = {
-            FirstTeamId: teamA ? teamA.id : null,
-            SecondTeamId: teamB ? teamB.id : null,
+            AwayOrganizationId: away ? away.id : null,
+            HomeOrganizationId: home ? home.id : null,
             MatchId: response.id,
         };
-        await axios.post("/api/TeamMatches", request1);
+        await axios.post("/api/OrganizationMatches", request1);
         window.alert("Success!");
     };
 
-    const allTeams = context.teams.map((t) => t.name);
+    const allTeams = context.organizations.map((t) => t.name);
     allTeams.sort();
     const teamOptions = ["No Team"].concat(allTeams);
 
@@ -146,19 +145,20 @@ export default function EditMatchPage({ match }: Props) {
             />
             <br />
             <Dropdown
-                label={"First Team"}
-                placeholder={"Select a Team"}
-                selected={team1}
+                label={"Away Organization"}
+                placeholder={"Select a Organization"}
+                selected={awayOrg}
                 options={teamOptions}
-                onChange={handleTeam1}
+                onChange={handleAwayOrg}
                 botPad
             />
+            <br />
             <Dropdown
-                label={"Second Team"}
-                placeholder={"Select a Team"}
-                selected={team2}
+                label={"Home Organization"}
+                placeholder={"Select a Organization"}
+                selected={homeOrg}
                 options={teamOptions}
-                onChange={handleTeam2}
+                onChange={handleHomeOrg}
                 botPad
             />
             <br />

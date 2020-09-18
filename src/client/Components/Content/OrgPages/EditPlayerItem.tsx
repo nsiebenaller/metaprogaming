@@ -1,20 +1,19 @@
 import React from "react";
 import axios from "axios";
-import { Player, Role, Game } from "../../../types/types";
 import { TextField, Button, Multiselect } from "ebrap-ui";
 import { connectContext } from "../../Context";
 
 interface Props {
     player: Player;
-    teamId: number;
+    orgId: number;
     roles: Array<Role>;
-    refreshTeam: () => void;
+    refreshOrg: () => void;
 }
-export default function PlayerItem({
+export default function EditPlayerItem({
     player,
-    teamId,
+    orgId,
     roles,
-    refreshTeam,
+    refreshOrg,
 }: Props) {
     const context = connectContext()!;
 
@@ -51,14 +50,14 @@ export default function PlayerItem({
             window.alert("Error saving player!");
         }
         window.alert("Success!");
-        refreshTeam();
+        refreshOrg();
     };
     const remove = async () => {
-        await axios.delete("/api/TeamPlayers", {
-            params: { TeamId: teamId, PlayerId: player.id },
+        await axios.delete("/api/OrganizationPlayers", {
+            params: { OrganizationId: orgId, PlayerId: player.id },
         });
         await axios.delete("/api/Player", { params: { id: player.id } });
-        refreshTeam();
+        refreshOrg();
     };
 
     let selectedGames = new Array();
@@ -73,7 +72,7 @@ export default function PlayerItem({
     const allRoles = roles.map(addValue);
 
     return (
-        <div className="player-item">
+        <div className="edit-player-item">
             <TextField
                 label={"Name"}
                 value={currentPlayer.name || ""}

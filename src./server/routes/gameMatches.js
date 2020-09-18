@@ -9,12 +9,12 @@ module.exports = (router) => {
             where: { GameId, DivisionId },
             include: [
                 {
-                    model: db.Team,
-                    as: "firstTeam",
+                    model: db.Organization,
+                    as: "awayOrg",
                 },
                 {
-                    model: db.Team,
-                    as: "secondTeam",
+                    model: db.Organization,
+                    as: "homeOrg",
                 },
             ],
         });

@@ -2,7 +2,6 @@ import React from "react";
 import axios from "axios";
 import SidePanel from "./SidePanel/SidePanel";
 import Content from "./Content/Content";
-import { Game, Team } from "../types/types";
 import { connectContext } from "./Context";
 import { sortConferences } from "../utils/sort";
 
@@ -18,16 +17,20 @@ export default function App() {
 
         const requests = [
             axios.get("/api/Game"),
-            axios.get("/api/Team"),
+            axios.get("/api/Organization"),
             axios.get("/api/Conference"),
         ];
         const [
             { data: games },
-            { data: teams },
+            { data: organizations },
             { data: conferences },
         ] = await Promise.all(requests);
-        const imageRequests = [populateImages(games), populateImages(teams)];
-        const [gameList, teamList] = await Promise.all(imageRequests);
+
+        const imageRequests = [
+            populateImages(games),
+            populateImages(organizations),
+        ];
+        const [gameList, orgList] = await Promise.all(imageRequests);
 
         sortConferences(conferences);
         const selectedSubConference = conferences[0].subconferences[0];
@@ -35,7 +38,7 @@ export default function App() {
 
         context.setProperty({
             games: gameList as Array<Game>,
-            teams: teamList as Array<Team>,
+            organizations: orgList as Array<Organization>,
             conferences,
             selectedDivision,
             selectedSubConference,

@@ -3,23 +3,23 @@ const { tokenChecker } = require("../tokenChecker");
 
 module.exports = (router) => {
     router
-        .route("/TeamPlayers")
+        .route("/OrganizationPlayers")
         .post(tokenChecker, async (req, res) => {
-            const team = await db.Team.findOne({
-                where: { id: req.body.TeamId },
+            const org = await db.Organization.findOne({
+                where: { id: req.body.OrganizationId },
             });
-            if (!team) return res.json({ success: false });
+            if (!org) return res.json({ success: false });
             const player = await db.Player.findOne({
                 where: { id: req.body.PlayerId },
             });
             if (!player) return res.json({ success: false });
-            await player.addTeams(team);
+            await player.addOrganizations(org);
             res.json({ success: true });
         })
         .delete(tokenChecker, async (req, res) => {
-            const { PlayerId, TeamId } = req.query;
-            const team = await db.Team.findOne({
-                where: { id: TeamId },
+            const { PlayerId, OrganizationId } = req.query;
+            const org = await db.Organization.findOne({
+                where: { id: OrganizationId },
                 include: [
                     {
                         model: db.Player,
@@ -28,24 +28,24 @@ module.exports = (router) => {
                     },
                 ],
             });
-            if (!team) return res.json({ success: false });
+            if (!org) return res.json({ success: false });
             const player = await db.Player.findOne({
                 where: { id: PlayerId },
                 include: [
                     {
-                        model: db.Team,
-                        as: "teams",
+                        model: db.Organization,
+                        as: "organizations",
                         through: { attributes: [] },
                     },
                 ],
             });
             if (!player) return res.json({ success: false });
 
-            const teams = player.teams.filter((x) => x.id !== team.id);
-            await player.setTeams(teams);
+            const orgs = player.organizations.filter((x) => x.id !== org.id);
+            await player.setOrganizations(orgs);
 
-            const players = team.players.filter((x) => x.id !== player.id);
-            await team.setPlayers(players);
+            const players = org.players.filter((x) => x.id !== player.id);
+            await org.setPlayers(players);
 
             res.json({ success: true });
         });

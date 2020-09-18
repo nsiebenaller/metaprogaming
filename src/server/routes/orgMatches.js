@@ -3,11 +3,15 @@ const { tokenChecker } = require("../tokenChecker");
 
 module.exports = (router) => {
     router
-        .route("/TeamMatches")
+        .route("/OrganizationMatches")
         .post(tokenChecker, async (req, res) => {
-            const { FirstTeamId, SecondTeamId, MatchId } = req.body;
+            const {
+                AwayOrganizationId,
+                HomeOrganizationId,
+                MatchId,
+            } = req.body;
             await db.Match.update(
-                { FirstTeamId, SecondTeamId },
+                { AwayOrganizationId, HomeOrganizationId },
                 { where: { id: MatchId } }
             );
             res.json({ success: true });
@@ -16,7 +20,7 @@ module.exports = (router) => {
             const { MatchId } = req.query;
             if (!MatchId) return res.json({ success: false });
             await db.Match.update(
-                { FirstTeamId: null, SecondTeamId: null },
+                { AwayOrganizationId: null, HomeOrganizationId: null },
                 { where: { id: MatchId } }
             );
             res.json({ success: true });

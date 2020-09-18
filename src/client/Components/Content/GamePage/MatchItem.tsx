@@ -1,10 +1,13 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
-import { Match, Side } from "../../../types/types";
-import TeamMatch from "./TeamMatch";
+import OrgMatch from "./OrgMatch";
 import { connectContext } from "../../Context";
 import axios from "axios";
 
+enum Side {
+    LEFT,
+    RIGHT,
+}
 interface Props {
     match: Match;
     changeScore: (match: Match) => void;
@@ -34,16 +37,16 @@ export default function MatchItem({ match, changeScore, deleteMatch }: Props) {
     return (
         <div className="bracket-container">
             <div className="bracket">
-                <TeamMatch
-                    team={match.firstTeam}
+                <OrgMatch
+                    org={match.awayOrg}
                     score={match.firstTeamScore}
                     side={Side.LEFT}
                     date={match.date}
                     changeScore={changeFirstTeamScore}
                 />
                 <div className="bracket-divider">- vs -</div>
-                <TeamMatch
-                    team={match.secondTeam}
+                <OrgMatch
+                    org={match.homeOrg}
                     score={match.secondTeamScore}
                     side={Side.RIGHT}
                     changeScore={changeSecondTeamScore}

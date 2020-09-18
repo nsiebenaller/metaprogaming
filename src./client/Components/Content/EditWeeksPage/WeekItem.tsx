@@ -1,5 +1,4 @@
 import React from "react";
-import { Week } from "../../../types/types";
 
 interface Props {
     week: Week;

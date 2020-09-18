@@ -3,11 +3,9 @@ import logo from "../../Assets/logo.png";
 import neccLogo from "../../Assets/necc-logo.png";
 import DivisionItem from "./DivisionItem";
 import { connectContext } from "../Context";
-import { SubConference, Division } from "../../types/types";
 import { sortConference } from "../../utils/sort";
 
-interface Props {}
-export default function SidePanel(props: Props) {
+export default function SidePanel() {
     const context = connectContext()!;
 
     let shouldDisplay = true;
