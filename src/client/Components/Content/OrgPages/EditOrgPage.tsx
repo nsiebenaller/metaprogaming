@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { TextField, Button, Multiselect } from "ebrap-ui";
 import EditPlayerItem from "./EditPlayerItem";
+import EditTeamItem from "./EditTeamItem";
 import { connectContext } from "../../Context";
 
 const initNewPlayer = {
@@ -30,6 +31,9 @@ export default function EditOrgPage({ match }: Props) {
     const [newPlayer, setNewPlayer] = React.useState(initNewPlayer);
     const setPlayerParam = (param: string) => (value: any) =>
         setNewPlayer({ ...newPlayer, [param]: value });
+
+    const [newTeam, setNewTeam] = React.useState("");
+    const handleNewTeam = (value: string) => setNewTeam(value);
 
     const [roles, setRoles] = React.useState<Array<Role>>(new Array<Role>());
 
@@ -90,6 +94,18 @@ export default function EditOrgPage({ match }: Props) {
         onMount();
     };
 
+    const createTeam = async () => {
+        const { data } = await axios.post("/api/Team", {
+            name: newTeam,
+            OrganizationId: orgId,
+        });
+        if (!data.success) {
+            return window.alert("error creating team");
+        }
+        setNewTeam("");
+        onMount();
+    };
+
     if (org && org.players) {
         org.players.sort((a: Player, b: Player) => a.id - b.id);
     }
@@ -110,6 +126,9 @@ export default function EditOrgPage({ match }: Props) {
 
     const [coaches, captains, players] = sortPlayers(allPlayers);
 
+    let allTeams = new Array<Team>();
+    if (org.teams) allTeams = org.teams;
+
     return (
         <div className="org-page">
             <h1>Edit Organization</h1>
@@ -126,6 +145,7 @@ export default function EditOrgPage({ match }: Props) {
             </div>
             <hr />
             <h4>Roster</h4>
+            {allPlayers.length === 0 && <div>No Players</div>}
             {coaches.map((player: Player, key: number) => (
                 <EditPlayerItem
                     key={`coaches-${rand(key)}`}
@@ -194,6 +214,29 @@ export default function EditOrgPage({ match }: Props) {
                 </Button>
             </div>
             <h4>Teams</h4>
+            {allTeams.map((team: Team, key: number) => (
+                <EditTeamItem
+                    key={rand(key)}
+                    team={team}
+                    refreshOrg={onMount}
+                />
+            ))}
+            {allTeams.length === 0 && <div>No Teams</div>}
+            <div className="flex-row --right-pad-10">
+                <TextField
+                    label={"New Team Name"}
+                    value={newTeam}
+                    onChange={handleNewTeam}
+                />
+                <Button
+                    onClick={createTeam}
+                    variant="outlined"
+                    color="blue-500"
+                    topPad
+                >
+                    Create
+                </Button>
+            </div>
         </div>
     );
 }

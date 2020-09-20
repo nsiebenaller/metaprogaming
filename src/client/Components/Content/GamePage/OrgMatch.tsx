@@ -9,6 +9,7 @@ enum Side {
 }
 interface Props {
     org?: Organization;
+    team?: Team;
     score?: number;
     side: Side;
     date?: Date;
@@ -16,6 +17,7 @@ interface Props {
 }
 export default function OrgMatch({
     org,
+    team,
     score,
     side,
     date,
@@ -34,62 +36,115 @@ export default function OrgMatch({
         }
     };
 
-    if (!org)
-        return (
-            <div className="bracket-group">
-                <div className="arrow-container" />
-                <div className="bracket-match">
-                    <span>No Team</span>
-                </div>
-            </div>
-        );
+    if (!org) return <NoTeamBracket />;
 
     switch (side) {
         case Side.LEFT:
             return (
-                <div className="bracket-group">
-                    <div className="arrow-container left">
-                        <div className={"date"}>{getDate(date)}</div>
-                        {context.user && <ArrowUp onClick={increment} />}
-                    </div>
-
-                    <div className="bracket-match">
-                        <div className="bracket-contents left">
-                            <img src={org.image} />
-                            <span>{org.name}</span>
-                        </div>
-                        <div className="score-container">
-                            <span className="score">{score || 0}</span>
-                        </div>
-                    </div>
-                    <div className="arrow-container left">
-                        {context.user && <ArrowDown onClick={decrement} />}
-                    </div>
-                </div>
+                <AwayBracket
+                    isAdmin={!!context.user}
+                    date={date}
+                    organization={org}
+                    team={team}
+                    score={score || 0}
+                    increment={increment}
+                    decrement={decrement}
+                />
             );
         case Side.RIGHT:
             return (
-                <div className="bracket-group">
-                    <div className="arrow-container right">
-                        {context.user && <ArrowUp onClick={increment} />}
-                    </div>
-                    <div className="bracket-match">
-                        <div className="score-container">
-                            <span className="score">{score || 0}</span>
-                        </div>
-                        <div className="bracket-contents right">
-                            <span>{org.name}</span>
-                            <img src={org.image} />
-                        </div>
-                    </div>
-                    <div className="arrow-container right">
-                        {context.user && <ArrowDown onClick={decrement} />}
-                    </div>
-                </div>
+                <HomeBracket
+                    isAdmin={!!context.user}
+                    date={date}
+                    organization={org}
+                    team={team}
+                    score={score || 0}
+                    increment={increment}
+                    decrement={decrement}
+                />
             );
         default:
             return null;
     }
+}
+
+function NoTeamBracket() {
+    return (
+        <div className="bracket-group">
+            <div className="arrow-container" />
+            <div className="bracket-match">
+                <span>No Team</span>
+            </div>
+        </div>
+    );
+}
+
+interface BracketProps {
+    isAdmin: boolean;
+    date: Date | undefined;
+    organization: Organization;
+    team?: Team;
+    score: number;
+    increment: () => void;
+    decrement: () => void;
+}
+function AwayBracket(props: BracketProps) {
+    return (
+        <div className="bracket-group">
+            <div className="arrow-container left">
+                <div className={"date"}>{getDate(props.date)}</div>
+                {props.isAdmin && <ArrowUp onClick={props.increment} />}
+            </div>
+
+            <div className="bracket-match">
+                <div className="bracket-contents left">
+                    <img src={props.organization.image} />
+                    <div className={"team-name-left"}>
+                        <div>{props.organization.name}</div>
+                        {props.team && (
+                            <div>
+                                <b>{props.team.name}</b>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className="score-container">
+                    <span className="score">{props.score}</span>
+                </div>
+            </div>
+            <div className="arrow-container left">
+                {props.isAdmin && <ArrowDown onClick={props.decrement} />}
+            </div>
+        </div>
+    );
+}
+function HomeBracket(props: BracketProps) {
+    return (
+        <div className="bracket-group">
+            <div className="arrow-container right">
+                {props.isAdmin && <ArrowUp onClick={props.increment} />}
+            </div>
+            <div className="bracket-match">
+                <div className="score-container">
+                    <span className="score">{props.score}</span>
+                </div>
+                <div className="bracket-contents right">
+                    <div className={"team-name-right"}>
+                        <div>{props.organization.name}</div>
+                        {props.team && (
+                            <div>
+                                <b>{props.team.name}</b>
+                            </div>
+                        )}
+                    </div>
+                    <img src={props.organization.image} />
+                </div>
+            </div>
+            <div className="arrow-container right">
+                {props.isAdmin && <ArrowDown onClick={props.decrement} />}
+            </div>
+        </div>
+    );
 }
 
 function getDate(date: Date | undefined) {

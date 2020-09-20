@@ -13,7 +13,7 @@ interface Props {
     changeScore: (match: Match) => void;
     deleteMatch: (id: number) => void;
 }
-export default function MatchItem({ match, changeScore, deleteMatch }: Props) {
+export default function MatchRow({ match, changeScore, deleteMatch }: Props) {
     const context = connectContext()!;
 
     const editMatch = () => context.history.push(`/Match/edit/${match.id}`);
@@ -39,6 +39,7 @@ export default function MatchItem({ match, changeScore, deleteMatch }: Props) {
             <div className="bracket">
                 <OrgMatch
                     org={match.awayOrg}
+                    team={match.awayTeam}
                     score={match.firstTeamScore}
                     side={Side.LEFT}
                     date={match.date}
@@ -47,6 +48,7 @@ export default function MatchItem({ match, changeScore, deleteMatch }: Props) {
                 <div className="bracket-divider">- vs -</div>
                 <OrgMatch
                     org={match.homeOrg}
+                    team={match.homeTeam}
                     score={match.secondTeamScore}
                     side={Side.RIGHT}
                     changeScore={changeSecondTeamScore}

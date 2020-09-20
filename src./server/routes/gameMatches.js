@@ -16,6 +16,14 @@ module.exports = (router) => {
                     model: db.Organization,
                     as: "homeOrg",
                 },
+                {
+                    model: db.Team,
+                    as: "awayTeam",
+                },
+                {
+                    model: db.Team,
+                    as: "homeTeam",
+                },
             ],
         });
         res.json(matchList);

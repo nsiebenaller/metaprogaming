@@ -5,6 +5,7 @@ module.exports = (router) => {
     router
         .route("/OrganizationMatches")
         .post(tokenChecker, async (req, res) => {
+            /** DEPRECATED! */
             const {
                 AwayOrganizationId,
                 HomeOrganizationId,

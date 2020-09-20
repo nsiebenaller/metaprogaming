@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "SubConferenceId",
                 sourceKey: "id",
             });
+            Organization.hasMany(models.Team, {
+                as: "teams",
+                foreignKey: "OrganizationId",
+            });
         }
     }
     Organization.init(

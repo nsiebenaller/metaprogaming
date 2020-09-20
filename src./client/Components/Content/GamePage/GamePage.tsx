@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Dropdown } from "ebrap-ui";
-import MatchItem from "./MatchItem";
+import MatchRow from "./MatchRow";
 import { connectContext } from "../../Context";
 import Axios from "axios";
 
@@ -126,7 +126,7 @@ export default function GamePage({ match }: Props) {
             <div className={"match-list"}>
                 {weekMatches.length === 0 && <span>no matches scheduled</span>}
                 {weekMatches.map((match, idx) => (
-                    <MatchItem
+                    <MatchRow
                         key={idx}
                         match={match}
                         changeScore={changeScore}

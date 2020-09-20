@@ -13,14 +13,22 @@ declare global {
         image: string;
         imageSrc?: string;
         players?: Array<Player>;
+        teams?: Array<Team>;
+    }
+
+    interface Team {
+        id: number;
+        name: string;
     }
 
     interface Match {
         id: number;
         awayOrg: Organization;
         firstTeamScore: number;
+        awayTeam: Team;
         homeOrg: Organization;
         secondTeamScore: number;
+        homeTeam: Team;
         date: Date;
         winner: number | null;
         notes: string;

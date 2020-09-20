@@ -1,77 +1,111 @@
 import React from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
-import { Dropdown, TextField, Datepicker, TextArea } from "ebrap-ui";
+import { Dropdown, Datepicker, TextArea, command } from "ebrap-ui";
+import { OptionFormat } from "ebrap-ui/dist/types/types";
 import { connectContext } from "../../Context";
+import Convert from "../../../utils/convert";
 
+type SelectedGame = Game | undefined;
+type SelectedOrg = Organization | undefined;
+type SelectedTeam = Team | undefined;
+type SelectedDivision = Division | undefined;
+
+const noTeam: Array<OptionFormat> = [{ value: "No Team" }];
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 export default function NewMatchPage() {
     const context = connectContext()!;
 
-    const [selectedGame, setGame] = React.useState("");
-    const handleGame = (e: any) => setGame(e);
+    const [allGames, setAllGames] = React.useState<Array<OptionFormat>>([]);
+    const [allOrgs, setAllOrgs] = React.useState<Array<OptionFormat>>([]);
+    const [divisions, setDivisions] = React.useState<Array<OptionFormat>>([]);
+    const [awayTeams, setAwayTeams] = React.useState<Array<OptionFormat>>([]);
+    const [homeTeams, setHomeTeams] = React.useState<Array<OptionFormat>>([]);
+    React.useEffect(() => {
+        const games = Convert.toOptionFormat(context.games);
+        setAllGames(games);
+    }, [context.games]);
+    React.useEffect(() => {
+        const orgs = Convert.toOptionFormat(context.organizations);
+        setAllOrgs(noTeam.concat(orgs));
+    }, [context.organizations]);
+    React.useEffect(() => {
+        const divisions = formatConferences(context.conferences);
+        setDivisions(divisions);
+    }, [context.conferences]);
+
+    const [selectedGame, setGame] = React.useState<SelectedGame>();
+    const handleGame = (option: OptionFormat) =>
+        setGame(Convert.toGame(option));
     const [selectedType, setType] = React.useState("");
     const handleType = (e: any) => setType(e);
     const [selectedDate, setDate] = React.useState(new Date());
     const handleDate = (e: any) => setDate(e);
-    const [selectedDivision, setDivision] = React.useState<any>(undefined);
-    const handleDivision = (e: any) => setDivision(e);
-    const [team1, setTeam1] = React.useState("");
-    const handleTeam1 = (e: any) => setTeam1(e);
-    const [team2, setTeam2] = React.useState("");
-    const handleTeam2 = (e: any) => setTeam2(e);
-    const [divisions, setDivisions] = React.useState(new Array());
+    const [selectedDivision, setDivision] = React.useState<SelectedDivision>();
+    const handleDivision = (option: OptionFormat) =>
+        setDivision(Convert.toDivision(option));
+
+    // Away Org & Team
+    const [awayOrg, setAwayOrg] = React.useState<SelectedOrg>();
+    const [awayTeam, setAwayTeam] = React.useState<SelectedTeam>();
+    const handleAwayOrg = (option: OptionFormat) => {
+        const org = Convert.toOrganization(option);
+        const teams = org.teams || new Array();
+        setAwayTeams(Convert.toOptionFormat(teams));
+        setAwayOrg(org);
+    };
+    const handleAwayTeam = (option: OptionFormat) => {
+        setAwayTeam(Convert.toTeam(option));
+    };
+
+    // Home Org & Team
+    const [homeOrg, setHomeOrg] = React.useState<SelectedOrg>();
+    const [homeTeam, setHomeTeam] = React.useState<SelectedTeam>();
+    const handleHomeOrg = (option: OptionFormat) => {
+        const org = Convert.toOrganization(option);
+        const teams = org.teams || new Array();
+        setHomeTeams(Convert.toOptionFormat(teams));
+        setHomeOrg(org);
+    };
+    const handleHomeTeam = (option: OptionFormat) => {
+        setHomeTeam(Convert.toTeam(option));
+    };
+
     const [notes, setNotes] = React.useState("");
     const handleNotes = (e: string) => setNotes(e);
 
-    React.useEffect(() => {
-        const divs = new Array();
-        context.conferences.forEach((c) => {
-            if (!c.subconferences) return;
-            c.subconferences.forEach((s) => {
-                if (!s.divisions) return;
-                s.divisions.forEach((d) => {
-                    divs.push({ ...d, value: `${c.name} ${s.name} ${d.name}` });
-                });
-            });
-        });
-        setDivisions(divs);
-    }, [context.conferences]);
-
     const createMatch = async () => {
-        const game = context.games.find((g) => g.name === selectedGame);
-        const teamA = context.organizations.find((t) => t.name === team1);
-        const teamB = context.organizations.find((t) => t.name === team2);
-        if (!game) {
-            return window.alert("invalid game");
+        if (!selectedGame) {
+            await command.alert("invalid game");
+            return;
         }
         if (!selectedDivision) {
-            return window.alert("invalid conference/division");
+            await command.alert("invalid conference/division");
+            return;
         }
 
+        const AwayOrganizationId = awayOrg ? awayOrg.id : null;
+        const HomeOrganizationId = homeOrg ? homeOrg.id : null;
+        const AwayTeamId = awayTeam ? awayTeam.id : null;
+        const HomeTeamId = homeTeam ? homeTeam.id : null;
         const request = {
             date: selectedDate,
             type: selectedType,
             notes: notes,
             DivisionId: selectedDivision.id,
-            GameId: game.id,
+            AwayOrganizationId,
+            HomeOrganizationId,
+            AwayTeamId,
+            HomeTeamId,
+            GameId: selectedGame.id,
         };
         const { data: response } = await axios.post("/api/Match", request);
         if (!response.success) {
-            return window.alert("error creating game");
+            await command.alert("error creating game");
+            return;
         }
-        const request1 = {
-            AwayOrganizationId: teamA ? teamA.id : null,
-            HomeOrganizationId: teamB ? teamB.id : null,
-            MatchId: response.id,
-        };
-        await axios.post("/api/TeamMatches", request1);
-        window.alert("Success!");
+        await command.alert("Success!");
     };
-
-    const allTeams = context.organizations.map((t) => t.name);
-    allTeams.sort();
-    const teamOptions = ["No Team"].concat(allTeams);
 
     return (
         <div>
@@ -79,8 +113,8 @@ export default function NewMatchPage() {
             <Dropdown
                 label={"Game"}
                 placeholder={"Select a Game"}
-                selected={selectedGame}
-                options={context.games.map((g) => g.name)}
+                selected={selectedGame?.name}
+                options={allGames}
                 onChange={handleGame}
                 botPad
             />
@@ -104,7 +138,7 @@ export default function NewMatchPage() {
             <Dropdown
                 label={"Conference / Division"}
                 placeholder={"Select One"}
-                selected={selectedDivision}
+                selected={selectedDivision?.name}
                 options={divisions}
                 onChange={handleDivision}
                 botPad
@@ -113,18 +147,36 @@ export default function NewMatchPage() {
             <Dropdown
                 label={"Away Organization"}
                 placeholder={"Select a Organization"}
-                selected={team1}
-                options={teamOptions}
-                onChange={handleTeam1}
+                selected={awayOrg?.name}
+                options={allOrgs}
+                onChange={handleAwayOrg}
+                botPad
+            />
+            <Dropdown
+                label={"Away Team"}
+                placeholder={"Select a Team"}
+                selected={awayTeam?.name}
+                options={awayTeams}
+                onChange={handleAwayTeam}
+                noOptionsText={"No Teams"}
                 botPad
             />
             <br />
             <Dropdown
                 label={"Home Organization"}
                 placeholder={"Select a Organization"}
-                selected={team2}
-                options={teamOptions}
-                onChange={handleTeam2}
+                selected={homeOrg?.name}
+                options={allOrgs}
+                onChange={handleHomeOrg}
+                botPad
+            />
+            <Dropdown
+                label={"Home Team"}
+                placeholder={"Select a Team"}
+                selected={homeTeam?.name}
+                options={homeTeams}
+                onChange={handleHomeTeam}
+                noOptionsText={"No Teams"}
                 botPad
             />
             <br />
@@ -138,4 +190,23 @@ export default function NewMatchPage() {
             <Button onClick={createMatch}>Create</Button>
         </div>
     );
+}
+
+function formatConferences(
+    conferences: Array<Conference>
+): Array<OptionFormat> {
+    const options = new Array<OptionFormat>();
+    conferences.forEach((c) => {
+        if (!c.subconferences) return;
+        c.subconferences.forEach((s) => {
+            if (!s.divisions) return;
+            s.divisions.forEach((d) => {
+                options.push({
+                    ...d,
+                    value: `${c.name} ${s.name} ${d.name}`,
+                } as OptionFormat);
+            });
+        });
+    });
+    return options;
 }

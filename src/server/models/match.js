@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
             });
             Match.belongsTo(models.Game);
             Match.belongsTo(models.Division);
+            Match.belongsTo(models.Team, {
+                as: "awayTeam",
+                foreignKey: "AwayTeamId",
+            });
+            Match.belongsTo(models.Team, {
+                as: "homeTeam",
+                foreignKey: "HomeTeamId",
+            });
         }
     }
     Match.init(

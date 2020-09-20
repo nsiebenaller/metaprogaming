@@ -28,6 +28,10 @@ module.exports = (router) => {
                                 },
                             ],
                         },
+                        {
+                            model: db.Team,
+                            as: "teams",
+                        },
                     ],
                 });
             } else {
@@ -50,6 +54,10 @@ module.exports = (router) => {
                                     through: { attributes: [] },
                                 },
                             ],
+                        },
+                        {
+                            model: db.Team,
+                            as: "teams",
                         },
                     ],
                 });

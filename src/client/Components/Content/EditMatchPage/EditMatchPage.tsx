@@ -2,8 +2,16 @@ import React from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { Dropdown, Datepicker, TextArea } from "ebrap-ui";
+import { OptionFormat } from "ebrap-ui/dist/types/types";
 import { connectContext } from "../../Context";
+import Convert from "../../../utils/convert";
 
+type SelectedGame = Game | undefined;
+type SelectedOrg = Organization | undefined;
+type SelectedTeam = Team | undefined;
+type SelectedDivision = Division | undefined;
+
+const noTeam: Array<OptionFormat> = [{ value: "No Team" }];
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 interface Props {
     match: any;
@@ -14,6 +22,14 @@ export default function EditMatchPage({ match }: Props) {
 
     const MatchId = parseInt(match.params.matchId);
 
+    const [allOrgs, setAllOrgs] = React.useState<Array<OptionFormat>>([]);
+    const [awayTeams, setAwayTeams] = React.useState<Array<OptionFormat>>([]);
+    const [homeTeams, setHomeTeams] = React.useState<Array<OptionFormat>>([]);
+    React.useEffect(() => {
+        const orgs = Convert.toOptionFormat(context.organizations);
+        setAllOrgs(noTeam.concat(orgs));
+    }, [context.organizations]);
+
     const [selectedGame, setGame] = React.useState("");
     const handleGame = (e: any) => setGame(e);
     const [selectedType, setType] = React.useState("");
@@ -22,10 +38,33 @@ export default function EditMatchPage({ match }: Props) {
     const handleDate = (e: any) => setDate(e);
     const [selectedDivision, setDivision] = React.useState<any>(undefined);
     const handleDivision = (e: any) => setDivision(e);
-    const [awayOrg, setAwayOrg] = React.useState("");
-    const handleAwayOrg = (e: any) => setAwayOrg(e);
-    const [homeOrg, setHomeOrg] = React.useState("");
-    const handleHomeOrg = (e: any) => setHomeOrg(e);
+
+    // Away Org & Team
+    const [awayOrg, setAwayOrg] = React.useState<SelectedOrg>();
+    const [awayTeam, setAwayTeam] = React.useState<SelectedTeam>();
+    const handleAwayOrg = (option: OptionFormat) => {
+        const org = Convert.toOrganization(option);
+        const teams = org.teams || new Array();
+        setAwayTeams(Convert.toOptionFormat(teams));
+        setAwayOrg(org);
+    };
+    const handleAwayTeam = (option: OptionFormat) => {
+        setAwayTeam(Convert.toTeam(option));
+    };
+
+    // Home Org & Team
+    const [homeOrg, setHomeOrg] = React.useState<SelectedOrg>();
+    const [homeTeam, setHomeTeam] = React.useState<SelectedTeam>();
+    const handleHomeOrg = (option: OptionFormat) => {
+        const org = Convert.toOrganization(option);
+        const teams = org.teams || new Array();
+        setHomeTeams(Convert.toOptionFormat(teams));
+        setHomeOrg(org);
+    };
+    const handleHomeTeam = (option: OptionFormat) => {
+        setHomeTeam(Convert.toTeam(option));
+    };
+
     const [notes, setNotes] = React.useState("");
     const handleNotes = (e: string) => setNotes(e);
 
@@ -47,6 +86,8 @@ export default function EditMatchPage({ match }: Props) {
             date,
             awayOrg,
             homeOrg,
+            awayTeam,
+            homeTeam,
             notes,
         } = currentMatch;
 
@@ -54,24 +95,35 @@ export default function EditMatchPage({ match }: Props) {
         const game = context.games.find((g) => g.id === GameId);
         const division = allDivisions.find((d) => d.id === DivisionId);
         const matchDate = new Date(date);
-        let awayOrgName = "";
-        if (awayOrg) awayOrgName = awayOrg.name;
-        let homeOrgName = "";
-        if (homeOrg) homeOrgName = homeOrg.name;
 
         if (game) setGame(game.name);
         setType(type);
         if (division) setDivision(division.value);
         setDate(matchDate);
-        setAwayOrg(awayOrgName);
-        setHomeOrg(homeOrgName);
+        if (awayOrg) {
+            setAwayOrg(awayOrg);
+            setAwayTeams(Convert.toOptionFormat(awayOrg?.teams || new Array()));
+        }
+        if (awayTeam) {
+            setAwayTeam(awayTeam);
+        }
+        if (homeOrg) {
+            setHomeOrg(homeOrg);
+            setHomeTeams(Convert.toOptionFormat(homeOrg?.teams || new Array()));
+        }
+        if (homeTeam) {
+            setHomeTeam(homeTeam);
+        }
+
         setNotes(notes || "");
     }
 
     const save = async () => {
         const game = context.games.find((g) => g.name === selectedGame);
-        const away = context.organizations.find((t) => t.name === awayOrg);
-        const home = context.organizations.find((t) => t.name === homeOrg);
+        const AwayOrganizationId = awayOrg ? awayOrg.id : null;
+        const HomeOrganizationId = homeOrg ? homeOrg.id : null;
+        const AwayTeamId = awayTeam ? awayTeam.id : null;
+        const HomeTeamId = homeTeam ? homeTeam.id : null;
         if (!game) {
             return window.alert("invalid game");
         }
@@ -87,6 +139,10 @@ export default function EditMatchPage({ match }: Props) {
             date: selectedDate,
             type: selectedType,
             notes: notes,
+            AwayOrganizationId,
+            HomeOrganizationId,
+            AwayTeamId,
+            HomeTeamId,
             DivisionId: selectedDivision.id,
             GameId: game.id,
         };
@@ -94,18 +150,8 @@ export default function EditMatchPage({ match }: Props) {
         if (!response.success) {
             return window.alert("error creating game");
         }
-        const request1 = {
-            AwayOrganizationId: away ? away.id : null,
-            HomeOrganizationId: home ? home.id : null,
-            MatchId: response.id,
-        };
-        await axios.post("/api/OrganizationMatches", request1);
         window.alert("Success!");
     };
-
-    const allTeams = context.organizations.map((t) => t.name);
-    allTeams.sort();
-    const teamOptions = ["No Team"].concat(allTeams);
 
     return (
         <div>
@@ -147,18 +193,36 @@ export default function EditMatchPage({ match }: Props) {
             <Dropdown
                 label={"Away Organization"}
                 placeholder={"Select a Organization"}
-                selected={awayOrg}
-                options={teamOptions}
+                selected={awayOrg?.name}
+                options={allOrgs}
                 onChange={handleAwayOrg}
+                botPad
+            />
+            <Dropdown
+                label={"Away Team"}
+                placeholder={"Select a Team"}
+                selected={awayTeam?.name}
+                options={awayTeams}
+                onChange={handleAwayTeam}
+                noOptionsText={"No Teams"}
                 botPad
             />
             <br />
             <Dropdown
                 label={"Home Organization"}
                 placeholder={"Select a Organization"}
-                selected={homeOrg}
-                options={teamOptions}
+                selected={homeOrg?.name}
+                options={allOrgs}
                 onChange={handleHomeOrg}
+                botPad
+            />
+            <Dropdown
+                label={"Home Team"}
+                placeholder={"Select a Team"}
+                selected={homeTeam?.name}
+                options={homeTeams}
+                onChange={handleHomeTeam}
+                noOptionsText={"No Teams"}
                 botPad
             />
             <br />

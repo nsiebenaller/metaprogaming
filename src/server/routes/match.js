@@ -15,10 +15,30 @@ module.exports = (router) => {
                     {
                         model: db.Organization,
                         as: "awayOrg",
+                        include: [
+                            {
+                                model: db.Team,
+                                as: "teams",
+                            },
+                        ],
                     },
                     {
                         model: db.Organization,
                         as: "homeOrg",
+                        include: [
+                            {
+                                model: db.Team,
+                                as: "teams",
+                            },
+                        ],
+                    },
+                    {
+                        model: db.Team,
+                        as: "awayTeam",
+                    },
+                    {
+                        model: db.Team,
+                        as: "homeTeam",
                     },
                 ],
             });
