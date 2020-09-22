@@ -4,6 +4,7 @@ import { TextField, Button, Multiselect } from "ebrap-ui";
 import EditPlayerItem from "./EditPlayerItem";
 import EditTeamItem from "./EditTeamItem";
 import { connectContext } from "../../Context";
+import { fetchOrganizations } from "../../../Api";
 
 const initNewPlayer = {
     name: "",
@@ -39,6 +40,9 @@ export default function EditOrgPage({ match }: Props) {
 
     React.useEffect(() => {
         onMount();
+        return () => {
+            onUnMount();
+        };
     }, []);
     async function onMount() {
         const requests = [
@@ -51,6 +55,10 @@ export default function EditOrgPage({ match }: Props) {
         }
         setOrg(orgs[0] as Organization);
         setRoles(roles);
+    }
+    async function onUnMount() {
+        const orgs = await fetchOrganizations();
+        context.setOrganizations(orgs);
     }
 
     const save = async () => {

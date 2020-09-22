@@ -16,7 +16,9 @@ interface Props {
 export default function MatchRow({ match, changeScore, deleteMatch }: Props) {
     const context = connectContext()!;
 
-    const editMatch = () => context.history.push(`/Match/edit/${match.id}`);
+    const editMatch = () => {
+        context.history.push(`/Match/edit/${match.id}`);
+    };
     const handleDelete = () => deleteMatch(match.id);
 
     const changeFirstTeamScore = async (score: number) => {

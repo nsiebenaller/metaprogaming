@@ -11,24 +11,20 @@ type SelectedOrg = Organization | undefined;
 type SelectedTeam = Team | undefined;
 type SelectedDivision = Division | undefined;
 
-const noTeam: Array<OptionFormat> = [{ value: "No Team" }];
+const noTeam: Array<OptionFormat> = [{ id: null, value: "No Team" }];
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 interface Props {
     match: any;
 }
 export default function EditMatchPage({ match }: Props) {
     const context = connectContext()!;
-    const allDivisions = getAllDivision(context.conferences);
 
+    const allDivisions = getAllDivision(context.conferences);
     const MatchId = parseInt(match.params.matchId);
 
     const [allOrgs, setAllOrgs] = React.useState<Array<OptionFormat>>([]);
     const [awayTeams, setAwayTeams] = React.useState<Array<OptionFormat>>([]);
     const [homeTeams, setHomeTeams] = React.useState<Array<OptionFormat>>([]);
-    React.useEffect(() => {
-        const orgs = Convert.toOptionFormat(context.organizations);
-        setAllOrgs(noTeam.concat(orgs));
-    }, [context.organizations]);
 
     const [selectedGame, setGame] = React.useState("");
     const handleGame = (e: any) => setGame(e);
@@ -45,7 +41,8 @@ export default function EditMatchPage({ match }: Props) {
     const handleAwayOrg = (option: OptionFormat) => {
         const org = Convert.toOrganization(option);
         const teams = org.teams || new Array();
-        setAwayTeams(Convert.toOptionFormat(teams));
+        teams.sort(ByName);
+        setAwayTeams(noTeam.concat(Convert.toOptionFormat(teams)));
         setAwayOrg(org);
     };
     const handleAwayTeam = (option: OptionFormat) => {
@@ -58,7 +55,8 @@ export default function EditMatchPage({ match }: Props) {
     const handleHomeOrg = (option: OptionFormat) => {
         const org = Convert.toOrganization(option);
         const teams = org.teams || new Array();
-        setHomeTeams(Convert.toOptionFormat(teams));
+        teams.sort(ByName);
+        setHomeTeams(noTeam.concat(Convert.toOptionFormat(teams)));
         setHomeOrg(org);
     };
     const handleHomeTeam = (option: OptionFormat) => {
@@ -72,6 +70,10 @@ export default function EditMatchPage({ match }: Props) {
         onMount();
     }, []);
     async function onMount() {
+        context.organizations.sort(ByName);
+        const orgs = Convert.toOptionFormat(context.organizations);
+        setAllOrgs(noTeam.concat(orgs));
+
         const { data: matches } = await axios.get("/api/Match", {
             params: { id: MatchId },
         });
@@ -98,18 +100,22 @@ export default function EditMatchPage({ match }: Props) {
 
         if (game) setGame(game.name);
         setType(type);
-        if (division) setDivision(division.value);
+        if (division) setDivision(division);
         setDate(matchDate);
         if (awayOrg) {
             setAwayOrg(awayOrg);
-            setAwayTeams(Convert.toOptionFormat(awayOrg?.teams || new Array()));
+            const teams = awayOrg?.teams || new Array();
+            teams.sort(ByName);
+            setAwayTeams(noTeam.concat(Convert.toOptionFormat(teams)));
         }
         if (awayTeam) {
             setAwayTeam(awayTeam);
         }
         if (homeOrg) {
             setHomeOrg(homeOrg);
-            setHomeTeams(Convert.toOptionFormat(homeOrg?.teams || new Array()));
+            const teams = awayOrg?.teams || new Array();
+            teams.sort(ByName);
+            setHomeTeams(noTeam.concat(Convert.toOptionFormat(teams)));
         }
         if (homeTeam) {
             setHomeTeam(homeTeam);
@@ -253,4 +259,11 @@ function getAllDivision(conferences: Array<Conference>): Array<any> {
         });
     });
     return divisions;
+}
+
+type Named = Organization | Team;
+function ByName(a: Named, b: Named): number {
+    if (a.name > b.name) return 1;
+    if (a.name < b.name) return -1;
+    return 0;
 }

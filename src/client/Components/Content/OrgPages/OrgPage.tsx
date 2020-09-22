@@ -2,6 +2,7 @@ import React from "react";
 import Axios from "axios";
 import { command } from "ebrap-ui";
 import PlayerItem from "./PlayerItem";
+import { ByName } from "../../../utils/sort";
 
 interface Props {
     match: any;
@@ -38,6 +39,10 @@ export default function OrgPage({ match }: Props) {
 
     const [coaches, captains, players] = sortPlayers(allPlayers);
 
+    let allTeams = new Array<Team>();
+    if (org.teams) allTeams = org.teams;
+    allTeams.sort(ByName);
+
     return (
         <div className="org-page">
             <h1>Organization</h1>
@@ -52,6 +57,10 @@ export default function OrgPage({ match }: Props) {
             ))}
             {players.map((player: Player, key: number) => (
                 <PlayerItem key={key} player={player} />
+            ))}
+            <h4>Teams</h4>
+            {allTeams.map((team: Team, key: number) => (
+                <div key={key}>{team.name}</div>
             ))}
         </div>
     );

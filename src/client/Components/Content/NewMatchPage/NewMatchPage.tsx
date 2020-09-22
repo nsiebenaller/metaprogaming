@@ -11,8 +11,9 @@ type SelectedOrg = Organization | undefined;
 type SelectedTeam = Team | undefined;
 type SelectedDivision = Division | undefined;
 
-const noTeam: Array<OptionFormat> = [{ value: "No Team" }];
+const noTeam: Array<OptionFormat> = [{ id: null, value: "No Team" }];
 const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
+
 export default function NewMatchPage() {
     const context = connectContext()!;
 

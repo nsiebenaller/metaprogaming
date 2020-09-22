@@ -1,11 +1,11 @@
-export function sortConferences(conferences: Array<Conference> | undefined) {
+export function sortConferences(conferences: Array<Conference>) {
     if (!conferences) return;
     conferences.forEach((conference) => {
         sortConference(conference);
     });
 }
 
-export function sortConference(conference: Conference | undefined) {
+export function sortConference(conference: Conference) {
     if (!conference || !conference.subconferences) return;
     conference.subconferences.sort(ByName);
     conference.subconferences.map((s) => ({
@@ -15,7 +15,7 @@ export function sortConference(conference: Conference | undefined) {
     }));
 }
 
-type Sortable = Conference | SubConference | Division | Organization;
+type Sortable = Conference | SubConference | Division | Organization | Team;
 export function ByName(a: Sortable, b: Sortable): number {
     if (a.name < b.name) {
         return -1;

@@ -52,7 +52,12 @@ function revokeToken() {
 function verifyToken(req) {
     const token = req.cookies.meta_token;
     if (!token) return { verified: false };
-    const verifiedToken = jwt.verify(token, secret);
+    let verifiedToken;
+    try {
+        verifiedToken = jwt.verify(token, secret);
+    } catch (e) {
+        return { verified: false };
+    }
     if (!verifiedToken) return { verified: false };
     const { exp, revoked } = verifiedToken;
     if (!exp) return { verified: false };

@@ -10,7 +10,7 @@ export default function GameImage({ game }: Props) {
 
     return (
         <div className={"game"} onClick={redirect}>
-            <img className={"img"} src={game.imageSrc} />
+            <img className={"img"} src={game.image} />
             <div className={"name"}>{game.name}</div>
         </div>
     );

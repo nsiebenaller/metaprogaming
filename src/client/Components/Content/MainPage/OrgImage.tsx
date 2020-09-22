@@ -18,7 +18,7 @@ export default function OrgImage({ org }: Props) {
 
     return (
         <Card className={"org"} onClick={editTeam}>
-            <img className={"img"} src={org.imageSrc} />
+            <img className={"img"} src={org.image} />
             <div className={"name"}>{org.name}</div>
         </Card>
     );

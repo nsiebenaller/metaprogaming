@@ -22,6 +22,15 @@ export default function PlayerItem({ player }: any) {
                         {player.discord || "-none-"}
                     </span>
                 </div>
+                <div>
+                    Games:{" "}
+                    <span className="info-value">
+                        {player.games &&
+                            player.games.map((x: Game) => x.name).join(", ")}
+                        {(!player.games || player.games.length === 0) &&
+                            "-none-"}
+                    </span>
+                </div>
             </div>
         </div>
     );
