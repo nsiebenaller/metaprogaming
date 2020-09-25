@@ -4,7 +4,8 @@ import { TextField, Button, Multiselect } from "ebrap-ui";
 import EditPlayerItem from "./EditPlayerItem";
 import EditTeamItem from "./EditTeamItem";
 import { connectContext } from "../../Context";
-import { fetchOrganizations } from "../../../Api";
+import { fetchOrganizations, updateOrganization } from "../../../Api";
+import * as Util from "../../../utils/file";
 
 const initNewPlayer = {
     name: "",
@@ -25,6 +26,15 @@ interface Props {
 export default function EditOrgPage({ match }: Props) {
     const context = connectContext()!;
     const orgId = parseInt(match.params.orgId);
+
+    const imageRef = React.useRef<HTMLImageElement | null>(null);
+    const [file, setFile] = React.useState<File | undefined>();
+    const handleFile = (event: React.FormEvent<HTMLInputElement>) => {
+        const file = Util.extractFile(event);
+        setFile(file);
+        if (!file) return;
+        Util.setImage(file, imageRef);
+    };
 
     const [org, setOrg] = React.useState<Organization>(loadingOrg);
     const setName = (name: string) => setOrg({ ...org, name });
@@ -62,7 +72,7 @@ export default function EditOrgPage({ match }: Props) {
     }
 
     const save = async () => {
-        const { data } = await axios.patch("/api/Organization", org);
+        const data = await updateOrganization(org.id, org.name, file);
         if (data.success) {
             return window.alert("success!");
         }
@@ -140,6 +150,15 @@ export default function EditOrgPage({ match }: Props) {
     return (
         <div className="org-page">
             <h1>Edit Organization</h1>
+            <img
+                className={"org-img"}
+                ref={imageRef}
+                src={`${Util.Bucket}${org.image}`}
+            />
+            <br />
+            <input type={"file"} onInput={handleFile} />
+            <br />
+            <br />
             <div className="flex-row --right-pad-10">
                 <TextField
                     label={"Organization Name"}

@@ -64,6 +64,20 @@ export async function saveGame(
     return data;
 }
 
+export async function updateOrganization(
+    id: number,
+    name: string,
+    image?: File
+): Promise<any> {
+    const formData = new FormData();
+    if (image) formData.append("image", image);
+    formData.append("id", id.toString());
+    formData.append("name", name);
+
+    const { data } = await Axios.patch("/api/Organization", formData);
+    return data;
+}
+
 // File test stuff
 export async function getFile(fileName: string): Promise<File | undefined> {
     const { data } = await Axios({

@@ -1,5 +1,6 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
+const { uploadFile } = require("../index");
 
 module.exports = (router) => {
     router
@@ -70,8 +71,23 @@ module.exports = (router) => {
             res.json({ success: true });
         })
         .patch(tokenChecker, async (req, res) => {
-            const { id, ...props } = req.body;
-            await db.Organization.update(props, { where: { id } });
+            const { id, name } = req.body;
+            const { image } = req.files;
+
+            if (!id) {
+                return res.json({ success: false });
+            }
+
+            // Upload files to S3
+            const requests = [];
+            if (image) requests.push(uploadFile(image));
+            await Promise.all(requests);
+
+            const org = {};
+            if (name) org.name = name;
+            if (image) org.image = image.name;
+
+            await db.Organization.update(org, { where: { id } });
             res.json({ success: true, id });
         });
 };

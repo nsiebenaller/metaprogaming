@@ -1,11 +1,12 @@
 import React from "react";
-import { TextField, Button } from "ebrap-ui";
+import { TextField, Button, command } from "ebrap-ui";
 import { saveGame, fetchGames } from "../../../Api";
 import { connectContext } from "../../Context";
 import ImageInput from "./ImageInput";
 import GameTypes from "./GameTypes";
+import * as Util from "../../../utils/file";
 
-const bucket = "https://metaprogaming.s3.amazonaws.com/";
+const bucket = Util.Bucket;
 const initState = {
     banner: null,
     image: null,
@@ -23,16 +24,16 @@ export default function ManageGameForm({ game }: Props) {
     const imageRef = React.useRef<HTMLImageElement | null>(null);
 
     const handleBanner = (event: React.FormEvent<HTMLInputElement>) => {
-        const file = extractFile(event);
+        const file = Util.extractFile(event);
         setState({ banner: file });
         if (!file) return;
-        setBanner(file, bannerRef);
+        Util.setBanner(file, bannerRef);
     };
     const handleImage = (event: React.FormEvent<HTMLInputElement>) => {
-        const file = extractFile(event);
+        const file = Util.extractFile(event);
         setState({ image: file });
         if (!file) return;
-        setImage(file, imageRef);
+        Util.setImage(file, imageRef);
     };
 
     const handleSave = async () => {
@@ -43,13 +44,12 @@ export default function ManageGameForm({ game }: Props) {
             state.image
         );
         refreshGame();
+        await command.alert("Game Saved!");
     };
     const refreshGame = async () => {
         const games = await fetchGames();
         context.setContext({ games });
     };
-
-    console.log(game);
 
     return (
         <div className={"manage-game-form"}>
@@ -91,40 +91,4 @@ export default function ManageGameForm({ game }: Props) {
             </Button>
         </div>
     );
-}
-
-function extractFile(
-    event: React.FormEvent<HTMLInputElement>
-): File | undefined {
-    const target = event.target as HTMLInputElement;
-    if (!target.files) return undefined;
-    const file = Array.from(target.files)[0];
-    return file;
-}
-
-function setBanner(
-    file: File,
-    ref: React.MutableRefObject<HTMLDivElement | null>
-) {
-    const { current } = ref;
-    if (!current) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        current.style.backgroundImage = `url(${reader.result})`;
-    };
-    reader.readAsDataURL(file);
-}
-
-function setImage(
-    file: File,
-    ref: React.MutableRefObject<HTMLImageElement | null>
-) {
-    const { current } = ref;
-    if (!current) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        if (!reader.result) return;
-        current.setAttribute("src", reader.result.toString());
-    };
-    reader.readAsDataURL(file);
 }

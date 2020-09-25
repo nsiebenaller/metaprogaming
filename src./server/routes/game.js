@@ -17,9 +17,26 @@ module.exports = (router) => {
             res.json(games);
         })
         .post(tokenChecker, async (req, res) => {
+            const { name } = req.body;
             const { banner, image } = req.files;
-            console.log(req.body);
-            console.log(banner, image);
+
+            // Upload files to S3
+            const requests = [];
+            if (banner) requests.push(uploadFile(banner));
+            if (image) requests.push(uploadFile(image));
+            await Promise.all(requests);
+
+            const game = { ConferenceId: 1 };
+            if (name) game.name = name;
+            if (banner) game.banner = banner.name;
+            if (image) game.image = image.name;
+            try {
+                console.log(game.id);
+                await db.Game.create(game);
+            } catch (e) {
+                console.log(e);
+                return res.json({ success: false });
+            }
 
             res.json({ success: true });
         })
@@ -37,7 +54,7 @@ module.exports = (router) => {
             if (image) requests.push(uploadFile(image));
             await Promise.all(requests);
 
-            const game = {};
+            const game = { ConferenceId: 1 };
             if (name) game.name = name;
             if (banner) game.banner = banner.name;
             if (image) game.image = image.name;

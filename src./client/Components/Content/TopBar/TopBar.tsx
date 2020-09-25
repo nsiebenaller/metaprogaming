@@ -15,12 +15,15 @@ export default function TopBar(props: Props) {
     const router = connectRouter()!;
 
     const login = () => {
+        context.setContext({ selectedGame: undefined });
         router.history.push("/login");
     };
     const createMatch = () => {
+        context.setContext({ selectedGame: undefined });
         router.history.push("/Match/new");
     };
     const editWeeks = () => {
+        context.setContext({ selectedGame: undefined });
         router.history.push("/Weeks/edit");
     };
     const manageGames = () => {
@@ -29,11 +32,18 @@ export default function TopBar(props: Props) {
     };
 
     const goBack = () => {
+        context.setContext({ selectedGame: undefined });
         if (router.location.pathname === "/") return;
         router.history.goBack();
     };
-    const goForward = () => router.history.goForward();
-    const goHome = () => router.history.push("/");
+    const goForward = () => {
+        context.setContext({ selectedGame: undefined });
+        router.history.goForward();
+    };
+    const goHome = () => {
+        context.setContext({ selectedGame: undefined });
+        router.history.push("/");
+    };
 
     const logout = async () => {
         await Axios.get("/api/logout");

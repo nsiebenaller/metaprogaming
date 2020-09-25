@@ -1,52 +1,32 @@
 import React from "react";
-import GameImage from "./GameImage";
 import OrgImage from "./OrgImage";
 import { connectContext } from "../../Context";
 import { ByName } from "../../../utils/sort";
 
 export default function MainPage() {
     const context = connectContext()!;
-    const {
-        games,
-        organizations,
-        selectedDivision,
-        selectedSubConference,
-    } = context;
+    const { organizations } = context;
 
-    if (!selectedDivision || !selectedSubConference)
+    if (!organizations) {
         return <div>Loading...</div>;
+    }
 
-    const selectedOrgs = getSelectedOrgs(selectedSubConference, organizations);
-    selectedOrgs.sort(ByName);
+    organizations.sort(ByName);
 
     return (
         <div className={"main-page"}>
-            <h1>
-                {selectedSubConference.name} {selectedDivision.name}
-            </h1>
-            <div className={"games-container"}>
-                {games.map((game: Game, idx: number) => (
-                    <GameImage key={idx} game={game} />
-                ))}
-            </div>
+            <div
+                className={"main-banner"}
+                style={{ backgroundImage: "url(/images/main-banner.jpg)" }}
+            />
             <div>
-                <h1>{selectedSubConference.name} Organizations</h1>
+                <h1>Organizations</h1>
                 <div className={"orgs-container"}>
-                    {selectedOrgs.map((org: Organization, idx: number) => (
+                    {organizations.map((org: Organization, idx: number) => (
                         <OrgImage key={idx} org={org} />
                     ))}
                 </div>
             </div>
         </div>
     );
-}
-
-function getSelectedOrgs(
-    subconference: SubConference | undefined,
-    allOrganizations: Array<Organization>
-): Array<Organization> {
-    if (!subconference || !subconference.organizations)
-        return new Array<Organization>();
-    const ids = subconference.organizations.map((x) => x.id);
-    return allOrganizations.filter((x) => ids.includes(x.id));
 }

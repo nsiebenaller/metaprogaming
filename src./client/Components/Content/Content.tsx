@@ -17,6 +17,7 @@ export default function Content() {
         <div className="content">
             <Route path={"/"} component={TopBar} />
             <div className="content-main">
+                <Route path={"/"} exact component={MainPage} />
                 <Route
                     path={"/Game/:gameId"}
                     exact
@@ -28,10 +29,9 @@ export default function Content() {
                     exact
                     component={renderAdminGamePage}
                 />
+                <Route path={"/Organization"} component={OrgPages} />
 
-                {/* <Route path={"/"} exact>
-                    <MainPage />
-                </Route>
+                {/* 
                 <Route
                     path={"/game/:gameId"}
                     exact

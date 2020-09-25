@@ -1,5 +1,6 @@
 import React from "react";
 import { connectRouter } from "../../Context";
+import * as Util from "../../../utils/file";
 
 interface Props {
     game?: Game;
@@ -20,7 +21,7 @@ export default function GameCard({ game }: Props) {
 
     return (
         <div className={"game-card"} onClick={handleClick}>
-            {src && <img src={src} alt={label} />}
+            {src && <img src={`${Util.Bucket}${src}`} alt={label} />}
             {!src && <div>{label}</div>}
         </div>
     );

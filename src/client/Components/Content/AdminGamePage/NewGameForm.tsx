@@ -1,9 +1,10 @@
 import React from "react";
 import { TextField, Button } from "ebrap-ui";
 import { createGame, fetchGames } from "../../../Api";
-import { connectContext } from "../../Context";
+import { connectContext, connectRouter } from "../../Context";
+import * as Util from "../../../utils/file";
+import ImageInput from "./ImageInput";
 
-const bucket = "https://metaprogaming.s3.amazonaws.com/";
 const initState = {
     banner: null,
     image: null,
@@ -13,59 +14,57 @@ const reduce = (prevState: any, params: any) => ({ ...prevState, ...params });
 interface Props {}
 export default function NewGameForm({}: Props) {
     const context = connectContext();
+    const router = connectRouter()!;
 
     const [state, setState] = React.useReducer(reduce, initState);
+    const bannerRef = React.useRef<HTMLDivElement | null>(null);
+    const imageRef = React.useRef<HTMLImageElement | null>(null);
+    const { name } = state;
 
     const handleBanner = (event: React.FormEvent<HTMLInputElement>) => {
-        const target = event.target as HTMLInputElement;
-        if (!target.files) return;
-        const file = Array.from(target.files)[0];
+        const file = Util.extractFile(event);
         setState({ banner: file });
+        if (!file) return;
+        Util.setBanner(file, bannerRef);
     };
     const handleImage = (event: React.FormEvent<HTMLInputElement>) => {
-        const target = event.target as HTMLInputElement;
-        if (!target.files) return;
-        const file = Array.from(target.files)[0];
+        const file = Util.extractFile(event);
         setState({ image: file });
+        if (!file) return;
+        Util.setImage(file, imageRef);
     };
 
     const handleSave = async () => {
         await createGame(state.name, state.banner, state.image);
         const games = await fetchGames();
         context.setContext({ games });
+        router.history.push("/Admin/Game");
     };
 
     return (
         <div className={"manage-game-form"}>
             <h1>Create New Game</h1>
-            {/* <div className={"banner-container"}>
-                {game?.banner && (
-                    <div
-                        className={"banner-img"}
-                        style={{
-                            backgroundImage: `url(${bucket}${game.banner})`,
-                        }}
-                    />
-                )}
-            </div> */}
-            {/* <div className={"game"}>
-                <img className={"img"} src={game?.image || ""} />
-                <div className={"name"}>{state.name || game?.name}</div>
-            </div> */}
+            <div className={"banner-container"}>
+                <div ref={bannerRef} className={"banner-img"} />
+            </div>
+            <input type={"file"} onInput={handleBanner} />
+            <br />
+            <br />
+
+            <div className={"flex-row --right-pad-10"}>
+                <ImageInput
+                    imageRef={imageRef}
+                    image={""}
+                    name={name}
+                    onInput={handleImage}
+                />
+            </div>
+            <br />
             <TextField
                 label={"Game Name"}
                 value={state.name || ""}
                 onChange={(e: string) => setState({ name: e })}
             />
-            <br />
-            <br />
-            <div>Banner</div>
-            <input type={"file"} onInput={handleBanner} />
-            <br />
-            <br />
-            <div>Image</div>
-            <input type={"file"} onInput={handleImage} />
-
             <br />
             <br />
             <Button onClick={handleSave} color={"blue"}>

@@ -1,4 +1,30 @@
 .main-page {
+    height: 100%;
+    .main-banner {
+        width: 100%;
+        height: 450px;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        @media (max-width: 1600px) {
+            height: 400px;
+        }
+        @media (max-width: 1520px) {
+            height: 350px;
+        }
+        @media (max-width: 1450px) {
+            height: 300px;
+        }
+        @media (max-width: 1210px) {
+            height: 250px;
+        }
+        @media (max-width: 1050px) {
+            height: 200px;
+        }
+        @media (max-width: 890px) {
+            height: 150px;
+        }
+    }
     .games-container {
         display: flex;
         flex-wrap: wrap;
