@@ -22,9 +22,30 @@ export async function checkUser(): Promise<any> {
     return data;
 }
 
-export async function createGame(params: any): Promise<any> {
-    const { data } = await Axios.post("/api/Game", params);
-    console.log(data);
+export async function addGameType(params: any): Promise<any> {
+    const { data } = await Axios.post("/api/GameType", params);
+    return data;
+}
+export async function editGameType(params: any): Promise<any> {
+    const { data } = await Axios.patch("/api/GameType", params);
+    return data;
+}
+export async function deleteGameType(id: number): Promise<any> {
+    const { data } = await Axios.delete("/api/GameType", { params: { id } });
+    return data;
+}
+
+export async function createGame(
+    name: string,
+    banner?: File,
+    image?: File
+): Promise<any> {
+    const formData = new FormData();
+    if (banner) formData.append("banner", banner);
+    if (image) formData.append("image", image);
+    formData.append("name", name);
+    const { data } = await Axios.post("/api/Game", formData);
+    return data;
 }
 
 export async function saveGame(
@@ -40,7 +61,7 @@ export async function saveGame(
     formData.append("name", name);
 
     const { data } = await Axios.patch("/api/Game", formData);
-    console.log(data);
+    return data;
 }
 
 // File test stuff

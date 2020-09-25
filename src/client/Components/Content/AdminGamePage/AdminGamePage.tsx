@@ -1,32 +1,29 @@
 import React from "react";
 import { connectContext, connectRouter } from "../../Context";
-import GameCard from "./GameCard";
+import DisplayGames from "./DisplayGames";
 import ManageGameForm from "./ManageGameForm";
+import NewGameForm from "./NewGameForm";
 
 interface Props {
-    gameId?: number;
+    gameId?: string;
 }
 export default function AdminGamePage({ gameId }: Props) {
     const context = connectContext();
     const { games } = context;
+    let page = null;
 
-    const managedGame = gameId ? games.find((x) => x.id === gameId) : null;
+    if (gameId === "new") {
+        page = <NewGameForm />;
+    } else if (!gameId) {
+        page = <DisplayGames games={games} />;
+    } else {
+        const managedGame = games.find((x) => x.id === parseInt(gameId));
+        if (!managedGame) {
+            page = <div>unkown game</div>;
+        } else {
+            page = <ManageGameForm game={managedGame} />;
+        }
+    }
 
-    return (
-        <div className={"admin-game-page"}>
-            {!managedGame && (
-                <React.Fragment>
-                    <h1>Manage Games</h1>
-                    <h4>NECC Conference</h4>
-                    <div className={"game-card-container"}>
-                        {games.map((game, key) => (
-                            <GameCard key={key} game={game} />
-                        ))}
-                        <GameCard />
-                    </div>
-                </React.Fragment>
-            )}
-            {managedGame && <ManageGameForm game={managedGame} />}
-        </div>
-    );
+    return <div className={"admin-game-page"}>{page}</div>;
 }

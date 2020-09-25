@@ -2,11 +2,22 @@ export {};
 declare global {
     interface Game {
         id: number;
+        createdAt: string;
+        updatedAt: string;
         name: string;
         image: string;
         imageSrc?: string;
         banner: string;
+        gameTypes: Array<GameType>;
         ConferenceId: number;
+    }
+
+    interface GameType {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+        GameId: number;
     }
 
     interface Organization {

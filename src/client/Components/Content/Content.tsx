@@ -87,5 +87,5 @@ function renderAdminGamePage(props: RouteComponentProps<GameIdQueryParam>) {
         },
     } = props;
     if (!gameId) return <AdminGamePage gameId={undefined} />;
-    return <AdminGamePage gameId={parseInt(gameId)} />;
+    return <AdminGamePage gameId={gameId} />;
 }

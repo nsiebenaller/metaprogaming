@@ -6,7 +6,14 @@ module.exports = (router) => {
     router
         .route("/Game")
         .get(async (req, res) => {
-            const games = await db.Game.findAll();
+            const games = await db.Game.findAll({
+                include: [
+                    {
+                        model: db.GameType,
+                        as: "gameTypes",
+                    },
+                ],
+            });
             res.json(games);
         })
         .post(tokenChecker, async (req, res) => {
@@ -37,6 +44,25 @@ module.exports = (router) => {
 
             await db.Game.update(game, { where: { id } });
 
+            res.json({ success: true });
+        });
+
+    router
+        .route("/GameType")
+        .post(async (req, res) => {
+            const result = await db.GameType.create(req.body);
+            res.json({ success: true, id: result.id });
+        })
+        .patch(tokenChecker, async (req, res) => {
+            const { id, ...props } = req.body;
+            if (!id) return res.json({ success: false });
+            await db.GameType.update(props, { where: { id } });
+            res.json({ success: false });
+        })
+        .delete(tokenChecker, async (req, res) => {
+            const { id } = req.query;
+            if (!id) return res.json({ success: false });
+            await db.GameType.destroy({ where: { id } });
             res.json({ success: true });
         });
 };
