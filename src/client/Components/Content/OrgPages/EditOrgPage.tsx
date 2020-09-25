@@ -58,7 +58,7 @@ export default function EditOrgPage({ match }: Props) {
     }
     async function onUnMount() {
         const orgs = await fetchOrganizations();
-        context.setOrganizations(orgs);
+        context.setContext({ organizations: orgs });
     }
 
     const save = async () => {

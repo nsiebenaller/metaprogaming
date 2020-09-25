@@ -1,46 +1,43 @@
-import Axios from "axios";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { MatchProps, ContextType, ContextStateType } from "./ContextTypes";
+import { MatchProps, ContextType, ContextReducerType } from "./ContextTypes";
 
-const initContext: ContextStateType = {
+const initContext: ContextType = {
     user: null,
     conferences: new Array<Conference>(),
     organizations: new Array<Organization>(),
     games: new Array<Game>(),
+    selectedGame: undefined,
     selectedDivision: undefined,
     selectedSubConference: undefined,
+    setContext: () => {},
 };
-const Context = React.createContext<ContextType | undefined>(undefined);
-export const connectContext = () => React.useContext(Context);
+const Context = React.createContext<ContextType>(initContext);
+const RouterContext = React.createContext<RouteComponentProps | undefined>(
+    undefined
+);
+const reduce = (prevState: any, props: ContextReducerType) => ({
+    ...prevState,
+    ...props,
+});
 
 interface Props extends RouteComponentProps<MatchProps> {
     children: React.ReactNode;
 }
 function ContextWrapper({ children, ...routerProps }: Props) {
-    const [context, setContext] = React.useState(initContext);
-    const setProperty = (property: any) =>
-        setContext({ ...context, ...routerProps, ...property });
-    const setUser = (user: any) =>
-        setContext({ ...context, ...routerProps, user });
-    const setOrganizations = (organizations: Array<Organization>) =>
-        setContext({ ...context, ...routerProps, organizations });
-    const setGames = (games: Array<Game>) =>
-        setContext({ ...context, ...routerProps, games });
-    const setSelectedDivision = (
-        selectedDivision: Division,
-        selectedSubConference: SubConference
-    ) => setContext({ ...context, selectedDivision, selectedSubConference });
+    const [context, setContext] = React.useReducer(reduce, initContext);
 
-    const value = {
+    const contextValue: ContextType = {
         ...context,
-        ...routerProps,
-        setProperty,
-        setUser,
-        setOrganizations,
-        setGames,
-        setSelectedDivision,
+        setContext,
     };
-    return <Context.Provider value={value}>{children}</Context.Provider>;
+    return (
+        <RouterContext.Provider value={routerProps}>
+            <Context.Provider value={contextValue}>{children}</Context.Provider>
+        </RouterContext.Provider>
+    );
 }
+
 export default withRouter(ContextWrapper);
+export const connectContext = () => React.useContext(Context);
+export const connectRouter = () => React.useContext(RouterContext);

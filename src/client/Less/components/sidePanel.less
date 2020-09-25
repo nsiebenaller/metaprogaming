@@ -1,0 +1,50 @@
+.side-panel {
+    min-width: 200px;
+    background: @grey-200;
+    .conference-item {
+        margin-left: 20px;
+        max-height: 80px;
+        display: flex;
+        justify-content: center;
+        .conference-logo {
+            max-width: 150px;
+            max-height: 80px;
+            background: @grey-200;
+        }
+    }
+
+    .logo-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+        .side-panel-logo {
+            max-width: 150px;
+        }
+    }
+
+    .menu-item {
+        margin-left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        color: @grey-500;
+        svg {
+            margin-right: 10px;
+        }
+        &:hover {
+            background: @grey-300;
+            color: @grey-600;
+        }
+        &.active {
+            background: #7cb342;
+            color: #f1f8e9;
+        }
+    }
+}

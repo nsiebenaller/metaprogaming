@@ -1,13 +1,15 @@
 import React from "react";
 import { TextField, Datepicker, Button } from "ebrap-ui";
-import { connectContext } from "../../Context";
+import { connectContext, connectRouter } from "../../Context";
 import Axios from "axios";
 
 interface Props {
     match: any;
 }
 export default function CreateSeasonPage(props: Props) {
-    const context = connectContext()!;
+    const context = connectContext();
+    const router = connectRouter()!;
+
     const { selectedDivision, selectedSubConference } = context;
     const gameId = parseInt(props.match.params.gameId);
     const DivisionId = (selectedDivision && selectedDivision.id) || null;
@@ -42,7 +44,7 @@ export default function CreateSeasonPage(props: Props) {
         }
         await Promise.all(requests);
         window.alert("success!");
-        context.history.goBack();
+        router.history.goBack();
     };
 
     if (!game) return null;

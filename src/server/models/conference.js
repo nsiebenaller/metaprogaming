@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
                 as: "subconferences",
                 foreignKey: "ConferenceId",
             });
+            Conference.hasMany(models.Game, {
+                as: "games",
+                foreignKey: "ConferenceId",
+            });
         }
     }
     Conference.init(

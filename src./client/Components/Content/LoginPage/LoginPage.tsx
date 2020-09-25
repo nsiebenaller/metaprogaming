@@ -2,11 +2,12 @@ import React from "react";
 import axios from "axios";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { connectContext } from "../../Context";
+import { connectContext, connectRouter } from "../../Context";
 
 interface Props {}
 export default function LoginPage(props: Props) {
     const context = connectContext()!;
+    const router = connectRouter()!;
 
     const [username, setUsername] = React.useState("");
     const handleUsername = (e: any) => setUsername(e.target.value);
@@ -20,8 +21,8 @@ export default function LoginPage(props: Props) {
         e.preventDefault();
         const { data } = await axios.post("/api/login", { username, password });
         if (!data.success) return setError(true);
-        context.setUser(username);
-        context.history.push("/");
+        context.setContext({ user: username, selectedGame: undefined });
+        router.history.push("/");
     };
 
     return (
@@ -52,6 +53,7 @@ export default function LoginPage(props: Props) {
                     Login
                 </Button>
             </form>
+            {error && <div>Invalid Credentials</div>}
         </div>
     );
 }

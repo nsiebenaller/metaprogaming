@@ -1,12 +1,12 @@
 import React from "react";
-import { connectContext } from "../../Context";
+import { connectRouter } from "../../Context";
 
 interface Props {
     game: Game;
 }
 export default function GameImage({ game }: Props) {
-    const context = connectContext()!;
-    const redirect = () => context.history.push(`/game/${game.id}`);
+    const router = connectRouter()!;
+    const redirect = () => router.history.push(`/game/${game.id}`);
 
     return (
         <div className={"game"} onClick={redirect}>

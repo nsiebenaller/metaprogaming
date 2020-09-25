@@ -5,6 +5,8 @@ declare global {
         name: string;
         image: string;
         imageSrc?: string;
+        banner: string;
+        ConferenceId: number;
     }
 
     interface Organization {

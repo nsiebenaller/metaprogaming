@@ -24,12 +24,19 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "GameId",
                 as: "weeks",
             });
+            Game.belongsTo(models.Conference);
+            Game.hasMany(models.GameType, {
+                foreignKey: "GameId",
+                as: "gameTypes",
+            });
         }
     }
     Game.init(
         {
             name: DataTypes.STRING,
             image: DataTypes.STRING,
+            banner: DataTypes.STRING,
+            ConferenceId: DataTypes.INTEGER,
         },
         {
             sequelize,

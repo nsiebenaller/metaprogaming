@@ -1,19 +1,21 @@
 import React from "react";
 import { Button } from "ebrap-ui";
-import { connectContext } from "../../Context";
+import { connectContext, connectRouter } from "../../Context";
 import Axios from "axios";
 import WeekItem from "./WeekItem";
 
 interface Props {}
 export default function EditWeeksPage(props: Props) {
-    const context = connectContext()!;
+    const context = connectContext();
+    const router = connectRouter()!;
+
     const { selectedDivision, selectedSubConference } = context;
     const DivisionId = (selectedDivision && selectedDivision.id) || null;
 
     const [gameId, setGame] = React.useState<number | undefined>();
     const [weeks, setWeeks] = React.useState(new Array<Week>());
 
-    const createSeason = () => context.history.push(`/Season/${gameId}`);
+    const createSeason = () => router.history.push(`/Season/${gameId}`);
 
     const findWeeks = async (GameId: number) => {
         const { data: weeks } = await Axios.get("/api/Week", {

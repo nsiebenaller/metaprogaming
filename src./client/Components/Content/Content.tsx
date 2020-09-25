@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, RouteComponentProps } from "react-router-dom";
 import TopBar from "./TopBar/TopBar";
 import LoginPage from "./LoginPage/LoginPage";
 import GamePage from "./GamePage/GamePage";
@@ -9,13 +9,27 @@ import EditMatchPage from "./EditMatchPage/EditMatchPage";
 import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
 import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
 import OrgPages from "./OrgPages";
+import MainGamePage from "./MainGamePage/MainGamePage";
+import AdminGamePage from "./AdminGamePage/AdminGamePage";
 
 export default function Content() {
     return (
         <div className="content">
             <Route path={"/"} component={TopBar} />
             <div className="content-main">
-                <Route path={"/"} exact>
+                <Route
+                    path={"/Game/:gameId"}
+                    exact
+                    component={renderMainGamePage}
+                />
+                <Route path={"/login"} exact component={LoginPage} />
+                <Route
+                    path={"/Admin/Game/:gameId?"}
+                    exact
+                    component={renderAdminGamePage}
+                />
+
+                {/* <Route path={"/"} exact>
                     <MainPage />
                 </Route>
                 <Route
@@ -48,8 +62,30 @@ export default function Content() {
                     component={({ match }: any) => (
                         <CreateSeasonPage match={match} />
                     )}
-                />
+                /> */}
             </div>
         </div>
     );
+}
+
+interface GameIdQueryParam {
+    gameId?: string;
+}
+function renderMainGamePage(props: RouteComponentProps<GameIdQueryParam>) {
+    const {
+        match: {
+            params: { gameId },
+        },
+    } = props;
+    if (!gameId) return null;
+    return <MainGamePage gameId={parseInt(gameId)} />;
+}
+function renderAdminGamePage(props: RouteComponentProps<GameIdQueryParam>) {
+    const {
+        match: {
+            params: { gameId },
+        },
+    } = props;
+    if (!gameId) return <AdminGamePage gameId={undefined} />;
+    return <AdminGamePage gameId={parseInt(gameId)} />;
 }

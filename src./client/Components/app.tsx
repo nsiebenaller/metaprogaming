@@ -1,5 +1,5 @@
 import React from "react";
-import SidePanel from "./SidePanel/SidePanel";
+import SideBar from "./SidePanel/SideBar";
 import Content from "./Content/Content";
 import { connectContext } from "./Context";
 import { sortConferences } from "../utils/sort";
@@ -36,7 +36,7 @@ export default function App() {
         const selectedSubConference = getFirstSubConference(conferences);
         const selectedDivision = getFirstDivision(selectedSubConference);
 
-        context.setProperty({
+        context.setContext({
             games,
             organizations,
             conferences,
@@ -51,11 +51,51 @@ export default function App() {
 
     return (
         <div className="app">
-            <SidePanel />
+            <SideBar />
             <Content />
         </div>
     );
 }
+
+/**
+ * const handleFile = (event: React.FormEvent<HTMLInputElement>) => {
+        const target = event.target as HTMLInputElement;
+        if (!target.files) return;
+        const file = Array.from(target.files)[0];
+        setFile(file);
+    };
+ * const upload = () => {
+        if (!file) return;
+        uploadFile(file);
+    };
+    const fetchFile = async () => {
+        const file = await getFile(text);
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+            document
+                .getElementById("img")
+                ?.setAttribute("src", e.target.result);
+        };
+        reader.readAsDataURL(file);
+    };
+ * <div>
+                <input type={"file"} onInput={handleFile} />
+                <button onClick={upload}>upload</button>
+                <input
+                    type={"text"}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setText(e.target.value)
+                    }
+                />
+                <button onClick={fetchFile}>fetch</button>
+                <img
+                    id="img"
+                    src={"https://metaprogaming.s3.amazonaws.com/anchor.jpg"}
+                />
+            </div>
+ */
 
 function getFirstSubConference(
     conferences: Array<Conference> | undefined

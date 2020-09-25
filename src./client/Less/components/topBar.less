@@ -6,24 +6,33 @@
     height: 40px;
     padding: 15px 50px;
     border-bottom: 1px solid @grey-300;
-    > * {
-        margin-left: 10px !important;
-    }
 
-    .arrow-container {
-        position: absolute;
-        left: 0;
-        margin-left: 50px !important;
-    }
-
-    .user-container {
+    .navigation {
         display: flex;
-        border-radius: 5px;
-        border: 1px solid @grey-300;
-        padding: 5px 10px;
-        svg {
-            fill: @grey-600;
+        position: absolute;
+        left: 50px;
+        > * {
             margin-right: 10px;
+        }
+    }
+
+    .right-side {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        > * {
+            margin-left: 10px !important;
+        }
+        .user-container {
+            display: flex;
+            border-radius: 5px;
+            border: 1px solid @grey-300;
+            padding: 5px 10px;
+            svg {
+                fill: @grey-600;
+                margin-right: 10px;
+            }
         }
     }
 }

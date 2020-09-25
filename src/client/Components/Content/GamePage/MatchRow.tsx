@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import OrgMatch from "./OrgMatch";
-import { connectContext } from "../../Context";
+import { connectContext, connectRouter } from "../../Context";
 import axios from "axios";
 
 enum Side {
@@ -15,9 +15,10 @@ interface Props {
 }
 export default function MatchRow({ match, changeScore, deleteMatch }: Props) {
     const context = connectContext()!;
+    const router = connectRouter()!;
 
     const editMatch = () => {
-        context.history.push(`/Match/edit/${match.id}`);
+        router.history.push(`/Match/edit/${match.id}`);
     };
     const handleDelete = () => deleteMatch(match.id);
 

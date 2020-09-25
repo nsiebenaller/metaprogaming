@@ -22,6 +22,56 @@ export async function checkUser(): Promise<any> {
     return data;
 }
 
+export async function createGame(params: any): Promise<any> {
+    const { data } = await Axios.post("/api/Game", params);
+    console.log(data);
+}
+
+export async function saveGame(
+    id: number,
+    name: string,
+    banner?: File,
+    image?: File
+): Promise<any> {
+    const formData = new FormData();
+    if (banner) formData.append("banner", banner);
+    if (image) formData.append("image", image);
+    formData.append("id", id.toString());
+    formData.append("name", name);
+
+    const { data } = await Axios.patch("/api/Game", formData);
+    console.log(data);
+}
+
+// File test stuff
+export async function getFile(fileName: string): Promise<File | undefined> {
+    const { data } = await Axios({
+        url: "/api/file",
+        method: "GET",
+        responseType: "blob",
+        params: {
+            fileName,
+        },
+    });
+    const blob = new Blob([data]);
+    if (blob.size === 0) {
+        console.log("No File!");
+        return;
+    }
+    const file = new File([data], fileName);
+    console.log(file);
+    return file;
+    //downloadFile(data, fileName);
+}
+
+export async function uploadFile(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await Axios.post("/api/upload", formData);
+    console.log(data);
+}
+
 interface ImageRef {
     image: string;
     [key: string]: any;
@@ -42,4 +92,17 @@ async function populateImages(
     });
     const images = await Promise.all(promises);
     return objects.map((g, i) => ({ ...g, imageSrc: images[i] }));
+}
+function downloadFile(data: string, filename: string) {
+    if (navigator.appVersion.toString().indexOf(".NET") > 0) {
+        window.navigator.msSaveBlob(data, filename);
+    } else {
+        const url = (<any>window).URL.createObjectURL(new Blob([data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
