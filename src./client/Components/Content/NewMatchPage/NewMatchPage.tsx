@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { Dropdown, Datepicker, TextArea, command } from "ebrap-ui";
 import { OptionFormat } from "ebrap-ui/dist/types/types";
 import { connectContext } from "../../Context";
 import Convert from "../../../utils/convert";
+import { ByName } from "../../../utils/sort";
 
 type SelectedGame = Game | undefined;
+type SelectedGameType = GameType | undefined;
 type SelectedOrg = Organization | undefined;
 type SelectedTeam = Team | undefined;
 type SelectedDivision = Division | undefined;
@@ -17,16 +19,19 @@ const gameTypes = ["Best of 1", "Best of 3", "Best of 5", "Best of 7"];
 export default function NewMatchPage() {
     const context = connectContext()!;
 
-    const [allGames, setAllGames] = React.useState<Array<OptionFormat>>([]);
-    const [allOrgs, setAllOrgs] = React.useState<Array<OptionFormat>>([]);
-    const [divisions, setDivisions] = React.useState<Array<OptionFormat>>([]);
-    const [awayTeams, setAwayTeams] = React.useState<Array<OptionFormat>>([]);
-    const [homeTeams, setHomeTeams] = React.useState<Array<OptionFormat>>([]);
+    const [allGames, setAllGames] = useState<Array<OptionFormat>>([]);
+    const [allGameTypes, setAllGameTypes] = useState<Array<OptionFormat>>([]);
+    const [allOrgs, setAllOrgs] = useState<Array<OptionFormat>>([]);
+    const [divisions, setDivisions] = useState<Array<OptionFormat>>([]);
+    const [awayTeams, setAwayTeams] = useState<Array<OptionFormat>>([]);
+    const [homeTeams, setHomeTeams] = useState<Array<OptionFormat>>([]);
     React.useEffect(() => {
+        context.games.sort(ByName);
         const games = Convert.toOptionFormat(context.games);
         setAllGames(games);
     }, [context.games]);
     React.useEffect(() => {
+        context.organizations.sort(ByName);
         const orgs = Convert.toOptionFormat(context.organizations);
         setAllOrgs(noTeam.concat(orgs));
     }, [context.organizations]);
@@ -36,8 +41,18 @@ export default function NewMatchPage() {
     }, [context.conferences]);
 
     const [selectedGame, setGame] = React.useState<SelectedGame>();
-    const handleGame = (option: OptionFormat) =>
-        setGame(Convert.toGame(option));
+    const [selectedGameType, setGametype] = React.useState<SelectedGameType>();
+    const handleGame = (option: OptionFormat) => {
+        const game = Convert.toGame(option);
+        setGame(game);
+        setGametype(undefined);
+        setAllGameTypes(Convert.toOptionFormat(game?.gameTypes || []));
+    };
+    const handleGameType = (option: OptionFormat) => {
+        const gameType = Convert.toGameType(option);
+        setGametype(gameType);
+    };
+
     const [selectedType, setType] = React.useState("");
     const handleType = (e: any) => setType(e);
     const [selectedDate, setDate] = React.useState(new Date());
@@ -80,10 +95,10 @@ export default function NewMatchPage() {
             await command.alert("invalid game");
             return;
         }
-        if (!selectedDivision) {
-            await command.alert("invalid conference/division");
-            return;
-        }
+        // if (!selectedDivision) {
+        //     await command.alert("invalid conference/division");
+        //     return;
+        // }
 
         const AwayOrganizationId = awayOrg ? awayOrg.id : null;
         const HomeOrganizationId = homeOrg ? homeOrg.id : null;
@@ -93,12 +108,13 @@ export default function NewMatchPage() {
             date: selectedDate,
             type: selectedType,
             notes: notes,
-            DivisionId: selectedDivision.id,
+            //DivisionId: selectedDivision.id,
             AwayOrganizationId,
             HomeOrganizationId,
             AwayTeamId,
             HomeTeamId,
             GameId: selectedGame.id,
+            GameTypeId: selectedGameType?.id || null,
         };
         const { data: response } = await axios.post("/api/Match", request);
         if (!response.success) {
@@ -119,6 +135,14 @@ export default function NewMatchPage() {
                 onChange={handleGame}
                 botPad
             />
+            <Dropdown
+                label={"Game Variant"}
+                placeholder={"Select a Game Variant"}
+                selected={selectedGameType?.name}
+                options={allGameTypes}
+                onChange={handleGameType}
+                botPad
+            />
             <br />
             <Dropdown
                 label={"Type of Game"}
@@ -135,7 +159,7 @@ export default function NewMatchPage() {
                 onChange={handleDate}
                 includeTime
             />
-            <br />
+            {/* <br />
             <Dropdown
                 label={"Conference / Division"}
                 placeholder={"Select One"}
@@ -143,7 +167,7 @@ export default function NewMatchPage() {
                 options={divisions}
                 onChange={handleDivision}
                 botPad
-            />
+            /> */}
             <br />
             <Dropdown
                 label={"Away Organization"}

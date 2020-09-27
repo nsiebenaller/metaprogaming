@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "HomeOrganizationId",
             });
             Match.belongsTo(models.Game);
+            Match.belongsTo(models.GameType);
             Match.belongsTo(models.Division);
             Match.belongsTo(models.Team, {
                 as: "awayTeam",
@@ -40,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             HomeOrganizationId: DataTypes.INTEGER,
             firstTeamScore: DataTypes.INTEGER,
             secondTeamScore: DataTypes.INTEGER,
+            GameTypeId: DataTypes.INTEGER,
         },
         {
             sequelize,

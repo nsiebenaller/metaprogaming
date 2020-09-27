@@ -7,6 +7,7 @@ import { connectContext } from "../../Context";
 import Convert from "../../../utils/convert";
 
 type SelectedGame = Game | undefined;
+type SelectedGameType = GameType | undefined;
 type SelectedOrg = Organization | undefined;
 type SelectedTeam = Team | undefined;
 type SelectedDivision = Division | undefined;
@@ -22,12 +23,27 @@ export default function EditMatchPage({ match }: Props) {
     const allDivisions = getAllDivision(context.conferences);
     const MatchId = parseInt(match.params.matchId);
 
+    // Options
     const [allOrgs, setAllOrgs] = React.useState<Array<OptionFormat>>([]);
+    const [allGames, setAllGames] = React.useState<Array<OptionFormat>>([]);
     const [awayTeams, setAwayTeams] = React.useState<Array<OptionFormat>>([]);
     const [homeTeams, setHomeTeams] = React.useState<Array<OptionFormat>>([]);
+    const [variants, setVariants] = React.useState<Array<OptionFormat>>([]);
 
-    const [selectedGame, setGame] = React.useState("");
-    const handleGame = (e: any) => setGame(e);
+    // Selected
+    const [selectedGame, setGame] = React.useState<SelectedGame>();
+    const [selectedVariant, setVariant] = React.useState<SelectedGameType>();
+    const handleGame = (option: OptionFormat) => {
+        const game = Convert.toGame(option);
+        setGame(game);
+        setVariant(undefined);
+        setVariants(Convert.toOptionFormat(game?.gameTypes || []));
+    };
+    const handleVariant = (option: OptionFormat) => {
+        const variant = Convert.toGameType(option);
+        setVariant(variant);
+    };
+
     const [selectedType, setType] = React.useState("");
     const handleType = (e: any) => setType(e);
     const [selectedDate, setDate] = React.useState(new Date());
@@ -71,8 +87,12 @@ export default function EditMatchPage({ match }: Props) {
     }, []);
     async function onMount() {
         context.organizations.sort(ByName);
-        const orgs = Convert.toOptionFormat(context.organizations);
-        setAllOrgs(noTeam.concat(orgs));
+        const o = Convert.toOptionFormat(context.organizations);
+        setAllOrgs(noTeam.concat(o));
+
+        context.games.sort(ByName);
+        const g = Convert.toOptionFormat(context.games);
+        setAllGames(g);
 
         const { data: matches } = await axios.get("/api/Match", {
             params: { id: MatchId },
@@ -83,6 +103,7 @@ export default function EditMatchPage({ match }: Props) {
         const currentMatch: Match = matches[0];
         const {
             GameId,
+            GameTypeId,
             DivisionId,
             type,
             date,
@@ -97,8 +118,18 @@ export default function EditMatchPage({ match }: Props) {
         const game = context.games.find((g) => g.id === GameId);
         const division = allDivisions.find((d) => d.id === DivisionId);
         const matchDate = new Date(date);
+        let gameType;
 
-        if (game) setGame(game.name);
+        if (game) {
+            setGame(game);
+            setVariants(Convert.toOptionFormat(game?.gameTypes || []));
+            if (GameTypeId) {
+                gameType = game?.gameTypes.find((x) => x.id === GameTypeId);
+            }
+        }
+        if (gameType) {
+            setVariant(gameType);
+        }
         setType(type);
         if (division) setDivision(division);
         setDate(matchDate);
@@ -125,7 +156,7 @@ export default function EditMatchPage({ match }: Props) {
     }
 
     const save = async () => {
-        const game = context.games.find((g) => g.name === selectedGame);
+        const game = selectedGame;
         const AwayOrganizationId = awayOrg ? awayOrg.id : null;
         const HomeOrganizationId = homeOrg ? homeOrg.id : null;
         const AwayTeamId = awayTeam ? awayTeam.id : null;
@@ -133,9 +164,9 @@ export default function EditMatchPage({ match }: Props) {
         if (!game) {
             return window.alert("invalid game");
         }
-        if (!selectedDivision) {
-            return window.alert("invalid conference/division");
-        }
+        // if (!selectedDivision) {
+        //     return window.alert("invalid conference/division");
+        // }
 
         await axios.delete("/api/OrganizationMatches", {
             params: { MatchId },
@@ -149,8 +180,9 @@ export default function EditMatchPage({ match }: Props) {
             HomeOrganizationId,
             AwayTeamId,
             HomeTeamId,
-            DivisionId: selectedDivision.id,
+            //DivisionId: selectedDivision.id,
             GameId: game.id,
+            GameTypeId: selectedVariant?.id || null,
         };
         const { data: response } = await axios.patch("/api/Match", request);
         if (!response.success) {
@@ -165,9 +197,18 @@ export default function EditMatchPage({ match }: Props) {
             <Dropdown
                 label={"Game"}
                 placeholder={"Select a Game"}
-                selected={selectedGame}
-                options={context.games.map((g) => g.name)}
+                selected={selectedGame?.name}
+                options={allGames}
                 onChange={handleGame}
+                botPad
+            />
+            <Dropdown
+                label={"Game Variant"}
+                placeholder={"Select a Game Variant"}
+                selected={selectedVariant?.name}
+                options={variants}
+                onChange={handleVariant}
+                noOptionsText={"No Variants"}
                 botPad
             />
             <br />
@@ -186,7 +227,7 @@ export default function EditMatchPage({ match }: Props) {
                 onChange={handleDate}
                 includeTime
             />
-            <br />
+            {/* <br />
             <Dropdown
                 label={"Division"}
                 placeholder={"Select a Division"}
@@ -194,7 +235,7 @@ export default function EditMatchPage({ match }: Props) {
                 options={allDivisions}
                 onChange={handleDivision}
                 botPad
-            />
+            /> */}
             <br />
             <Dropdown
                 label={"Away Organization"}

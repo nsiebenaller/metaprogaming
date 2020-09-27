@@ -55,15 +55,13 @@ export default function ManageGameForm({ game }: Props) {
         <div className={"manage-game-form"}>
             <h1>Manage {game.name}</h1>
             <div className={"banner-container"}>
-                {game.banner && (
-                    <div
-                        ref={bannerRef}
-                        className={"banner-img"}
-                        style={{
-                            backgroundImage: `url(${bucket}${game.banner})`,
-                        }}
-                    />
-                )}
+                <div
+                    ref={bannerRef}
+                    className={"banner-img"}
+                    style={{
+                        backgroundImage: `url(${bucket}${game.banner})`,
+                    }}
+                />
             </div>
             <input type={"file"} onInput={handleBanner} />
             <br />

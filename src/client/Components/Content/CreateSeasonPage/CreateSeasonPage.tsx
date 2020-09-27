@@ -37,7 +37,7 @@ export default function CreateSeasonPage(props: Props) {
                 start: start,
                 end: nextweek(start),
                 GameId: gameId,
-                DivisionId,
+                DivisionId: null,
             };
             requests.push(Axios.post("/api/Week", data));
             start = nextweek(start);
@@ -52,8 +52,7 @@ export default function CreateSeasonPage(props: Props) {
         <div>
             <h1>Create Season</h1>
             <h4>
-                {game.name} {selectedDivision && selectedDivision.name}{" "}
-                {selectedSubConference && selectedSubConference.name}
+                {game.name} {"NECC Conference"}
             </h4>
             <TextField
                 value={numWeeks}

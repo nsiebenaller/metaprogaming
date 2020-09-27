@@ -30,7 +30,18 @@ export default function Content() {
                     component={renderAdminGamePage}
                 />
                 <Route path={"/Organization"} component={OrgPages} />
-
+                <Route
+                    path={"/Match/edit/:matchId"}
+                    exact
+                    component={renderEditMatchPage}
+                />
+                <Route path={"/Match/new"} exact component={NewMatchPage} />
+                <Route path={"/Weeks/edit"} exact component={EditWeeksPage} />
+                <Route
+                    path={"/Season/:gameId"}
+                    exact
+                    component={renderCreateSeasonPage}
+                />
                 {/* 
                 <Route
                     path={"/game/:gameId"}
@@ -53,25 +64,17 @@ export default function Content() {
                 <Route path={"/Organization"}>
                     <OrgPages />
                 </Route>
-                <Route path={"/Weeks/edit"} exact>
-                    <EditWeeksPage />
-                </Route>
-                <Route
-                    path={"/Season/:gameId"}
-                    exact
-                    component={({ match }: any) => (
-                        <CreateSeasonPage match={match} />
-                    )}
-                /> */}
+                 */}
             </div>
         </div>
     );
 }
 
-interface GameIdQueryParam {
+interface MatchProps {
     gameId?: string;
+    matchId?: string;
 }
-function renderMainGamePage(props: RouteComponentProps<GameIdQueryParam>) {
+function renderMainGamePage(props: RouteComponentProps<MatchProps>) {
     const {
         match: {
             params: { gameId },
@@ -80,7 +83,7 @@ function renderMainGamePage(props: RouteComponentProps<GameIdQueryParam>) {
     if (!gameId) return null;
     return <MainGamePage gameId={parseInt(gameId)} />;
 }
-function renderAdminGamePage(props: RouteComponentProps<GameIdQueryParam>) {
+function renderAdminGamePage(props: RouteComponentProps<MatchProps>) {
     const {
         match: {
             params: { gameId },
@@ -88,4 +91,18 @@ function renderAdminGamePage(props: RouteComponentProps<GameIdQueryParam>) {
     } = props;
     if (!gameId) return <AdminGamePage gameId={undefined} />;
     return <AdminGamePage gameId={gameId} />;
+}
+function renderEditMatchPage(props: RouteComponentProps<MatchProps>) {
+    const {
+        match,
+        match: {
+            params: { matchId },
+        },
+    } = props;
+    if (!matchId) return null;
+    return <EditMatchPage match={match} />;
+}
+function renderCreateSeasonPage(props: RouteComponentProps<MatchProps>) {
+    const { match } = props;
+    return <CreateSeasonPage match={match} />;
 }

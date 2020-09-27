@@ -13,13 +13,15 @@ const initContext: ContextType = {
     setContext: () => {},
 };
 const Context = React.createContext<ContextType>(initContext);
-const RouterContext = React.createContext<RouteComponentProps | undefined>(
-    undefined
-);
-const reduce = (prevState: any, props: ContextReducerType) => ({
-    ...prevState,
-    ...props,
-});
+
+type RouterType = RouteComponentProps | undefined;
+const RouterContext = React.createContext<RouterType>(undefined);
+const reduce = (prevState: any, props: ContextReducerType) => {
+    return {
+        ...prevState,
+        ...props,
+    };
+};
 
 interface Props extends RouteComponentProps<MatchProps> {
     children: React.ReactNode;

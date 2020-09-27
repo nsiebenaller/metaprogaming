@@ -48,6 +48,7 @@ declare global {
         DivisionId: number;
         GameId: number;
         type: string;
+        GameTypeId: number;
     }
 
     interface Player {

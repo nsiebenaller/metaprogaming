@@ -21,7 +21,7 @@ export default function EditWeeksPage(props: Props) {
         const { data: weeks } = await Axios.get("/api/Week", {
             params: {
                 GameId,
-                DivisionId,
+                DivisionId: null,
             },
         });
         setWeeks(weeks);
@@ -58,8 +58,7 @@ export default function EditWeeksPage(props: Props) {
         <div>
             <h1>Edit Season</h1>
             <h2>
-                {currentGameName} {selectedDivision && selectedDivision.name}{" "}
-                {selectedSubConference && selectedSubConference.name}
+                {currentGameName} {"NECC Conference"}
             </h2>
             <h4>Select a Game:</h4>
             {context.games.map((game: Game, idx: number) =>
@@ -76,10 +75,7 @@ export default function EditWeeksPage(props: Props) {
             <h4>Current Season:</h4>
             {weeks.length === 0 && (
                 <div>
-                    <div>
-                        No current season for {currentGameName}{" "}
-                        {selectedDivision && selectedDivision.name}
-                    </div>
+                    <div>No current season for {currentGameName}</div>
                     <br />
                     <Button color={"blue-500"} onClick={createSeason}>
                         Create a Season

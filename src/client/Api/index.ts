@@ -35,6 +35,11 @@ export async function deleteGameType(id: number): Promise<any> {
     return data;
 }
 
+export async function deleteMatch(id: number): Promise<any> {
+    const { data } = await Axios.delete("/api/Match", { params: { id } });
+    return data;
+}
+
 export async function createGame(
     name: string,
     banner?: File,
@@ -75,6 +80,16 @@ export async function updateOrganization(
     formData.append("name", name);
 
     const { data } = await Axios.patch("/api/Organization", formData);
+    return data;
+}
+
+export async function getMatches(): Promise<Array<Match>> {
+    const { data } = await Axios.get("/api/Match");
+    return data as Array<Match>;
+}
+
+export async function updateMatch(props: any): Promise<any> {
+    const { data } = await Axios.patch("/api/Match", props);
     return data;
 }
 

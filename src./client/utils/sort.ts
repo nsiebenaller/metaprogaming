@@ -35,3 +35,9 @@ export function ById(a: Sortable, b: Sortable): number {
     }
     return 0;
 }
+
+export function ByDate(a: Match, b: Match): number {
+    if (!a.date) return -1;
+    if (!b.date) return 1;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+}

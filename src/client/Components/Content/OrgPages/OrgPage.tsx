@@ -3,6 +3,7 @@ import Axios from "axios";
 import { command } from "ebrap-ui";
 import PlayerItem from "./PlayerItem";
 import { ByName } from "../../../utils/sort";
+import * as Util from "../../../utils/file";
 
 interface Props {
     match: any;
@@ -46,6 +47,7 @@ export default function OrgPage({ match }: Props) {
     return (
         <div className="org-page">
             <h1>Organization</h1>
+            <img className={"org-img"} src={`${Util.Bucket}${org.image}`} />
             <div className="title">{org.name}</div>
             <hr />
             <h4>Roster</h4>

@@ -6,8 +6,14 @@ module.exports = (router) => {
         .route("/Week")
         .get(async (req, res) => {
             const { GameId, DivisionId } = req.query;
-            const whereClause =
-                GameId && DivisionId ? { where: { GameId, DivisionId } } : {};
+            const whereClause = { where: {} };
+            if (GameId) {
+                whereClause.where = { ...whereClause.where, GameId };
+            }
+            if (DivisionId) {
+                whereClause.where = { ...whereClause.where, DivisionId };
+            }
+
             const data = await db.Week.findAll({ ...whereClause });
             res.json(data);
         })

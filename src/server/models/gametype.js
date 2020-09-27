@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             GameType.belongsTo(models.Game);
+            GameType.hasMany(models.Match, {
+                as: "matches",
+                foreignKey: "GameTypeId",
+            });
         }
     }
     GameType.init(
