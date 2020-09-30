@@ -9,17 +9,15 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Week.belongsTo(models.Division);
-            Week.belongsTo(models.Game);
+            Week.belongsTo(models.Season);
         }
     }
     Week.init(
         {
             name: DataTypes.STRING,
-            DivisionId: DataTypes.INTEGER,
-            GameId: DataTypes.INTEGER,
             start: DataTypes.DATE,
             end: DataTypes.DATE,
+            SeasonId: DataTypes.INTEGER,
         },
         {
             sequelize,

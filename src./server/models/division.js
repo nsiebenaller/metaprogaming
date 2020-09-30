@@ -11,10 +11,6 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Division.belongsTo(models.SubConference);
             Division.hasMany(models.Match, { foreignKey: "DivisionId" });
-            Division.hasMany(models.Week, {
-                foreignKey: "DivisionId",
-                as: "weeks",
-            });
         }
     }
     Division.init(

@@ -1,80 +1,86 @@
 import React from "react";
 import { TextField, Datepicker, Button } from "ebrap-ui";
 import { connectContext, connectRouter } from "../../Context";
-import Axios from "axios";
+import GameSelector from "../EditWeeksPage/GameSelector";
+import { createSeason } from "../../../Api";
 
-interface Props {
-    match: any;
-}
-export default function CreateSeasonPage(props: Props) {
+type SelectedGame = Game | undefined;
+type SelectedGameType = GameType | undefined;
+export default function CreateSeasonPage() {
     const context = connectContext();
     const router = connectRouter()!;
 
-    const { selectedDivision, selectedSubConference } = context;
-    const gameId = parseInt(props.match.params.gameId);
-    const DivisionId = (selectedDivision && selectedDivision.id) || null;
-
-    const [game, setGame] = React.useState<Game | undefined>();
+    const [selectedGame, setGame] = React.useState<SelectedGame>();
+    const [selectedGameType, setGameType] = React.useState<SelectedGameType>();
     const [numWeeks, setNumWeeks] = React.useState<number>(10);
-    const handleNumWeeks = (value: string) => setNumWeeks(parseInt(value));
     const [startDate, setStartDate] = React.useState<Date>(new Date());
-    const handleStartDate = (value: Date | null) => {
+    const [seasonName, setName] = React.useState<string>("");
+    const selectGame = (game: Game) => setGame(game);
+    const selectGameType = (gameType: GameType) => setGameType(gameType);
+    const selectWeeks = (value: string) => setNumWeeks(parseInt(value));
+    const selectDate = (value: Date | null) => {
         if (!value) return;
         setStartDate(value);
     };
-
-    React.useEffect(() => {
-        const game = context.games.find((x) => x.id === gameId);
-        setGame(game);
-    }, [gameId, context.games]);
-
-    const createSeason = async () => {
-        const requests = [];
-        let start = startDate;
-        for (let i = 0; i < numWeeks; i++) {
-            const data = {
-                name: `Week ${i + 1}`,
-                start: start,
-                end: nextweek(start),
-                GameId: gameId,
-                DivisionId: null,
-            };
-            requests.push(Axios.post("/api/Week", data));
-            start = nextweek(start);
+    const handleName = (value: string) => setName(value);
+    const handleSeason = async () => {
+        const ready = isReady(selectedGame, selectedGameType);
+        if (!ready) {
+            window.alert("Please select game and game type");
+            return;
         }
-        await Promise.all(requests);
-        window.alert("success!");
-        router.history.goBack();
+        const GameId = selectedGame ? selectedGame.id : null;
+        const GameTypeId = selectedGameType ? selectedGameType.id : null;
+        await createSeason(seasonName, startDate, numWeeks, GameId, GameTypeId);
+        window.alert("Success!");
     };
 
-    if (!game) return null;
     return (
         <div>
             <h1>Create Season</h1>
-            <h4>
-                {game.name} {"NECC Conference"}
-            </h4>
+            <GameSelector
+                games={context.games}
+                selectedGame={selectedGame}
+                selectedGameType={selectedGameType}
+                selectGame={selectGame}
+                selectGameType={selectGameType}
+            />
+            <br />
             <TextField
+                label={"Season Name"}
+                value={seasonName}
+                onChange={handleName}
+                botPad
+            />
+            <br />
+            <TextField
+                label={"Number of Weeks"}
                 value={numWeeks}
-                label="Number of Weeks"
-                type="number"
-                onChange={handleNumWeeks}
+                type={"number"}
+                onChange={selectWeeks}
                 botPad
             />
             <br />
             <Datepicker
-                label="Start Date"
+                label={"Start Date"}
                 value={startDate}
-                onChange={handleStartDate}
+                onChange={selectDate}
             />
             <br />
-            <Button color={"blue-500"} onClick={createSeason}>
+            <Button color={"blue-500"} onClick={handleSeason}>
                 Create Season
             </Button>
         </div>
     );
 }
 
-function nextweek(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 7);
+function isReady(
+    selectedGame: SelectedGame,
+    selectedGameType: SelectedGameType
+): boolean {
+    if (!selectedGame) return false;
+    const gameTypes = selectedGame.gameTypes;
+    if (gameTypes.length === 0) return true;
+    if (!selectedGameType) return false;
+    return true;
 }

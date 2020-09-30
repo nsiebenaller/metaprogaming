@@ -93,6 +93,43 @@ export async function updateMatch(props: any): Promise<any> {
     return data;
 }
 
+export async function getSeasons(
+    GameId: number,
+    GameTypeId: number | null
+): Promise<any> {
+    const { data } = await Axios.get("/api/Season", {
+        params: { GameId, GameTypeId },
+    });
+    return data;
+}
+
+export async function createSeason(
+    name: string,
+    startDate: Date,
+    numWeeks: number,
+    GameId: number | null,
+    GameTypeId: number | null
+): Promise<any> {
+    const { data } = await Axios.post("/api/Season", {
+        name,
+        startDate,
+        numWeeks,
+        GameId,
+        GameTypeId,
+    });
+    return data;
+}
+
+export async function setActiveSeason(id: number): Promise<any> {
+    const { data } = await Axios.patch("/api/Season", { id });
+    return data;
+}
+
+export async function deleteSeason(id: number): Promise<any> {
+    const { data } = await Axios.delete("/api/Season", { params: { id } });
+    return data;
+}
+
 // File test stuff
 export async function getFile(fileName: string): Promise<File | undefined> {
     const { data } = await Axios({

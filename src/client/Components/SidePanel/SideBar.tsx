@@ -18,6 +18,9 @@ export default function SideBar() {
         context.setContext({ selectedGame });
         router.history.push(`/Game/${selectedGame.id}`);
     };
+    const goHome = () => {
+        router.history.push(`/`);
+    };
 
     return (
         <div className="side-panel">
@@ -25,7 +28,11 @@ export default function SideBar() {
                 <img className={"side-panel-logo"} src={metaLogo} />
             </div>
             <div className={"conference-item"}>
-                <img className={"conference-logo"} src={neccLogo} />
+                <img
+                    className={"conference-logo"}
+                    src={neccLogo}
+                    onClick={goHome}
+                />
             </div>
             {games.map((game, key) => (
                 <GameItem

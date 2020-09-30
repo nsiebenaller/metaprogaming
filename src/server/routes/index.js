@@ -12,7 +12,7 @@ const orgRouter = require("./org");
 const orgMatchesRouter = require("./orgMatches");
 const orgPlayersRouter = require("./orgPlayers");
 const userRouter = require("./user");
-const weekRouter = require("./week");
+const seasonRouter = require("./season");
 
 module.exports = (router) => {
     conferenceRouter(router);
@@ -29,5 +29,5 @@ module.exports = (router) => {
     orgMatchesRouter(router);
     orgPlayersRouter(router);
     userRouter(router);
-    weekRouter(router);
+    seasonRouter(router);
 };

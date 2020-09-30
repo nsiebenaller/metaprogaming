@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "PlayerId",
                 sourceKey: "id",
             });
-            Game.hasMany(models.Week, {
-                foreignKey: "GameId",
-                as: "weeks",
-            });
             Game.belongsTo(models.Conference);
             Game.hasMany(models.GameType, {
                 foreignKey: "GameId",

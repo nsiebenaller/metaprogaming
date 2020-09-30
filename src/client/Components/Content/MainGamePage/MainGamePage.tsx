@@ -82,6 +82,7 @@ export default function MainGamePage({ gameId }: Props) {
                 setCurrentWeek={setCurrentWeek}
                 currentWeek={currentWeek}
                 gameId={selectedGame.id}
+                gameTypeId={gameType?.id}
             />
             <MatchList
                 matches={gameMatches}

@@ -1,5 +1,25 @@
 export {};
 declare global {
+    interface Season {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        active: boolean;
+        name: string;
+        weeks: Array<Week>;
+        GameId: number | null;
+        GameTypeId: number | null;
+    }
+
+    interface Week {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+        start: Date;
+        end: Date;
+    }
+
     interface Game {
         id: number;
         createdAt: string;
@@ -60,15 +80,6 @@ declare global {
         updatedAt: string;
         games?: Array<Game>;
         roles?: Array<Role>;
-    }
-
-    interface Week {
-        id: number;
-        name: string;
-        start: Date;
-        end: Date;
-        createdAt: string;
-        updatedAt: string;
     }
 
     interface Conference {

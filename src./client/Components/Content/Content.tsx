@@ -38,9 +38,9 @@ export default function Content() {
                 <Route path={"/Match/new"} exact component={NewMatchPage} />
                 <Route path={"/Weeks/edit"} exact component={EditWeeksPage} />
                 <Route
-                    path={"/Season/:gameId"}
+                    path={"/Season/new"}
                     exact
-                    component={renderCreateSeasonPage}
+                    component={CreateSeasonPage}
                 />
                 {/* 
                 <Route
@@ -101,8 +101,4 @@ function renderEditMatchPage(props: RouteComponentProps<MatchProps>) {
     } = props;
     if (!matchId) return null;
     return <EditMatchPage match={match} />;
-}
-function renderCreateSeasonPage(props: RouteComponentProps<MatchProps>) {
-    const { match } = props;
-    return <CreateSeasonPage match={match} />;
 }

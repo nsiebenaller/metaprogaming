@@ -3,32 +3,49 @@ import { Dropdown, OptionFormat } from "ebrap-ui";
 import Axios from "axios";
 import Convert from "../../../utils/convert";
 
+type SelectedSeason = Season | undefined;
 type SelectedOption = OptionFormat | undefined;
 interface Props {
     gameId: number;
+    gameTypeId?: number;
     currentWeek: SelectedOption;
     setCurrentWeek: React.Dispatch<React.SetStateAction<SelectedOption>>;
 }
 export default function SeasonPicker({
     gameId,
+    gameTypeId,
     currentWeek,
     setCurrentWeek,
 }: Props) {
+    const [currentSeason, setSeason] = React.useState<SelectedSeason>();
     const [allWeeks, setAllWeeks] = React.useState<Array<OptionFormat>>([]);
 
     React.useEffect(() => {
         onMount();
-    }, [gameId]);
-    React.useEffect(() => {
-        onMount();
-    }, []);
+    }, [gameId, gameTypeId]);
     async function onMount() {
-        const { data: weeks } = await Axios.get("/api/Week", {
+        // Reset Selections
+        setAllWeeks([]);
+        setCurrentWeek(undefined);
+        setSeason(undefined);
+
+        // Fetch Season
+        const { data } = await Axios.get("/api/Season", {
             params: {
                 GameId: gameId,
-                DivisionId: null,
+                GameTypeId: gameTypeId || null,
+                active: true,
             },
         });
+        if (!data || data.length === 0) {
+            setAllWeeks([]);
+            setCurrentWeek(undefined);
+            setSeason(undefined);
+            return;
+        }
+        const currentSeason = data[0];
+        setSeason(currentSeason);
+        const { weeks } = currentSeason;
         if (weeks.length > 0) {
             weeks.sort(sortByDate);
             const newWeeks = [{ value: "All" }].concat(
@@ -55,6 +72,7 @@ export default function SeasonPicker({
     return (
         <React.Fragment>
             <div className={"season-picker"}>
+                {currentSeason && <div>{currentSeason.name}</div>}
                 <Dropdown
                     placeholder={placeholder}
                     selected={currentWeek}
