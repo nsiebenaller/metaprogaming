@@ -1,0 +1,82 @@
+@import "./AdminPagePage.less";
+
+.admin-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-shadow: @shadow-1;
+    border: 1px solid @grey-500;
+    border-radius: 5px;
+    transition: @transition;
+    text-align: center;
+    background: #424242;
+    width: 200px;
+    height: 100px;
+    margin: 10px;
+    overflow: hidden;
+
+    &:hover {
+        border: 1px solid @grey-100;
+        cursor: pointer;
+    }
+}
+
+.image-item {
+    width: 200px;
+    border: 1px solid @grey-500;
+    border-radius: 5px;
+    padding: 10px;
+    img {
+        max-width: 100%;
+        max-height: 100px;
+    }
+}
+
+.user-item {
+    position: relative;
+    border: 1px solid @grey-500;
+    border-radius: 5px;
+    padding: 10px;
+    transition: @transition;
+    b {
+        display: inline-block;
+        width: 125px;
+    }
+    b.lg-width {
+        width: 160px;
+    }
+    .icon {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+        height: 100%;
+        fill: white;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        transition: @transition;
+        svg {
+            width: 42px;
+            height: 42px;
+        }
+    }
+    &:hover {
+        cursor: pointer;
+        border: 1px solid @grey-100;
+    }
+    &:hover .icon {
+        opacity: 1;
+    }
+}
+
+.selected {
+    cursor: default !important;
+    border: 1px solid @grey-100 !important;
+}
+
+.create-user-btn {
+    position: absolute !important;
+    right: 0;
+}

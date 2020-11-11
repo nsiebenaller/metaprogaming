@@ -1,0 +1,43 @@
+@import "./variables.less";
+@import "./background.less";
+@import "./card.less";
+@import "./color.less";
+@import "./depth.less";
+
+.btn-group {
+    display: flex;
+    flex-direction: row;
+
+    button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        margin-right: 1px;
+        min-width: 40px;
+        transition: @transition;
+        outline: none;
+        &:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        &:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            margin-right: 0px;
+        }
+    }
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.children--text-align-left {
+    > * {
+        text-align: left;
+    }
+}
+.text-align-left {
+    text-align: left;
+}

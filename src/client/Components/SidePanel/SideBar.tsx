@@ -1,22 +1,34 @@
 import React from "react";
-import metaLogo from "../../Assets/logo.png";
-import neccLogo from "../../Assets/necc-logo.png";
 import { ByName } from "../../utils/sort";
 import { connectContext, connectRouter } from "../Context";
 import GameItem from "./GameItem";
+import PageItem from "./PageItem";
+import config from "../../config.js";
 
+const isNECC = config.theme === "necc";
 export default function SideBar() {
     const context = connectContext();
     const router = connectRouter()!;
-    const { games, selectedGame } = context;
+    const { games, pages, selectedGame, selectedPage } = context;
     games.sort(ByName);
+
+    const [showPages, setShowPages] = React.useState<Array<Page>>([]);
+    React.useEffect(() => {
+        const p = pages.filter((p) => !p.hidden);
+        p.sort(ByName);
+        setShowPages(p);
+    }, [pages]);
 
     const navToMeta = () => {
         window.location.href = "https://www.metaprogaming.gg/";
     };
     const selectGame = (selectedGame: Game) => {
-        context.setContext({ selectedGame });
+        context.setContext({ selectedGame, selectedPage: undefined });
         router.history.push(`/Game/${selectedGame.id}`);
+    };
+    const selectPage = (selectedPage: Page) => {
+        context.setContext({ selectedGame: undefined, selectedPage });
+        router.history.push(`/Page/${selectedPage.id}`);
     };
     const goHome = () => {
         router.history.push(`/`);
@@ -25,15 +37,29 @@ export default function SideBar() {
     return (
         <div className="side-panel">
             <div className={"logo-container"} onClick={navToMeta}>
-                <img className={"side-panel-logo"} src={metaLogo} />
-            </div>
-            <div className={"conference-item"}>
                 <img
-                    className={"conference-logo"}
-                    src={neccLogo}
-                    onClick={goHome}
+                    className={"side-panel-logo"}
+                    src={"/images/meta-logo-no-bg.png"}
                 />
             </div>
+            {isNECC && (
+                <div className={"conference-item"}>
+                    <img
+                        className={"conference-logo"}
+                        src={"/images/logo.png"}
+                        onClick={goHome}
+                    />
+                </div>
+            )}
+
+            {showPages.map((page, idx) => (
+                <PageItem
+                    key={idx}
+                    page={page}
+                    selected={page.id === selectedPage?.id}
+                    selectPage={selectPage}
+                />
+            ))}
             {games.map((game, key) => (
                 <GameItem
                     key={key}
@@ -42,6 +68,13 @@ export default function SideBar() {
                     selectGame={selectGame}
                 />
             ))}
+            <div className={"vert-banner"}>
+                <img
+                    className={"vert-banner-img"}
+                    src={"/images/vert-banner.png"}
+                    onClick={goHome}
+                />
+            </div>
         </div>
     );
 }

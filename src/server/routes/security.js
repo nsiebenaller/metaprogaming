@@ -15,7 +15,7 @@ module.exports = (router) => {
         const success = await compare(password, user.password);
         if (!success) return res.send({ success: false });
 
-        const token = getToken(username);
+        const token = getToken(user);
         res.cookie("meta_token", token);
         res.send({ success: true });
     });
@@ -29,10 +29,10 @@ module.exports = (router) => {
     });
 };
 
-function getToken(username) {
+function getToken(user) {
     return jwt.sign(
         {
-            username,
+            user,
         },
         secret,
         { expiresIn: "1d" }
@@ -69,7 +69,7 @@ function verifyToken(req) {
     const now = new Date().getTime();
     const expire = parseInt(exp * 1000);
     if (expire < now) return { verified: false };
-    return { verified: true, username: verifiedToken.username };
+    return { verified: true, ...verifiedToken };
 }
 
 function compare(text, hash) {

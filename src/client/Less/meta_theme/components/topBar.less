@@ -1,0 +1,63 @@
+// TopBar.tsx
+.top-bar {
+    position: relative;
+    display: flex;
+    //justify-content: flex-end;
+    align-items: center;
+    height: 30px;
+    padding: 20px 50px;
+    box-shadow: @shadow-2;
+
+    .navigation {
+        flex: 1;
+        display: flex;
+        height: 100%;
+    }
+
+    .right-side {
+        flex: 1;
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        > * {
+            margin-left: 10px !important;
+            background: @grey-800;
+            color: white;
+        }
+        .action-btns {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background: transparent;
+            > * {
+                margin-left: 10px !important;
+                color: white;
+            }
+            button {
+                border: 1px solid transparent;
+                outline: 1px solid transparent;
+                background: transparent;
+                color: @grey-600;
+                font-size: 1em;
+                font-weight: bold;
+                &:hover {
+                    cursor: pointer;
+                    color: @grey-300;
+                }
+            }
+        }
+
+        .user-container {
+            display: flex;
+            border-radius: 4px;
+            background: @meta-green;
+            padding: 5px 10px;
+            color: white;
+            svg {
+                fill: white;
+                margin-right: 10px;
+            }
+        }
+    }
+}

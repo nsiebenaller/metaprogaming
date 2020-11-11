@@ -16,13 +16,6 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "PlayerId",
                 sourceKey: "id",
             });
-            Organization.belongsToMany(models.SubConference, {
-                as: "subconference",
-                through: "OrganizationSubConferences",
-                foreignKey: "OrganizationId",
-                otherKey: "SubConferenceId",
-                sourceKey: "id",
-            });
             Organization.hasMany(models.Team, {
                 as: "teams",
                 foreignKey: "OrganizationId",

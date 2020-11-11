@@ -1,7 +1,8 @@
 import React from "react";
 import { Dropdown, OptionFormat } from "ebrap-ui";
 import Axios from "axios";
-import Convert from "../../../utils/convert";
+import { fetchLeaderboard } from "../../../Api";
+//import Convert from "../../../utils/convert";
 
 type SelectedSeason = Season | undefined;
 type SelectedOption = OptionFormat | undefined;
@@ -9,13 +10,19 @@ interface Props {
     gameId: number;
     gameTypeId?: number;
     currentWeek: SelectedOption;
+    loading: boolean;
     setCurrentWeek: React.Dispatch<React.SetStateAction<SelectedOption>>;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setLeaderboard: React.Dispatch<React.SetStateAction<Array<any>>>;
 }
 export default function SeasonPicker({
     gameId,
     gameTypeId,
     currentWeek,
+    loading,
     setCurrentWeek,
+    setLoading,
+    setLeaderboard,
 }: Props) {
     const [currentSeason, setSeason] = React.useState<SelectedSeason>();
     const [allWeeks, setAllWeeks] = React.useState<Array<OptionFormat>>([]);
@@ -28,6 +35,7 @@ export default function SeasonPicker({
         setAllWeeks([]);
         setCurrentWeek(undefined);
         setSeason(undefined);
+        setLoading(true);
 
         // Fetch Season
         const { data } = await Axios.get("/api/Season", {
@@ -41,10 +49,15 @@ export default function SeasonPicker({
             setAllWeeks([]);
             setCurrentWeek(undefined);
             setSeason(undefined);
+            setLoading(false);
             return;
         }
         const currentSeason = data[0];
         setSeason(currentSeason);
+
+        const leaderboard = await fetchLeaderboard(currentSeason.id);
+        setLeaderboard(leaderboard);
+
         const { weeks } = currentSeason;
         if (weeks.length > 0) {
             weeks.sort(sortByDate);
@@ -62,6 +75,7 @@ export default function SeasonPicker({
             setAllWeeks([]);
             setCurrentWeek(undefined);
         }
+        setLoading(false);
     }
 
     const handleChange = (option: OptionFormat) => setCurrentWeek(option);
@@ -69,6 +83,9 @@ export default function SeasonPicker({
     const placeholder = allWeeks.length === 0 ? "No Season" : "Select Week";
     const current = (currentWeek as unknown) as Week;
     const showDate = current && current.start && current.end;
+
+    if (loading) return <hr />;
+
     return (
         <React.Fragment>
             <div className={"season-picker"}>

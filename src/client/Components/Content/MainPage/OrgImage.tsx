@@ -1,7 +1,7 @@
 import React from "react";
-import Card from "@material-ui/core/Card";
 import { connectContext, connectRouter } from "../../Context";
 import * as Util from "../../../utils/file";
+import { Icon } from "ebrap-ui";
 
 interface Props {
     org: Organization;
@@ -19,9 +19,10 @@ export default function OrgImage({ org }: Props) {
     };
 
     return (
-        <Card className={"org"} onClick={editTeam}>
+        <div className={"card org"} onClick={editTeam}>
             <img className={"img"} src={`${Util.Bucket}${org.image}`} />
             <div className={"name"}>{org.name}</div>
-        </Card>
+            <Icon className={"org-arrow"} iconName={"ChevronRight"} />
+        </div>
     );
 }

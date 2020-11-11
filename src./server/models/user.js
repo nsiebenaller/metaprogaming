@@ -9,12 +9,21 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            User.belongsToMany(models.Player, {
+                as: "players",
+                through: "UserPlayers",
+                foreignKey: "UserId",
+                otherKey: "PlayerId",
+                sourceKey: "id",
+            });
         }
     }
     User.init(
         {
             username: DataTypes.STRING,
             password: DataTypes.STRING,
+            email: DataTypes.STRING,
+            admin: DataTypes.BOOLEAN,
         },
         {
             sequelize,

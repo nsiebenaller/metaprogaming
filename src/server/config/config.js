@@ -1,3 +1,4 @@
+require("dotenv").config();
 module.exports = {
     production: {
         username: "postgres",
@@ -8,9 +9,9 @@ module.exports = {
     },
     development: {
         username: "postgres",
-        password: "postgres",
+        password: process.env.RDS_PWD || "postgres",
         database: "meta",
-        host: "127.0.0.1",
+        host: process.env.RDS_HOST || "127.0.0.1",
         dialect: "postgres",
     },
 };

@@ -1,6 +1,7 @@
+require("dotenv").config();
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+//const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
@@ -28,7 +29,7 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: [
                     {
-                        loader: "awesome-typescript-loader",
+                        loader: "ts-loader",
                     },
                 ],
                 exclude: /node_modules/,
@@ -93,11 +94,10 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin([outputDirectory]),
         new webpack.HotModuleReplacementPlugin(),
-        // new HtmlWebpackPlugin({
-        //     template: "./public/index.html",
-        //     favicon: "./public/favicon.ico",
-        //     title: "Meta Pro Gaming",
-        // }),
+        new webpack.DefinePlugin({
+            THEME: JSON.stringify(process.env.THEME),
+            BUCKET: JSON.stringify(process.env.BUCKET),
+        }),
         new MiniCssExtractPlugin({
             filename: "./css/[name].css",
             chunkFilename: "./css/[id].css",

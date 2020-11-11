@@ -1,9 +1,5 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import ArrowBack from "@material-ui/icons/ArrowBackIos";
-import ArrowForward from "@material-ui/icons/ArrowForwardIos";
-import Home from "@material-ui/icons/Home";
+import { Button } from "ebrap-ui";
 import Avatar from "@material-ui/icons/AccountCircle";
 import { connectContext, connectRouter } from "../../Context";
 import Axios from "axios";
@@ -18,19 +14,6 @@ export default function TopBar(props: Props) {
         context.setContext({ selectedGame: undefined });
         router.history.push("/login");
     };
-    const createMatch = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/Match/new");
-    };
-    const editWeeks = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/Weeks/edit");
-    };
-    const manageGames = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/Admin/Game/");
-    };
-
     const goBack = () => {
         context.setContext({ selectedGame: undefined });
         if (router.location.pathname === "/") return;
@@ -44,10 +27,14 @@ export default function TopBar(props: Props) {
         context.setContext({ selectedGame: undefined });
         router.history.push("/");
     };
+    const goAdmin = () => {
+        context.setContext({ selectedGame: undefined });
+        router.history.push("/Admin");
+    };
 
     const logout = async () => {
         await Axios.get("/api/logout");
-        context.setContext({ user: null });
+        context.setContext({ user: undefined });
         router.history.push("/");
     };
 
@@ -55,29 +42,24 @@ export default function TopBar(props: Props) {
         <div className={"top-bar"}>
             <Navigation goBack={goBack} goForward={goForward} goHome={goHome} />
             <div className={"right-side"}>
-                {context.user && (
-                    <Button onClick={manageGames}>Manage Games</Button>
-                )}
-                {context.user && (
-                    <Button onClick={editWeeks}>Edit Seasons</Button>
-                )}
-                {context.user && (
-                    <Button onClick={createMatch}>Create Match</Button>
-                )}
-                {context.user && (
-                    <div className="user-container">
-                        <Avatar />
-                        <span>{context.user}</span>
-                    </div>
-                )}
-                {context.user && <Button onClick={logout}>Logout</Button>}
+                <div className={"action-btns"}>
+                    {context.user?.admin && (
+                        <button onClick={goAdmin}>Admin</button>
+                    )}
+                    {context.user && (
+                        <div className="user-container">
+                            <Avatar />
+                            <span>{context.user.username}</span>
+                        </div>
+                    )}
+                    {context.user && <button onClick={logout}>Logout</button>}
+                </div>
 
                 {!context.user && (
                     <React.Fragment>
-                        <Button variant={"outlined"} onClick={login}>
+                        <Button color={"grey-800"} onClick={login}>
                             Login
                         </Button>
-                        <Button>Register</Button>
                     </React.Fragment>
                 )}
             </div>

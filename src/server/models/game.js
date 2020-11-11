@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "PlayerId",
                 sourceKey: "id",
             });
-            Game.belongsTo(models.Conference);
             Game.hasMany(models.GameType, {
                 foreignKey: "GameId",
                 as: "gameTypes",
@@ -32,7 +31,6 @@ module.exports = (sequelize, DataTypes) => {
             name: DataTypes.STRING,
             image: DataTypes.STRING,
             banner: DataTypes.STRING,
-            ConferenceId: DataTypes.INTEGER,
         },
         {
             sequelize,

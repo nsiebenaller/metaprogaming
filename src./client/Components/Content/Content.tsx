@@ -1,16 +1,13 @@
 import React from "react";
 import { Route, RouteComponentProps } from "react-router-dom";
-import TopBar from "./TopBar/TopBar";
+
+import Admin from "./Admin/Admin";
 import LoginPage from "./LoginPage/LoginPage";
-import GamePage from "./GamePage/GamePage";
 import MainPage from "./MainPage/MainPage";
-import NewMatchPage from "./NewMatchPage/NewMatchPage";
-import EditMatchPage from "./EditMatchPage/EditMatchPage";
-import EditWeeksPage from "./EditWeeksPage/EditWeeksPage";
-import CreateSeasonPage from "./CreateSeasonPage/CreateSeasonPage";
 import OrgPages from "./OrgPages";
 import MainGamePage from "./MainGamePage/MainGamePage";
-import AdminGamePage from "./AdminGamePage/AdminGamePage";
+import TopBar from "./TopBar/TopBar";
+import { connectContext } from "../Context";
 
 export default function Content() {
     return (
@@ -24,47 +21,10 @@ export default function Content() {
                     component={renderMainGamePage}
                 />
                 <Route path={"/login"} exact component={LoginPage} />
-                <Route
-                    path={"/Admin/Game/:gameId?"}
-                    exact
-                    component={renderAdminGamePage}
-                />
+
                 <Route path={"/Organization"} component={OrgPages} />
-                <Route
-                    path={"/Match/edit/:matchId"}
-                    exact
-                    component={renderEditMatchPage}
-                />
-                <Route path={"/Match/new"} exact component={NewMatchPage} />
-                <Route path={"/Weeks/edit"} exact component={EditWeeksPage} />
-                <Route
-                    path={"/Season/new"}
-                    exact
-                    component={CreateSeasonPage}
-                />
-                {/* 
-                <Route
-                    path={"/game/:gameId"}
-                    exact
-                    component={({ match }: any) => <GamePage match={match} />}
-                />
-                <Route path={"/login"}>
-                    <LoginPage />
-                </Route>
-                <Route path={"/Match/new"} exact>
-                    <NewMatchPage />
-                </Route>
-                <Route
-                    path={"/Match/edit/:matchId"}
-                    exact
-                    component={({ match }: any) => (
-                        <EditMatchPage match={match} />
-                    )}
-                />
-                <Route path={"/Organization"}>
-                    <OrgPages />
-                </Route>
-                 */}
+                <Route path={"/Page/:pageId"} exact component={renderPage} />
+                <Route path={"/Admin"} component={Admin} />
             </div>
         </div>
     );
@@ -73,6 +33,7 @@ export default function Content() {
 interface MatchProps {
     gameId?: string;
     matchId?: string;
+    pageId?: string;
 }
 function renderMainGamePage(props: RouteComponentProps<MatchProps>) {
     const {
@@ -83,22 +44,22 @@ function renderMainGamePage(props: RouteComponentProps<MatchProps>) {
     if (!gameId) return null;
     return <MainGamePage gameId={parseInt(gameId)} />;
 }
-function renderAdminGamePage(props: RouteComponentProps<MatchProps>) {
+
+function renderPage(props: RouteComponentProps<MatchProps>) {
     const {
         match: {
-            params: { gameId },
+            params: { pageId },
         },
     } = props;
-    if (!gameId) return <AdminGamePage gameId={undefined} />;
-    return <AdminGamePage gameId={gameId} />;
-}
-function renderEditMatchPage(props: RouteComponentProps<MatchProps>) {
-    const {
-        match,
-        match: {
-            params: { matchId },
-        },
-    } = props;
-    if (!matchId) return null;
-    return <EditMatchPage match={match} />;
+    if (!pageId) return null;
+    const context = connectContext();
+    const { pages } = context;
+    const p = pages.find((x) => x.id === parseInt(pageId));
+    if (!p) return null;
+
+    React.useEffect(() => {
+        context.setContext({ selectedPage: p });
+    }, []);
+
+    return <div dangerouslySetInnerHTML={{ __html: p.content }} />;
 }

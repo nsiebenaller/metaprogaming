@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+
+            // Only ever one org association
             Player.belongsToMany(models.Organization, {
                 as: "organizations",
                 through: "OrganizationPlayers",

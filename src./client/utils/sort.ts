@@ -1,22 +1,7 @@
-export function sortConferences(conferences: Array<Conference>) {
-    if (!conferences) return;
-    conferences.forEach((conference) => {
-        sortConference(conference);
-    });
-}
+type HasName = Organization | Team | Game | GameType;
+type HasId = Organization | Team | Game | GameType | User;
 
-export function sortConference(conference: Conference) {
-    if (!conference || !conference.subconferences) return;
-    conference.subconferences.sort(ByName);
-    conference.subconferences.map((s) => ({
-        ...s,
-        divisions:
-            (s.divisions && s.divisions.sort(ById)) || new Array<Division>(),
-    }));
-}
-
-type Sortable = Conference | SubConference | Division | Organization | Team;
-export function ByName(a: Sortable, b: Sortable): number {
+export function ByName(a: HasName, b: HasName): number {
     if (a.name < b.name) {
         return -1;
     }
@@ -26,7 +11,7 @@ export function ByName(a: Sortable, b: Sortable): number {
     return 0;
 }
 
-export function ById(a: Sortable, b: Sortable): number {
+export function ById(a: HasId, b: HasId): number {
     if (a.id < b.id) {
         return -1;
     }

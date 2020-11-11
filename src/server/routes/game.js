@@ -1,24 +1,24 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
-const { uploadFile } = require("../index");
+const { uploadFile } = require("../managers/fileManager");
+
+const GameType = {
+    model: db.GameType,
+    as: "gameTypes",
+};
 
 module.exports = (router) => {
     router
         .route("/Game")
         .get(async (req, res) => {
             const games = await db.Game.findAll({
-                include: [
-                    {
-                        model: db.GameType,
-                        as: "gameTypes",
-                    },
-                ],
+                include: [GameType],
             });
             res.json(games);
         })
         .post(tokenChecker, async (req, res) => {
             const { name } = req.body;
-            const { banner, image } = req.files;
+            const { image, banner } = req.files;
 
             // Upload files to S3
             const requests = [];
@@ -26,7 +26,7 @@ module.exports = (router) => {
             if (image) requests.push(uploadFile(image));
             await Promise.all(requests);
 
-            const game = { ConferenceId: 1 };
+            const game = {};
             if (name) game.name = name;
             if (banner) game.banner = banner.name;
             if (image) game.image = image.name;
@@ -42,7 +42,7 @@ module.exports = (router) => {
         })
         .patch(tokenChecker, async (req, res) => {
             const { id, name } = req.body;
-            const { banner, image } = req.files;
+            const { image, banner } = req.files;
 
             if (!id) {
                 return res.json({ success: false });
@@ -54,13 +54,25 @@ module.exports = (router) => {
             if (image) requests.push(uploadFile(image));
             await Promise.all(requests);
 
-            const game = { ConferenceId: 1 };
+            const game = {};
             if (name) game.name = name;
             if (banner) game.banner = banner.name;
             if (image) game.image = image.name;
 
             await db.Game.update(game, { where: { id } });
 
+            res.json({ success: true });
+        })
+        .delete(tokenChecker, async (req, res) => {
+            const { id } = req.query;
+            if (!id) {
+                return res.json({
+                    success: false,
+                    message: ["id is a required field"],
+                });
+            }
+
+            await db.Game.destroy({ where: { id } });
             res.json({ success: true });
         });
 

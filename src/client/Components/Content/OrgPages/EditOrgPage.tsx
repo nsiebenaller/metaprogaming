@@ -3,8 +3,12 @@ import axios from "axios";
 import { TextField, Button, Multiselect } from "ebrap-ui";
 import EditPlayerItem from "./EditPlayerItem";
 import EditTeamItem from "./EditTeamItem";
-import { connectContext } from "../../Context";
-import { fetchOrganizations, updateOrganization } from "../../../Api";
+import { connectContext, connectRouter } from "../../Context";
+import {
+    deleteOrganization,
+    fetchOrganizations,
+    updateOrganization,
+} from "../../../Api";
 import * as Util from "../../../utils/file";
 
 const initNewPlayer = {
@@ -25,6 +29,7 @@ interface Props {
 }
 export default function EditOrgPage({ match }: Props) {
     const context = connectContext()!;
+    const router = connectRouter()!;
     const orgId = parseInt(match.params.orgId);
 
     const imageRef = React.useRef<HTMLImageElement | null>(null);
@@ -61,7 +66,7 @@ export default function EditOrgPage({ match }: Props) {
         ];
         const [{ data: roles }, { data: orgs }] = await Promise.all(requests);
         if (orgs.length === 0) {
-            return window.alert("error fetching organization");
+            return; //window.alert("error fetching organization");
         }
         setOrg(orgs[0] as Organization);
         setRoles(roles);
@@ -75,6 +80,21 @@ export default function EditOrgPage({ match }: Props) {
         const data = await updateOrganization(org.id, org.name, file);
         if (data.success) {
             return window.alert("success!");
+        }
+    };
+    const deleteOrg = async () => {
+        if (
+            window.confirm(
+                "Are you sure you would like to permanently delete this organization?"
+            )
+        ) {
+            const data = await deleteOrganization(org.id);
+            if (!data.success) {
+                return window.alert("Error deleting organization");
+            }
+            const organizations = await fetchOrganizations();
+            context.setContext({ organizations });
+            router.history.push("/");
         }
     };
 
@@ -169,6 +189,9 @@ export default function EditOrgPage({ match }: Props) {
                 <Button onClick={save} color="blue-500" topPad>
                     Save
                 </Button>
+                <Button onClick={deleteOrg} color="red-500" topPad>
+                    Delete
+                </Button>
             </div>
             <hr />
             <h4>Roster</h4>
@@ -231,12 +254,7 @@ export default function EditOrgPage({ match }: Props) {
                     options={allRoles}
                     onChange={setPlayerParam("roles")}
                 />
-                <Button
-                    onClick={createPlayer}
-                    variant="outlined"
-                    color="blue-500"
-                    topPad
-                >
+                <Button onClick={createPlayer} color="blue-500" topPad>
                     Create
                 </Button>
             </div>
@@ -255,12 +273,7 @@ export default function EditOrgPage({ match }: Props) {
                     value={newTeam}
                     onChange={handleNewTeam}
                 />
-                <Button
-                    onClick={createTeam}
-                    variant="outlined"
-                    color="blue-500"
-                    topPad
-                >
+                <Button onClick={createTeam} color="blue-500" topPad>
                     Create
                 </Button>
             </div>

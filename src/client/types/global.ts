@@ -1,5 +1,16 @@
 export {};
 declare global {
+    interface User {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        username: string;
+        password: string | null;
+        email: string | null;
+        players: Array<Player>;
+        admin?: boolean;
+    }
+
     interface Season {
         id: number;
         createdAt: string;
@@ -69,6 +80,8 @@ declare global {
         GameId: number;
         type: string;
         GameTypeId: number;
+        awayCheckedIn: boolean | null;
+        homeCheckedIn: boolean | null;
     }
 
     interface Player {
@@ -113,5 +126,27 @@ declare global {
         createdAt: string;
         updatedAt: string;
         name: string;
+    }
+
+    interface Page {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+        content: string;
+        hidden?: boolean;
+    }
+
+    interface Image {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        src: string;
+        type: string;
+    }
+
+    interface ApiResponse {
+        success: boolean;
+        messages: Array<string>;
     }
 }

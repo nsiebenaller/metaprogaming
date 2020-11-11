@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import { Button } from "ebrap-ui";
 import { connectContext, connectRouter } from "../../Context";
+import { checkUser } from "../../../Api";
 
 interface Props {}
 export default function LoginPage(props: Props) {
@@ -21,37 +21,30 @@ export default function LoginPage(props: Props) {
         e.preventDefault();
         const { data } = await axios.post("/api/login", { username, password });
         if (!data.success) return setError(true);
-        context.setContext({ user: username, selectedGame: undefined });
-        router.history.push("/");
+        const check = await checkUser();
+        if (check.verified) {
+            context.setContext({ user: check.user, selectedGame: undefined });
+            router.history.push("/");
+        }
     };
 
     return (
         <div>
             <h1>Login</h1>
             <form className="login-main" onSubmit={login}>
-                <TextField
-                    variant="outlined"
-                    label="Username"
-                    value={username}
+                <input
+                    type={"text"}
+                    placeholder={"Username"}
                     onChange={handleUsername}
-                    error={error}
+                    value={username}
                 />
-                <TextField
-                    variant="outlined"
-                    label="Password"
-                    type="password"
-                    value={password}
+                <input
+                    type={"password"}
+                    placeholder={"Password"}
                     onChange={handlePassword}
-                    error={error}
+                    value={password}
                 />
-                <Button
-                    variant="contained"
-                    disableElevation
-                    onClick={login}
-                    type="submit"
-                >
-                    Login
-                </Button>
+                <Button onClick={login}>Login</Button>
             </form>
             {error && <div>Invalid Credentials</div>}
         </div>

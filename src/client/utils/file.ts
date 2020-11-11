@@ -1,3 +1,7 @@
+import config from "../config";
+
+export const Bucket = config.bucket;
+
 export function extractFile(
     event: React.FormEvent<HTMLInputElement>
 ): File | undefined {
@@ -34,4 +38,18 @@ export function setImage(
     reader.readAsDataURL(file);
 }
 
-export const Bucket = "https://metaprogaming.s3.amazonaws.com/";
+export function removeImage(
+    ref: React.MutableRefObject<HTMLImageElement | null>
+) {
+    const { current } = ref;
+    if (!current) return;
+    current.setAttribute("src", "");
+}
+
+export function findOne(images: Array<Image>, type: string): Image | undefined {
+    return images.find((x) => x.type === type);
+}
+
+export function findAll(images: Array<Image>, type: string): Array<Image> {
+    return images.filter((x) => x.type === type);
+}

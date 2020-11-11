@@ -1,0 +1,144 @@
+@import "../std/index.less";
+
+@import "./components/Admin/Admin.less";
+
+@import "./components/sidePanel.less";
+@import "./components/mainPage.less";
+@import "./components/orgPage.less";
+
+@import "./components/adminGamePage.less";
+
+@import "./components/calendar.less";
+@import "./components/gamePage.less";
+@import "./components/leaderboard.less";
+@import "./components/topBar.less";
+@import "./components/loginPage.less";
+@import "./components/weekItem.less";
+
+// index.tsx
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+
+    #root {
+        width: 100%;
+        height: 100%;
+        .app {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            color: white;
+        }
+    }
+}
+
+// Content.tsx
+.content {
+    flex: 1;
+    box-shadow: @shadow-5;
+    overflow: auto;
+    background: @grey-900;
+    display: flex;
+    flex-direction: column;
+    .content-main {
+        padding: 25px 50px;
+        height: 100%;
+    }
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    &.--right-pad-10 {
+        > * {
+            margin-right: 10px;
+        }
+    }
+    &.--bot-pad-10 {
+        > * {
+            margin-bottom: 10px;
+        }
+    }
+    &.--vert-center {
+        align-items: center;
+    }
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.children--bot-pad-10 {
+    > * {
+        margin-bottom: 10px;
+    }
+}
+.children--right-pad-10 {
+    > * {
+        margin-right: 10px;
+    }
+}
+
+.pos-rel {
+    position: relative;
+}
+
+.vert-center {
+    align-items: center;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+@media screen {
+    @media (max-width: 1300px) {
+        .img-carousel {
+            justify-content: flex-start !important;
+            flex-wrap: wrap !important;
+        }
+    }
+    @media (max-width: 1000px) {
+        .division-row {
+            flex-direction: column !important;
+        }
+    }
+    @media (max-width: 900px) {
+        .division-row {
+            align-items: center !important;
+        }
+        .img-carousel {
+            justify-content: center !important;
+        }
+    }
+}
+
+.season-item {
+    position: relative;
+    box-shadow: @shadow-2;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: @grey-800;
+}
+
+.outline-btn {
+    border: 1px solid @meta-green;
+    background: transparent;
+    border-radius: 5px;
+    color: @meta-green;
+    padding: 5px 10px;
+    transition: @transition;
+    &:hover {
+        cursor: pointer;
+        background: #33691e;
+    }
+}

@@ -5,8 +5,6 @@ const Convert = {
     toOrganization: (option: OptionFormat): Organization =>
         (option as unknown) as Organization,
     toTeam: (option: OptionFormat): Team => (option as unknown) as Team,
-    toDivision: (option: OptionFormat): Division =>
-        (option as unknown) as Division,
     toGame: (option: OptionFormat): Game => (option as unknown) as Game,
     toGameType: (option: OptionFormat): GameType =>
         (option as unknown) as GameType,

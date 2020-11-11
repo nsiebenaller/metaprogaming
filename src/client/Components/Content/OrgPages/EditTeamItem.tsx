@@ -38,10 +38,10 @@ export default function EditTeamItem({ team, refreshOrg }: Props) {
                 value={currentTeam.name}
                 onChange={handleTeamName}
             />
-            <Button topPad onClick={save} variant="outlined" color="blue-500">
+            <Button topPad onClick={save} color="blue-500">
                 Save
             </Button>
-            <Button topPad onClick={remove} variant="outlined" color="red-500">
+            <Button topPad onClick={remove} color="red-500">
                 Remove
             </Button>
         </div>

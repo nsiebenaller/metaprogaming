@@ -102,10 +102,10 @@ export default function EditPlayerItem({
                 options={allRoles}
                 onChange={setPlayerParam("roles")}
             />
-            <Button topPad onClick={save} variant="outlined" color="blue-500">
+            <Button topPad onClick={save} color="blue-500">
                 Save
             </Button>
-            <Button topPad onClick={remove} variant="outlined" color="red-500">
+            <Button topPad onClick={remove} color="red-500">
                 Remove
             </Button>
         </div>

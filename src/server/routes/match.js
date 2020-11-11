@@ -50,8 +50,8 @@ module.exports = (router) => {
             res.json({ success: true, id: result.id });
         })
         .patch(tokenChecker, async (req, res) => {
-            const { id, ...matchProps } = req.body;
-            await db.Match.update(matchProps, { where: { id } });
+            const { id, ...props } = req.body;
+            await db.Match.update(props, { where: { id } });
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {

@@ -28,7 +28,7 @@ export default function OrgPage({ match }: Props) {
 
     if (!org) {
         return (
-            <div className="org-page">
+            <div>
                 <h1>Organization</h1>
                 <div>Loading...</div>
             </div>
@@ -45,25 +45,36 @@ export default function OrgPage({ match }: Props) {
     allTeams.sort(ByName);
 
     return (
-        <div className="org-page">
+        <div>
             <h1>Organization</h1>
             <img className={"org-img"} src={`${Util.Bucket}${org.image}`} />
-            <div className="title">{org.name}</div>
+            <h3>{org.name}</h3>
             <hr />
             <h4>Roster</h4>
-            {coaches.map((player: Player, key: number) => (
-                <PlayerItem key={key} player={player} />
-            ))}
-            {captains.map((player: Player, key: number) => (
-                <PlayerItem key={key} player={player} />
-            ))}
-            {players.map((player: Player, key: number) => (
-                <PlayerItem key={key} player={player} />
-            ))}
+            <div className={"flex-col children--bot-pad-10"}>
+                {coaches.map((player: Player, key: number) => (
+                    <PlayerItem key={key} player={player} />
+                ))}
+                {captains.map((player: Player, key: number) => (
+                    <PlayerItem key={key} player={player} />
+                ))}
+                {players.map((player: Player, key: number) => (
+                    <PlayerItem key={key} player={player} />
+                ))}
+            </div>
             <h4>Teams</h4>
-            {allTeams.map((team: Team, key: number) => (
-                <div key={key}>{team.name}</div>
-            ))}
+            <div className={"flex-col children--bot-pad-10"}>
+                {allTeams.map((team: Team, key: number) => (
+                    <div
+                        className={
+                            "card background--grey-800 hover-background--grey-700"
+                        }
+                        key={key}
+                    >
+                        {team.name}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

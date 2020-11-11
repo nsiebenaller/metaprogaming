@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { connectContext } from "../../Context";
-import { getMatches, updateMatch, deleteMatch } from "../../../Api";
+import {
+    getMatches,
+    updateMatch,
+    deleteMatch,
+    fetchLeaderboard,
+} from "../../../Api";
 import Banner from "./Banner";
 import GameTypeMenu from "./GameTypeMenu";
 import SeasonPicker from "./SeasonPicker";
 import MatchList from "./MatchList";
+import Leaderboard from "./Leaderboard";
 import { OptionFormat } from "ebrap-ui";
+import Axios from "axios";
 
 type SelectedOption = OptionFormat | undefined;
 interface Props {
@@ -18,9 +25,12 @@ export default function MainGamePage({ gameId }: Props) {
     const [gameType, setGameType] = useState<GameType | undefined>();
     const [matches, setMatches] = useState<Array<Match>>([]);
     const [currentWeek, setCurrentWeek] = useState<SelectedOption>();
+    const [leaderboard, setLeaderboard] = useState<Array<any>>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // Set selected game if not set
     React.useEffect(() => {
+        setLoading(true);
         if (!selectedGame) {
             const game = games.find((x) => x.id === gameId);
             if (game) {
@@ -33,6 +43,7 @@ export default function MainGamePage({ gameId }: Props) {
         const loadMatches = async () => {
             const data = await getMatches();
             setMatches(data);
+            setLoading(false);
         };
         loadMatches();
     }, []);
@@ -56,6 +67,22 @@ export default function MainGamePage({ gameId }: Props) {
         const m = matches.filter((x) => x.id !== match.id);
         setMatches(m);
         await deleteMatch(match.id);
+    };
+
+    const refreshLeaderboard = async () => {
+        const { data } = await Axios.get("/api/Season", {
+            params: {
+                GameId: selectedGame.id,
+                GameTypeId: gameType ? gameType.id : null,
+                active: true,
+            },
+        });
+        if (!data || data.length === 0) {
+            return;
+        }
+        const currentSeason = data[0];
+        const leaderboard = await fetchLeaderboard(currentSeason.id);
+        setLeaderboard(leaderboard);
     };
 
     const gameMatches = filterMatches(
@@ -83,13 +110,23 @@ export default function MainGamePage({ gameId }: Props) {
                 currentWeek={currentWeek}
                 gameId={selectedGame.id}
                 gameTypeId={gameType?.id}
+                loading={loading}
+                setLoading={setLoading}
+                setLeaderboard={setLeaderboard}
             />
-            <MatchList
-                matches={gameMatches}
-                isAdmin={isAdmin}
-                changeMatch={handleChange}
-                deleteMatch={handleDelete}
-            />
+            <div className={"flex-row"}>
+                <MatchList
+                    matches={gameMatches}
+                    isAdmin={isAdmin}
+                    loading={loading}
+                    changeMatch={handleChange}
+                    deleteMatch={handleDelete}
+                />
+                <Leaderboard
+                    leaderboard={leaderboard}
+                    refreshLeaderboard={refreshLeaderboard}
+                />
+            </div>
         </div>
     );
 }

@@ -3,13 +3,13 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { MatchProps, ContextType, ContextReducerType } from "./ContextTypes";
 
 const initContext: ContextType = {
-    user: null,
-    conferences: new Array<Conference>(),
+    user: undefined,
     organizations: new Array<Organization>(),
     games: new Array<Game>(),
+    pages: new Array<Page>(),
+    images: new Array<Image>(),
+    selectedPage: undefined,
     selectedGame: undefined,
-    selectedDivision: undefined,
-    selectedSubConference: undefined,
     setContext: () => {},
 };
 const Context = React.createContext<ContextType>(initContext);
