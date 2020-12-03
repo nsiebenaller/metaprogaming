@@ -4,6 +4,7 @@ export * from "./page";
 export * from "./org";
 export * from "./game";
 export * from "./image";
+export * from "./role";
 export * from "./user";
 
 export async function fetchLeaderboard(SeasonId: number): Promise<any> {

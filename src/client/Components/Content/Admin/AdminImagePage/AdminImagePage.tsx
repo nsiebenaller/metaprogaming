@@ -1,5 +1,5 @@
 import React from "react";
-import { connectContext } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 import * as FileUtil from "../../../../utils/file";
 import { Button, command } from "ebrap-ui";
 import { fetchImages, createImage, deleteImage } from "../../../../Api";

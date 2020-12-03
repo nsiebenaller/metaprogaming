@@ -2,7 +2,7 @@ import { Button, TextField } from "ebrap-ui";
 import React from "react";
 import { createOrganization, fetchOrganizations } from "../../../../Api";
 import * as Util from "../../../../utils/file";
-import { connectContext } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 
 const initOrg: Organization = {
     id: -1,

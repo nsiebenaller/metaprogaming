@@ -1,23 +1,36 @@
 import React from "react";
 import { command } from "ebrap-ui";
-import { connectRouter } from "../../../Context";
+import { connectContext, connectRouter } from "../../../../Store/Store";
 import MatchTeam from "./MatchTeam";
+import * as Sec from "../../../../utils/security";
 
 interface MatchRowProps {
     match: Match;
-    isAdmin: boolean;
+    loggedIn: boolean;
     changeMatch: (match: Match) => void;
     deleteMatch: (match: Match) => void;
 }
 export default function MatchRow({
     match,
-    isAdmin,
+    loggedIn,
     changeMatch,
     deleteMatch,
 }: MatchRowProps) {
+    const { user } = connectContext();
     const router = connectRouter()!;
     const date = getDate(match.date);
-    const checkInAllowed = canCheckIn(match.date);
+
+    const [awayTeamRep, setAwayTeamRep] = React.useState<boolean>(false);
+    const [homeTeamRep, setHomeTeamRep] = React.useState<boolean>(false);
+    React.useEffect(() => {
+        const gameId = match?.GameId || -1;
+        const awayOrgId = match?.awayOrg?.id || -1;
+        const homeOrgId = match?.homeOrg?.id || -1;
+        setAwayTeamRep(isRep(awayOrgId, gameId, user));
+        setHomeTeamRep(isRep(homeOrgId, gameId, user));
+    }, [user]);
+    const awayTeamCheckIn = canCheckIn(match.date) && awayTeamRep;
+    const homeTeamCheckIn = canCheckIn(match.date) && homeTeamRep;
 
     const awayOrgName = match?.awayOrg?.name || "No Team";
     const awayTeamName = match?.awayTeam?.name;
@@ -46,7 +59,7 @@ export default function MatchRow({
     };
 
     const handleEdit = () => {
-        router.history.push(`/Admin/Match/edit/${match.id}`);
+        router.navigate(`/Admin/Match/edit/${match.id}`);
     };
     const handleDelete = async () => {
         const confirm = await command.confirm(
@@ -59,27 +72,34 @@ export default function MatchRow({
     const navAway = () => {
         const id = match?.awayOrg?.id;
         if (!id) return;
-        if (isAdmin) {
-            router.history.push(`/Organization/edit/${id}`);
+        const isDirector = Sec.isOrgDirector(id, user);
+        const isCoach = Sec.isOrgCoach(id, user);
+        const isAdmin = Sec.isAdmin(user);
+
+        if (isDirector || isCoach || isAdmin) {
+            router.navigate(`/Organization/edit/${id}`);
         } else {
-            router.history.push(`/Organization/${id}`);
+            router.navigate(`/Organization/${id}`);
         }
     };
     const navHome = () => {
         const id = match?.homeOrg?.id;
         if (!id) return;
-        if (isAdmin) {
-            router.history.push(`/Organization/edit/${id}`);
+        const isDirector = Sec.isOrgDirector(id, user);
+        const isCoach = Sec.isOrgCoach(id, user);
+        const isAdmin = Sec.isAdmin(user);
+        if (isDirector || isCoach || isAdmin) {
+            router.navigate(`/Organization/edit/${id}`);
         } else {
-            router.history.push(`/Organization/${id}`);
+            router.navigate(`/Organization/${id}`);
         }
     };
     const toggleAway = () => {
-        if (!isAdmin) return;
+        if (!loggedIn) return;
         changeMatch({ ...match, awayCheckedIn: !awayCheckedIn });
     };
     const toggleHome = () => {
-        if (!isAdmin) return;
+        if (!loggedIn) return;
         changeMatch({ ...match, homeCheckedIn: !homeCheckedIn });
     };
 
@@ -90,7 +110,7 @@ export default function MatchRow({
                 <div className={"match-row"}>
                     <MatchTeam
                         className={"left"}
-                        isAdmin={isAdmin}
+                        isAdmin={awayTeamRep}
                         nav={navAway}
                         orgName={awayOrgName}
                         teamName={awayTeamName}
@@ -100,12 +120,12 @@ export default function MatchRow({
                         decrement={decrementAway}
                         checkedIn={awayCheckedIn}
                         toggleCheckIn={toggleAway}
-                        canCheckIn={checkInAllowed}
+                        canCheckIn={awayTeamCheckIn}
                     />
                     <div className={"vs"}>- vs -</div>
                     <MatchTeam
                         className={"right"}
-                        isAdmin={isAdmin}
+                        isAdmin={homeTeamRep}
                         nav={navHome}
                         orgName={homeOrgName}
                         teamName={homeTeamName}
@@ -115,12 +135,12 @@ export default function MatchRow({
                         decrement={decrementHome}
                         checkedIn={homeCheckedIn}
                         toggleCheckIn={toggleHome}
-                        canCheckIn={checkInAllowed}
+                        canCheckIn={homeTeamCheckIn}
                     />
                 </div>
                 <div className="notes-section">{match.notes}</div>
             </div>
-            {isAdmin && (
+            {Sec.isAdmin(user) && (
                 <div className={"button-container"}>
                     <button className={"outline-btn"} onClick={handleEdit}>
                         Edit
@@ -156,4 +176,23 @@ function canCheckIn(date: Date | undefined): boolean {
     const before = matchTime - MIN_30;
     const after = matchTime + MIN_30;
     return before < now && now < after;
+}
+
+function isRep(orgId: number, gameId: number, user?: User) {
+    if (!user) {
+        return false;
+    }
+    if (Sec.isAdmin(user)) {
+        return true;
+    }
+    if (Sec.isOrgDirector(orgId, user)) {
+        return true;
+    }
+    if (Sec.isOrgGameCoach(orgId, gameId, user)) {
+        return true;
+    }
+    if (Sec.isOrgCaptain(orgId, user)) {
+        return true;
+    }
+    return false;
 }

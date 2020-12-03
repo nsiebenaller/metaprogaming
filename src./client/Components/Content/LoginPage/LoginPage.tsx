@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Button } from "ebrap-ui";
-import { connectContext, connectRouter } from "../../Context";
+import { connectContext, connectRouter } from "../../../Store/Store";
 import { checkUser } from "../../../Api";
 
 interface Props {}
@@ -24,7 +24,7 @@ export default function LoginPage(props: Props) {
         const check = await checkUser();
         if (check.verified) {
             context.setContext({ user: check.user, selectedGame: undefined });
-            router.history.push("/");
+            router.navigate("/");
         }
     };
 

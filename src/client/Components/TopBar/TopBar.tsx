@@ -1,41 +1,56 @@
 import React from "react";
 import { Button } from "ebrap-ui";
-import Avatar from "@material-ui/icons/AccountCircle";
-import { connectContext, connectRouter } from "../../Context";
+import { connectContext } from "@Store";
 import Axios from "axios";
 import Navigation from "./Navigation/Navigation";
 
-interface Props {}
-export default function TopBar(props: Props) {
-    const context = connectContext()!;
-    const router = connectRouter()!;
+export default function TopBar() {
+    const context = connectContext();
 
     const login = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/login");
+        context.navigate("/login");
+        context.setContext({
+            selectedGame: undefined,
+            selectedPage: undefined,
+        });
     };
     const goBack = () => {
-        context.setContext({ selectedGame: undefined });
-        if (router.location.pathname === "/") return;
-        router.history.goBack();
+        if (context?.router?.location.pathname === "/") return;
+        context.goBack();
     };
     const goForward = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.goForward();
+        context.goForward();
     };
     const goHome = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/");
+        context.navigate("/");
+        context.setContext({
+            selectedGame: undefined,
+            selectedPage: undefined,
+        });
     };
     const goAdmin = () => {
-        context.setContext({ selectedGame: undefined });
-        router.history.push("/Admin");
+        context.navigate("/Admin");
+        context.setContext({
+            selectedGame: undefined,
+            selectedPage: undefined,
+        });
+    };
+    const goMyProfile = () => {
+        context.navigate("/MyProfile");
+        context.setContext({
+            selectedGame: undefined,
+            selectedPage: undefined,
+        });
     };
 
     const logout = async () => {
+        context.navigate("/");
+        context.setContext({
+            user: undefined,
+            selectedGame: undefined,
+            selectedPage: undefined,
+        });
         await Axios.get("/api/logout");
-        context.setContext({ user: undefined });
-        router.history.push("/");
     };
 
     return (
@@ -47,8 +62,10 @@ export default function TopBar(props: Props) {
                         <button onClick={goAdmin}>Admin</button>
                     )}
                     {context.user && (
+                        <button onClick={goMyProfile}>My Profile</button>
+                    )}
+                    {context.user && (
                         <div className="user-container">
-                            <Avatar />
                             <span>{context.user.username}</span>
                         </div>
                     )}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "ebrap-ui";
-import { connectContext, connectRouter } from "../../../Context";
+import { connectContext, connectRouter } from "../../../../Store/Store";
 import GameSelector from "../../../Selectors/GameSelector";
 import { getSeasons, setActiveSeason, deleteSeason } from "../../../../Api";
 import SeasonItem from "./SeasonItem";
@@ -15,7 +15,7 @@ export default function EditWeeksPage() {
     const [selectedGameType, setGameType] = React.useState<SelectedGameType>();
     const [seasons, setSeasons] = React.useState<Array<Season>>([]);
 
-    const createSeason = () => router.history.push(`/Admin/Season/new`);
+    const createSeason = () => router.navigate(`/Admin/Season/new`);
 
     const selectGame = async (game: SelectedGame) => {
         setGame(game);

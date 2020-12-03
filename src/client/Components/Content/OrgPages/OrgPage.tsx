@@ -1,30 +1,35 @@
 import React from "react";
-import Axios from "axios";
 import { command } from "ebrap-ui";
-import PlayerItem from "./PlayerItem";
 import { ByName } from "../../../utils/sort";
-import * as Util from "../../../utils/file";
+import OrgHeader from "./OrgHeader";
+import { connectContext } from "../../../Store/Store";
+import PlayerList from "./PlayerList";
+import { fetchOrganization } from "../../../Api";
 
 interface Props {
     match: any;
 }
+let mounted = true;
 export default function OrgPage({ match }: Props) {
+    const context = connectContext();
     const orgId = parseInt(match.params.orgId);
 
     const [org, setOrg] = React.useState<Organization | undefined>(undefined);
 
-    React.useEffect(() => {
-        onMount();
-    }, []);
-    async function onMount() {
-        const { data: orgs } = await Axios.get("/api/Organization", {
-            params: { id: orgId },
-        });
-        if (orgs.length === 0) {
+    const loadOrganization = async () => {
+        const organization = await fetchOrganization(orgId);
+        if (!organization) {
             return await command.alert("error fetching organization");
         }
-        setOrg(orgs[0] as Organization);
-    }
+        if (mounted) setOrg(organization);
+    };
+    React.useEffect(() => {
+        mounted = true;
+        loadOrganization();
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     if (!org) {
         return (
@@ -35,33 +40,19 @@ export default function OrgPage({ match }: Props) {
         );
     }
 
-    let allPlayers = new Array<Player>();
-    if (org.players) allPlayers = org.players;
-
-    const [coaches, captains, players] = sortPlayers(allPlayers);
-
     let allTeams = new Array<Team>();
     if (org.teams) allTeams = org.teams;
     allTeams.sort(ByName);
 
     return (
         <div>
-            <h1>Organization</h1>
-            <img className={"org-img"} src={`${Util.Bucket}${org.image}`} />
-            <h3>{org.name}</h3>
+            <OrgHeader organization={org} user={context.user} />
             <hr />
-            <h4>Roster</h4>
-            <div className={"flex-col children--bot-pad-10"}>
-                {coaches.map((player: Player, key: number) => (
-                    <PlayerItem key={key} player={player} />
-                ))}
-                {captains.map((player: Player, key: number) => (
-                    <PlayerItem key={key} player={player} />
-                ))}
-                {players.map((player: Player, key: number) => (
-                    <PlayerItem key={key} player={player} />
-                ))}
-            </div>
+            <PlayerList
+                user={context.user}
+                organization={org}
+                loadOrganization={loadOrganization}
+            />
             <h4>Teams</h4>
             <div className={"flex-col children--bot-pad-10"}>
                 {allTeams.map((team: Team, key: number) => (
@@ -77,27 +68,4 @@ export default function OrgPage({ match }: Props) {
             </div>
         </div>
     );
-}
-
-function sortPlayers(
-    allPlayers: Array<Player>
-): [Array<Player>, Array<Player>, Array<Player>] {
-    const coaches = new Array<Player>();
-    const captains = new Array<Player>();
-    const players = new Array<Player>();
-
-    allPlayers.forEach((player: Player) => {
-        const { roles } = player;
-        if (!roles) {
-            players.push(player);
-        } else if (roles.some((r) => r.name === "Coach")) {
-            coaches.push(player);
-        } else if (roles.some((r) => r.name === "Captain")) {
-            captains.push(player);
-        } else if (roles.some((r) => r.name === "Player")) {
-            players.push(player);
-        }
-    });
-
-    return [coaches, captains, players];
 }

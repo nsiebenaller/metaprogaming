@@ -26,7 +26,11 @@ export default function MatchTeam(props: Props) {
         />
     );
     const teamImage = (
-        <TeamImage image={props.image} checkedIn={props.checkedIn} />
+        <TeamImage
+            image={props.image}
+            checkedIn={props.checkedIn}
+            side={props.className}
+        />
     );
 
     const firstItem = props.className === "left" ? teamImage : scoreDial;

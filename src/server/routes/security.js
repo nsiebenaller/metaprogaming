@@ -5,12 +5,38 @@ const { tokenChecker } = require("../tokenChecker");
 
 const secret = process.env.SECRET || "secret"; // set secret for jwt
 
+const PlayerAndJoins = {
+    model: db.Player,
+    as: "players",
+    through: { attributes: [] },
+    include: [
+        {
+            model: db.Game,
+            as: "games",
+            through: { attributes: [] },
+        },
+        {
+            model: db.Role,
+            as: "roles",
+            through: { attributes: [] },
+        },
+        {
+            model: db.Organization,
+            as: "organizations",
+            through: { attributes: [] },
+        },
+    ],
+};
+
 module.exports = (router) => {
     router.route("/login").post(async (req, res) => {
         const { username, password } = req.body;
         if (!username || !password) return res.send({ success: false });
 
-        const user = await db.User.findOne({ where: { username } });
+        const user = await db.User.findOne({
+            where: { username },
+            include: [PlayerAndJoins],
+        });
         if (!user) return res.send({ success: false });
         const success = await compare(password, user.password);
         if (!success) return res.send({ success: false });
@@ -25,18 +51,36 @@ module.exports = (router) => {
         res.send({ success: true });
     });
     router.route("/check").get(async (req, res) => {
-        res.send({ ...verifyToken(req) });
+        const token = verifyToken(req);
+        if (!token.verified || !token.user) {
+            return res.json({ ...token });
+        }
+        const { id } = token.user;
+        const user = await db.User.findOne({
+            where: { id },
+            include: [PlayerAndJoins],
+        });
+        if (!user) {
+            return res.json({ verified: false });
+        }
+        res.send({
+            ...token,
+            user: {
+                ...user.dataValues,
+                password: "",
+            },
+        });
     });
 };
 
 function getToken(user) {
-    return jwt.sign(
-        {
-            user,
+    const payload = {
+        user: {
+            ...user.dataValues,
+            password: "",
         },
-        secret,
-        { expiresIn: "1d" }
-    );
+    };
+    return jwt.sign(payload, secret, { expiresIn: "1d" });
 }
 
 function revokeToken() {

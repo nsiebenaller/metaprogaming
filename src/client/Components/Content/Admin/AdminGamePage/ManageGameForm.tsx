@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField, Button, command } from "ebrap-ui";
 import { saveGame, fetchGames, deleteGame } from "../../../../Api";
-import { connectContext, connectRouter } from "../../../Context";
+import { connectContext, connectRouter } from "../../../../Store/Store";
 import ImageInput from "./ImageInput";
 import GameTypes from "./GameTypes";
 import * as Util from "../../../../utils/file";
@@ -58,7 +58,7 @@ export default function ManageGameForm({ game }: Props) {
                 return window.alert("Error deleting game");
             }
             refreshGame();
-            router.history.push("/Admin/Game");
+            router.navigate("/Admin/Game");
         }
     };
     const refreshGame = async () => {
@@ -74,7 +74,7 @@ export default function ManageGameForm({ game }: Props) {
                     ref={bannerRef}
                     className={"banner-img"}
                     style={{
-                        backgroundImage: `url(${bucket}${game.banner})`,
+                        backgroundImage: `url(${game.banner})`,
                     }}
                 />
             </div>

@@ -1,7 +1,5 @@
 import React from "react";
-import ArrowBack from "@material-ui/icons/ArrowBackIos";
-import ArrowForward from "@material-ui/icons/ArrowForwardIos";
-import Home from "@material-ui/icons/Home";
+import { Icon } from "ebrap-ui";
 
 interface Props {
     goBack: () => void;
@@ -18,7 +16,11 @@ export default function Navigation({ goBack, goForward, goHome }: Props) {
                     }
                     onClick={goBack}
                 >
-                    <ArrowBack className={"fill--grey-100"} fontSize="small" />
+                    <Icon
+                        iconName={"NavigateBefore"}
+                        color={"white"}
+                        cursorPointer
+                    />
                 </button>
                 <button
                     className={
@@ -26,9 +28,10 @@ export default function Navigation({ goBack, goForward, goHome }: Props) {
                     }
                     onClick={goForward}
                 >
-                    <ArrowForward
-                        className={"fill--grey-100"}
-                        fontSize="small"
+                    <Icon
+                        iconName={"NavigateNext"}
+                        color={"white"}
+                        cursorPointer
                     />
                 </button>
             </div>
@@ -39,7 +42,12 @@ export default function Navigation({ goBack, goForward, goHome }: Props) {
                     }
                     onClick={goHome}
                 >
-                    <Home className={"fill--grey-100"} fontSize="small" />
+                    <Icon
+                        iconName={"Home"}
+                        color={"white"}
+                        className={"width-18"}
+                        cursorPointer
+                    />
                 </button>
             </div>
         </div>

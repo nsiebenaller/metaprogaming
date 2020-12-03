@@ -12,7 +12,7 @@ export default function Banner({ banner, gameName, gameTypeName }: Props) {
             <div
                 className={"banner-img"}
                 style={{
-                    backgroundImage: `url(${Util.Bucket}${banner})`,
+                    backgroundImage: `url(${banner})`,
                 }}
             />
             <div className={"banner-title-container"}>

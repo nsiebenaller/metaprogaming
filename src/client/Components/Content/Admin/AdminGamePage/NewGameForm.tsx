@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField, Button } from "ebrap-ui";
 import { createGame, fetchGames } from "../../../../Api";
-import { connectContext, connectRouter } from "../../../Context";
+import { connectContext, connectRouter } from "../../../../Store/Store";
 import * as Util from "../../../../utils/file";
 import ImageInput from "./ImageInput";
 
@@ -47,7 +47,7 @@ export default function NewGameForm({}: Props) {
         await createGame(state.name, state.banner, state.image);
         const games = await fetchGames();
         context.setContext({ games });
-        router.history.push("/Admin/Game");
+        router.navigate("/Admin/Game");
     };
 
     return (

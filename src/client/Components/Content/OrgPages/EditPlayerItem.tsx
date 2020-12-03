@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { TextField, Button, Multiselect } from "ebrap-ui";
-import { connectContext } from "../../Context";
+import { connectContext } from "../../../Store/Store";
 
 interface Props {
     player: Player;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Dropdown, Datepicker, TextArea, command, Button } from "ebrap-ui";
-import { connectContext } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 import GameSelector from "../../../Selectors/GameSelector";
 import OrgTeamSelector from "../../../Selectors/OrgTeamSelector";
 import { getMatch, updateMatch } from "../../../../Api";
@@ -107,7 +107,7 @@ export default function EditMatchPage({ match }: Props) {
             GameId: selectedGame.id,
             GameTypeId: selectedVariant?.id || null,
         };
-        const { data: response } = await updateMatch(request);
+        const response = await updateMatch(request);
         if (!response.success) {
             return await command.alert("Error creating game");
         }

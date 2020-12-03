@@ -15,11 +15,16 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": false
+        "noEmit": false,
+        "baseUrl": "src",
+        "paths": {
+            "@Store": ["client/Store/Store.tsx"]
+        }
     },
     "include": [
         "./src/client/types/index.d.ts",
         "./src/client/**/*.ts",
-        "./src/client/**/*.tsx"
-    ]
+        "./src/client/**/*.tsx",
+    ],
+    "exclude": ["node_modules", ".vscode"]
 }

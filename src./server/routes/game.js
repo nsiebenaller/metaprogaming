@@ -1,6 +1,6 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
-const { uploadFile } = require("../managers/fileManager");
+const { uploadFile, removeFile, getExt } = require("../managers/fileManager");
 
 const GameType = {
     model: db.GameType,
@@ -20,25 +20,54 @@ module.exports = (router) => {
             const { name } = req.body;
             const { image, banner } = req.files;
 
-            // Upload files to S3
-            const requests = [];
-            if (banner) requests.push(uploadFile(banner));
-            if (image) requests.push(uploadFile(image));
-            await Promise.all(requests);
-
-            const game = {};
-            if (name) game.name = name;
-            if (banner) game.banner = banner.name;
-            if (image) game.image = image.name;
+            let game = {};
             try {
-                console.log(game.id);
-                await db.Game.create(game);
+                game = await db.Game.create({ name });
             } catch (e) {
-                console.log(e);
-                return res.json({ success: false });
+                console.error(e);
+                return res.json({ success: false, messages: [] });
             }
 
-            res.json({ success: true });
+            // Upload files to S3
+            let bannerResp = null;
+            if (banner) {
+                const ext = getExt(banner.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to retrieve extension from banner"],
+                    });
+                }
+                banner.name = `game/banner-${game.id}.${ext}`;
+                bannerResp = await uploadFile(banner);
+            }
+            let imageResp = null;
+            if (image) {
+                const ext = getExt(image.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to retrieve extension from image"],
+                    });
+                }
+                imageResp = await uploadFile(image);
+            }
+
+            let bannerKey = "";
+            if (bannerResp && bannerResp.success) {
+                bannerKey = bannerResp.key;
+            }
+
+            let imageKey = "";
+            if (imageResp && imageResp.success) {
+                imageKey = imageResp.key;
+            }
+            await db.Game.update(
+                { banner: bannerKey, image: imageKey },
+                { where: { id: game.id } }
+            );
+
+            res.json({ success: true, messages: [] });
         })
         .patch(tokenChecker, async (req, res) => {
             const { id, name } = req.body;
@@ -48,18 +77,67 @@ module.exports = (router) => {
                 return res.json({ success: false });
             }
 
+            let game = {};
+            try {
+                game = await db.Game.findOne({ where: { id } });
+            } catch (e) {
+                console.error(e);
+                return res.json({ success: false, messages: [] });
+            }
+
             // Upload files to S3
-            const requests = [];
-            if (banner) requests.push(uploadFile(banner));
-            if (image) requests.push(uploadFile(image));
-            await Promise.all(requests);
+            let bannerResp = null;
+            if (banner) {
+                if (game.banner) {
+                    await removeFile(game.banner);
+                }
+                const ext = getExt(banner.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to retrieve extension from banner"],
+                    });
+                }
+                banner.name = `game/banner-${game.id}.${ext}`;
+                bannerResp = await uploadFile(banner);
+            }
+            let imageResp = null;
+            if (image) {
+                if (game.image) {
+                    await removeFile(game.image);
+                }
+                const ext = getExt(image.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to retrieve extension from image"],
+                    });
+                }
+                image.name = `game/img-${game.id}.${ext}`;
+                imageResp = await uploadFile(image);
+            }
 
-            const game = {};
-            if (name) game.name = name;
-            if (banner) game.banner = banner.name;
-            if (image) game.image = image.name;
+            let bannerKey = "";
+            if (bannerResp && bannerResp.success) {
+                bannerKey = bannerResp.key;
+                await db.Game.update(
+                    { banner: bannerKey },
+                    { where: { id: game.id } }
+                );
+            }
 
-            await db.Game.update(game, { where: { id } });
+            let imageKey = "";
+            if (imageResp && imageResp.success) {
+                imageKey = imageResp.key;
+                await db.Game.update(
+                    { image: imageKey },
+                    { where: { id: game.id } }
+                );
+            }
+
+            if (name) {
+                await db.Game.update({ name }, { where: { id: game.id } });
+            }
 
             res.json({ success: true });
         })
@@ -86,7 +164,7 @@ module.exports = (router) => {
             const { id, ...props } = req.body;
             if (!id) return res.json({ success: false });
             await db.GameType.update(props, { where: { id } });
-            res.json({ success: false });
+            res.json({ success: true });
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;

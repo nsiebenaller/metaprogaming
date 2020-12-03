@@ -1,6 +1,6 @@
 import React from "react";
 import { TextField, Datepicker, Button } from "ebrap-ui";
-import { connectContext, connectRouter } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 import GameSelector from "../../../Selectors/GameSelector";
 import { createSeason } from "../../../../Api";
 

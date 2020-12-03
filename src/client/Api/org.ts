@@ -5,6 +5,16 @@ export async function fetchOrganizations(): Promise<Array<Organization>> {
     return organizations as Array<Organization>;
 }
 
+export async function fetchOrganization(
+    id: number
+): Promise<Organization | null> {
+    const { data: organizations } = await Axios.get("/api/Organization", {
+        params: { id },
+    });
+    if (organizations.length === 0) return null;
+    return organizations[0];
+}
+
 export async function updateOrganization(
     id: number,
     name: string,

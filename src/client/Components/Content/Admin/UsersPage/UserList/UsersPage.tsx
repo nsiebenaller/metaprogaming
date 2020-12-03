@@ -1,7 +1,7 @@
 import { Button } from "ebrap-ui";
 import React from "react";
-import { fetchUsers } from "../../../../Api";
-import { ById } from "../../../../utils/sort";
+import { fetchUsers } from "../../../../../Api";
+import { ById } from "../../../../../utils/sort";
 import UsersList from "./UsersList";
 
 interface Props {

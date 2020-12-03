@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { connectContext } from "../../Context";
+import { connectContext } from "../../../Store/Store";
 import {
     getMatches,
     updateMatch,
@@ -46,7 +46,7 @@ export default function MainGamePage({ gameId }: Props) {
             setLoading(false);
         };
         loadMatches();
-    }, []);
+    }, [gameId, games, selectedGame]);
     React.useEffect(() => {
         if (selectedGame) {
             if (selectedGame.gameTypes.length > 0) {
@@ -91,7 +91,7 @@ export default function MainGamePage({ gameId }: Props) {
         gameType?.id,
         currentWeek
     );
-    const isAdmin = !!user;
+    const loggedIn = !!user;
 
     return (
         <div>
@@ -117,7 +117,7 @@ export default function MainGamePage({ gameId }: Props) {
             <div className={"flex-row"}>
                 <MatchList
                     matches={gameMatches}
-                    isAdmin={isAdmin}
+                    loggedIn={loggedIn}
                     loading={loading}
                     changeMatch={handleChange}
                     deleteMatch={handleDelete}

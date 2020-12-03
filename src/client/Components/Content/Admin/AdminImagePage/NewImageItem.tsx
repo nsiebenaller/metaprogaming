@@ -2,7 +2,7 @@ import React from "react";
 import { Button, command } from "ebrap-ui";
 import * as FileUtil from "../../../../utils/file";
 import { createImage, fetchImages } from "../../../../Api";
-import { connectContext } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 
 interface Props {
     type: string;

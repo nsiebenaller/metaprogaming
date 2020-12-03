@@ -1,6 +1,7 @@
 @import "./variables.less";
 @import "./background.less";
 @import "./card.less";
+@import "./children.less";
 @import "./color.less";
 @import "./depth.less";
 
@@ -29,8 +30,15 @@
     }
 }
 
+.position-relative {
+    position: relative;
+}
+
 .align-items-center {
     align-items: center;
+}
+.justify-content-center {
+    justify-content: center;
 }
 
 .children--text-align-left {
@@ -40,4 +48,42 @@
 }
 .text-align-left {
     text-align: left;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+.col {
+    display: flex;
+    flex-direction: column;
+}
+
+.width-18 {
+    width: 18px;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.stream-container {
+    iframe {
+        width: 100%;
+    }
+}
+
+.page-bracket-team {
+    background: @blue-grey-700;
+    border: 1px solid @grey-200;
+    padding: 5px 10px;
+    width: 150px;
+    margin-right: 10px;
+}
+
+.spacer {
+    width: 100%;
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
 }

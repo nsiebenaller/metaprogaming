@@ -1,28 +1,16 @@
+import "./types/global";
 import React from "react";
 import ReactDOM from "react-dom";
 import config from "./config.js";
-
-if (config.theme === "necc") {
-    console.log("Load necc theme");
-    import("./Less/necc_theme/index.less");
-} if(config.theme === "army") {
-    console.log("Load army theme");
-    import("./Less/army_theme/index.less");
-}else {
-    console.log("Load meta theme");
-    import("./Less/meta_theme/index.less");
-}
-
-import "./types/global";
-import { BrowserRouter } from "react-router-dom";
-import ContextWrapper from "./Components/Context";
+import styleLoader from "./styleLoader";
 import App from "./Components/app";
+import Store from "./Store/Store";
+
+styleLoader.load(config.theme);
 
 ReactDOM.render(
-    <BrowserRouter>
-        <ContextWrapper>
-            <App />
-        </ContextWrapper>
-    </BrowserRouter>,
+    <Store>
+        <App />
+    </Store>,
     document.getElementById("root")
 );

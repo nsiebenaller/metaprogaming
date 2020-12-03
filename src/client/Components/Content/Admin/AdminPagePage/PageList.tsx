@@ -8,7 +8,7 @@ interface Props {
 export default function PageList({ pages, navCreatePage, navEditPage }: Props) {
     const handleClick = (id: number) => () => navEditPage(id);
     return (
-        <div className={"flex-row"}>
+        <div className={"flex-row wrap"}>
             {pages.map((p, idx) => (
                 <div
                     key={idx}

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
     page: Page;
@@ -8,11 +9,12 @@ interface Props {
 export default function PageItem({ page, selected, selectPage }: Props) {
     const handleClick = () => selectPage(page);
     return (
-        <div
+        <Link
             className={`menu-item ${selected ? "active" : ""}`}
             onClick={handleClick}
+            to={`/Page/${page.id}`}
         >
             <span>{page.name}</span>
-        </div>
+        </Link>
     );
 }

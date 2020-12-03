@@ -87,11 +87,12 @@ module.exports = (router) => {
         let seasonEnd = null;
         season.weeks.forEach((week) => {
             const weekStart = new Date(week.start).getTime();
+            const weekEnd = new Date(week.end).getTime();
             if (seasonStart === null || seasonStart > weekStart) {
                 seasonStart = weekStart;
             }
-            if (seasonEnd === null || seasonEnd < weekStart) {
-                seasonEnd = weekStart;
+            if (seasonEnd === null || seasonEnd < weekEnd) {
+                seasonEnd = weekEnd;
             }
         });
         if (!seasonStart) {
@@ -105,7 +106,17 @@ module.exports = (router) => {
         let leaderboard = {};
         const allMatches = await db.Match.findAll({
             where: {
-                date: { [Op.between]: [seasonStart, seasonEnd] },
+                [Op.or]: [
+                    {
+                        date: { [Op.between]: [seasonStart, seasonEnd] },
+                    },
+                    {
+                        date: seasonStart,
+                    },
+                    {
+                        date: seasonEnd,
+                    },
+                ],
                 GameTypeId: season.GameTypeId,
                 GameId: season.GameId,
             },

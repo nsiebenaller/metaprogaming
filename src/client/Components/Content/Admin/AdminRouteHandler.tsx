@@ -5,7 +5,7 @@ interface Props {
 }
 export default function AdminRouteHandler({ redirect }: Props) {
     return (
-        <div className={"flex-row --right-pad-10"}>
+        <div className={"flex-row --right-pad-10 wrap"}>
             <AdminCard
                 title={"Games"}
                 path={"/Admin/Game"}

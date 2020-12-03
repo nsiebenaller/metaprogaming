@@ -1,22 +1,18 @@
 import { Button, command, TextArea, TextField, Checkbox } from "ebrap-ui";
 import React from "react";
 import {
-    createPage,
+    addPageComponent,
     deletePage,
+    deletePageComponent,
     fetchPages,
     updatePage,
+    updatePageComponent,
 } from "../../../../Api";
-import { connectContext, connectRouter } from "../../../Context";
+import { connectContext, connectRouter } from "../../../../Store/Store";
+import BracketManager from "./BracketManager";
+import NewPageForm from "./NewPageForm";
 import PageList from "./PageList";
 
-const initNewPage: Page = {
-    id: -1,
-    name: "",
-    content: "",
-    createdAt: "",
-    updatedAt: "",
-    hidden: true,
-};
 interface Props {
     pageId?: number;
     isNewPage?: boolean;
@@ -25,31 +21,38 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
     const context = connectContext();
     const router = connectRouter()!;
     const [page, setPage] = React.useState<Page | undefined>();
-    const [newPage, setNewPage] = React.useState<Page>(initNewPage);
 
     React.useEffect(() => {
         if (!pageId) return;
         const p = context.pages.find((x) => x.id === pageId);
         if (p) setPage(p);
     }, [pageId]);
-
     const navCreatePage = () => {
-        router.history.push("/Admin/Page/new");
+        router.navigate("/Admin/Page/new");
     };
     const navEditPage = (id: number) => {
-        router.history.push(`/Admin/Page/${id}`);
-    };
-    const handleCreatePage = async () => {
-        await createPage(newPage.name, newPage.content, !!newPage.hidden);
-        const data = await fetchPages();
-        context.setContext({ pages: data });
-        router.history.push(`/Admin/Page`);
+        router.navigate(`/Admin/Page/${id}`);
     };
     const handleSavePage = async () => {
         if (!page) return;
         await updatePage(page);
-        const data = await fetchPages();
-        context.setContext({ pages: data });
+
+        const components = page.components || [];
+        if (components.length > 0) {
+            const promises = new Array<Promise<any>>();
+            components.forEach((c) => {
+                if (c.id === -1) {
+                    promises.push(addPageComponent({ ...c, PageId: page.id }));
+                } else {
+                    promises.push(updatePageComponent(c));
+                }
+            });
+            await Promise.all(promises);
+        }
+        const pages = await fetchPages();
+        const p = pages.find((x) => x.id === pageId);
+        setPage(p);
+        context.setContext({ pages: pages });
         await command.alert("Saved!");
     };
     const handleDeletePage = async () => {
@@ -57,44 +60,46 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
         await deletePage(page.id);
         const data = await fetchPages();
         context.setContext({ pages: data });
-        router.history.push(`/Admin/Page`);
+        router.navigate(`/Admin/Page`);
+    };
+    const handleAddComponent = () => {
+        if (!page) return;
+        const newComponent: PageComponent = {
+            id: -1,
+            createdAt: "",
+            updatedAt: "",
+            PageId: -1,
+            content: "",
+            type: "TWITCH_STREAM",
+        };
+        const components = page?.components || [];
+        components.push(newComponent);
+        setPage({ ...page, components });
+    };
+    const handleRemoveComponent = async (index: number) => {
+        if (!page) return;
+        const components = page.components || [];
+        const component = components.find((_, idx) => idx === index);
+        if (!component) return;
+        setPage({
+            ...page,
+            components: components.filter((_, idx) => idx !== index),
+        });
+        await deletePageComponent(component.id);
+    };
+    const handleChangeComponent = (index: number, value: string) => {
+        if (!page) return;
+        const components = page?.components || [];
+        setPage({
+            ...page,
+            components: components.map((c, idx) =>
+                idx === index ? { ...c, content: value } : c
+            ),
+        });
     };
 
     if (isNewPage) {
-        return (
-            <div>
-                <h2>New Page</h2>
-                <div className={"flex-row align-items-center"}>
-                    <TextField
-                        label={"Name"}
-                        value={newPage.name}
-                        onChange={(name: string) =>
-                            setNewPage({ ...newPage, name })
-                        }
-                    />
-                    <Checkbox
-                        value={!!newPage.hidden}
-                        label={"Hidden"}
-                        color={"blue"}
-                        onChange={() =>
-                            setNewPage({ ...newPage, hidden: !newPage.hidden })
-                        }
-                    />
-                </div>
-                <br />
-                <div className={"page-content-input"}>
-                    <TextArea
-                        label={"Content"}
-                        value={newPage.content}
-                        onChange={(content: string) =>
-                            setNewPage({ ...newPage, content })
-                        }
-                        noResize
-                    />
-                </div>
-                <Button onClick={handleCreatePage}>Create</Button>
-            </div>
-        );
+        return <NewPageForm />;
     }
 
     if (!pageId) {
@@ -138,6 +143,48 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                     noResize
                 />
             </div>
+            <div>
+                {page.components &&
+                    page.components.map((component, idx) => {
+                        if (component.type === "TWITCH_STREAM") {
+                            return (
+                                <div key={idx}>
+                                    <TextField
+                                        placeholder={"Enter Twitch Channel"}
+                                        value={component.content}
+                                        onChange={(value) =>
+                                            handleChangeComponent(idx, value)
+                                        }
+                                    />
+                                    <Button
+                                        onClick={() =>
+                                            handleRemoveComponent(idx)
+                                        }
+                                    >
+                                        Remove
+                                    </Button>
+                                    <br />
+                                </div>
+                            );
+                        } else if (component.type === "BRACKET") {
+                            return (
+                                <BracketManager
+                                    key={idx}
+                                    index={idx}
+                                    component={component}
+                                    changeComponent={handleChangeComponent}
+                                    removeComponent={handleRemoveComponent}
+                                />
+                            );
+                        }
+                        return null;
+                    })}
+            </div>
+            <br />
+            <Button onClick={handleAddComponent} botPad>
+                Add Twitch Stream
+            </Button>
+            <br />
             <div className={"flex-row --right-pad-10"}>
                 <Button onClick={handleSavePage}>Save</Button>
                 <Button onClick={handleDeletePage}>delete</Button>

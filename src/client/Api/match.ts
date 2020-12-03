@@ -10,6 +10,14 @@ export async function getMatches(): Promise<Array<Match>> {
     return data as Array<Match>;
 }
 
+export async function getMatchesForSeason(
+    seasonId: number
+): Promise<Array<Match>> {
+    const { data } = await Axios.get("/api/Match", { params: { seasonId } });
+    console.log("seasoned", data);
+    return data as Array<Match>;
+}
+
 export async function getMatch(id: number): Promise<Match | null> {
     const { data } = await Axios.get("/api/Match", {
         params: { id },

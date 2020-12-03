@@ -64,11 +64,13 @@ function LeaderboardItem({ team, number }: any) {
 }
 
 function sortScores(a: any, b: any): number {
-    if (a.win < b.win) return 1;
-    if (a.win > b.win) return -1;
-    if (a.loss < b.loss) return 1;
-    if (a.loss > b.loss) return -1;
-    if (a.tie < b.tie) return 1;
-    if (a.tie > b.tie) return -1;
+    const aPoints = a.win - a.loss;
+    const bPoints = b.win - b.loss;
+    if (aPoints < bPoints) return 1;
+    if (aPoints > bPoints) return -1;
+    const aTotal = a.win + a.loss;
+    const bTotal = b.win + b.loss;
+    if (aTotal < bTotal) return 1;
+    if (aTotal > bTotal) return -1;
     return 0;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { connectRouter } from "../../../Context";
+import { connectRouter } from "../../../../Store/Store";
 import * as Util from "../../../../utils/file";
 
 interface Props {
@@ -13,15 +13,15 @@ export default function GameCard({ game }: Props) {
 
     const handleClick = () => {
         if (game) {
-            router.history.push(`/Admin/Game/${game.id}`);
+            router.navigate(`/Admin/Game/${game.id}`);
         } else {
-            router.history.push(`/Admin/Game/new`);
+            router.navigate(`/Admin/Game/new`);
         }
     };
 
     return (
         <div className={"game-card"} onClick={handleClick}>
-            {src && <img src={`${Util.Bucket}${src}`} alt={label} />}
+            {src && <img src={src} alt={label} />}
             {!src && <div>{label}</div>}
         </div>
     );

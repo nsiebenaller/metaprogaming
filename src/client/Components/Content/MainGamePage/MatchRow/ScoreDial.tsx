@@ -1,6 +1,5 @@
 import React from "react";
-import ArrowUp from "@material-ui/icons/ArrowUpward";
-import ArrowDown from "@material-ui/icons/ArrowDownward";
+import { Icon } from "ebrap-ui";
 
 interface ScoreDialProps {
     isAdmin: boolean;
@@ -19,13 +18,21 @@ export default function ScoreDial({
             <div className={"score-container"}>
                 {isAdmin && (
                     <div className={"dial"} onClick={increment}>
-                        <ArrowUp />
+                        <Icon
+                            iconName={"ArrowDropUp"}
+                            color={"white"}
+                            cursorPointer
+                        />
                     </div>
                 )}
                 <div className={"score"}>{score}</div>
                 {isAdmin && (
                     <div className={"dial"} onClick={decrement}>
-                        <ArrowDown />
+                        <Icon
+                            iconName={"ArrowDropDown"}
+                            color={"white"}
+                            cursorPointer
+                        />
                     </div>
                 )}
             </div>

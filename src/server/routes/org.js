@@ -1,6 +1,6 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
-const { uploadFile } = require("../managers/fileManager");
+const { uploadFile, removeFile, getExt } = require("../managers/fileManager");
 
 module.exports = (router) => {
     router
@@ -70,16 +70,41 @@ module.exports = (router) => {
             const { name } = req.body;
             const { image } = req.files;
 
+            if (!name) {
+                return res.json({
+                    success: false,
+                    messages: ["name is a required field!"],
+                });
+            }
+            const org = await db.Organization.create({ name });
+
             // Upload files to S3
-            const requests = [];
-            if (image) requests.push(uploadFile(image));
-            await Promise.all(requests);
+            if (image) {
+                const ext = getExt(image.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: [
+                            "unable to retrieve extension from image, organization has been created",
+                        ],
+                    });
+                }
 
-            const org = {};
-            if (name) org.name = name;
-            if (image) org.image = image.name;
+                image.name = `organization/img-${org.id}.${ext}`;
+                const resp = await uploadFile(image);
+                if (!resp.success) {
+                    return res.json({
+                        success: false,
+                        messages: [],
+                    });
+                }
+                const img = resp.key;
+                await db.Organization.update(
+                    { image: img },
+                    { where: { id: org.id } }
+                );
+            }
 
-            await db.Organization.create(org);
             res.json({ success: true });
         })
         .patch(tokenChecker, async (req, res) => {
@@ -87,19 +112,47 @@ module.exports = (router) => {
             const { image } = req.files;
 
             if (!id) {
-                return res.json({ success: false });
+                return res.json({ success: false, messages: [] });
             }
 
-            // Upload files to S3
-            const requests = [];
-            if (image) requests.push(uploadFile(image));
-            await Promise.all(requests);
+            const organization = await db.Organization.findOne({
+                where: { id },
+            });
+            if (!organization) {
+                return res.json({
+                    success: false,
+                    messages: ["unable to find organization"],
+                });
+            }
 
-            const org = {};
-            if (name) org.name = name;
-            if (image) org.image = image.name;
+            let img = "";
+            if (image) {
+                const ext = getExt(image.name);
+                if (!ext) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to retrieve extension from image"],
+                    });
+                }
 
-            await db.Organization.update(org, { where: { id } });
+                if (organization.image) {
+                    await removeFile(organization.image);
+                }
+
+                image.name = `organization/img-${organization.id}.${ext}`;
+                const resp = await uploadFile(image);
+                if (!resp.success) {
+                    return res.json({
+                        success: false,
+                        messages: ["unable to update to S3"],
+                    });
+                }
+                img = resp.key;
+            }
+            await db.Organization.update(
+                { name, image: img },
+                { where: { id } }
+            );
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {

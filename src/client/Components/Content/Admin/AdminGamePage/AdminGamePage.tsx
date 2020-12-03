@@ -1,5 +1,5 @@
 import React from "react";
-import { connectContext } from "../../../Context";
+import { connectContext } from "../../../../Store/Store";
 import DisplayGames from "./DisplayGames";
 import ManageGameForm from "./ManageGameForm";
 import NewGameForm from "./NewGameForm";

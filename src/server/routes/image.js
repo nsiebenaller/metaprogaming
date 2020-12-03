@@ -1,7 +1,6 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 const { uploadFile, removeFile, Bucket } = require("../managers/fileManager");
-const site = process.env.THEME || "generic";
 
 module.exports = (router) => {
     router
@@ -23,9 +22,9 @@ module.exports = (router) => {
             }
 
             // Upload to S3
-            src.name = `${site}/images/${src.name}`;
-            const success = await uploadFile(src);
-            if (!success) {
+            src.name = `images/${src.name}`;
+            const resp = await uploadFile(src);
+            if (!resp.success) {
                 return res.json({
                     success: false,
                     messages: ["failed to upload to S3"],
@@ -34,7 +33,7 @@ module.exports = (router) => {
 
             // Create DB Record
             const image = {
-                src: `${Bucket}${src.name}`,
+                src: resp.key,
                 type: type,
             };
             await db.Image.create(image);

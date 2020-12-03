@@ -14,7 +14,7 @@ export default function ImageInput({ imageRef, image, name, onInput }: Props) {
                 <img
                     className={"img"}
                     ref={imageRef}
-                    src={`${Util.Bucket}${image}`}
+                    src={image}
                     alt={"Game Image"}
                 />
                 <div className={"name"}>{name}</div>

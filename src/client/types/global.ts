@@ -93,6 +93,7 @@ declare global {
         updatedAt: string;
         games?: Array<Game>;
         roles?: Array<Role>;
+        organizations?: Array<Organization>;
     }
 
     interface Conference {
@@ -135,6 +136,15 @@ declare global {
         name: string;
         content: string;
         hidden?: boolean;
+        components?: Array<PageComponent>;
+    }
+    interface PageComponent {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        content: string;
+        type: string;
+        PageId: number;
     }
 
     interface Image {
@@ -148,5 +158,9 @@ declare global {
     interface ApiResponse {
         success: boolean;
         messages: Array<string>;
+    }
+    interface CreateResponse {
+        success: boolean;
+        id: number;
     }
 }

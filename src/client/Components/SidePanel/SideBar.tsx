@@ -1,6 +1,6 @@
 import React from "react";
 import { ByName } from "../../utils/sort";
-import { connectContext, connectRouter } from "../Context";
+import { connectContext, connectRouter } from "../../Store/Store";
 import GameItem from "./GameItem";
 import PageItem from "./PageItem";
 import config from "../../config.js";
@@ -8,7 +8,7 @@ import config from "../../config.js";
 const isNECC = config.theme === "necc";
 export default function SideBar() {
     const context = connectContext();
-    const router = connectRouter()!;
+    const router = connectRouter();
     const { games, pages, selectedGame, selectedPage } = context;
     games.sort(ByName);
 
@@ -24,14 +24,12 @@ export default function SideBar() {
     };
     const selectGame = (selectedGame: Game) => {
         context.setContext({ selectedGame, selectedPage: undefined });
-        router.history.push(`/Game/${selectedGame.id}`);
     };
     const selectPage = (selectedPage: Page) => {
         context.setContext({ selectedGame: undefined, selectedPage });
-        router.history.push(`/Page/${selectedPage.id}`);
     };
     const goHome = () => {
-        router.history.push(`/`);
+        router.navigate(`/`);
     };
 
     return (

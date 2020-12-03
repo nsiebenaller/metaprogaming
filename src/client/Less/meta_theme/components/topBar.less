@@ -1,12 +1,14 @@
 // TopBar.tsx
 .top-bar {
-    position: relative;
+    position: sticky;
+    top: 0;
     display: flex;
-    //justify-content: flex-end;
     align-items: center;
     height: 30px;
     padding: 20px 50px;
     box-shadow: @shadow-2;
+    background: @grey-900;
+    z-index: 1;
 
     .navigation {
         flex: 1;
@@ -22,7 +24,6 @@
         align-items: center;
         > * {
             margin-left: 10px !important;
-            background: @grey-800;
             color: white;
         }
         .action-btns {

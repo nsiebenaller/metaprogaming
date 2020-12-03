@@ -4,14 +4,14 @@ import { ByDate } from "../../../utils/sort";
 
 interface Props {
     matches: Array<Match>;
-    isAdmin: boolean;
+    loggedIn: boolean;
     loading: boolean;
     changeMatch: (match: Match) => void;
     deleteMatch: (match: Match) => void;
 }
 export default function MatchList({
     matches,
-    isAdmin,
+    loggedIn,
     loading,
     changeMatch,
     deleteMatch,
@@ -34,7 +34,7 @@ export default function MatchList({
                 <MatchRow
                     key={idx}
                     match={match}
-                    isAdmin={isAdmin}
+                    loggedIn={loggedIn}
                     changeMatch={changeMatch}
                     deleteMatch={deleteMatch}
                 />
