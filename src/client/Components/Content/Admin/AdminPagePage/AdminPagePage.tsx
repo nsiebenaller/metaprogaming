@@ -17,6 +17,26 @@ interface Props {
     pageId?: number;
     isNewPage?: boolean;
 }
+const newTwitchStream: PageComponent = {
+    id: -1,
+    createdAt: "",
+    updatedAt: "",
+    PageId: -1,
+    content: "",
+    type: "TWITCH_STREAM",
+};
+const newBracketConfig = {
+    version: "v1",
+    data: [{ header: "", rows: [] }],
+};
+const newBracket: PageComponent = {
+    id: -1,
+    createdAt: "",
+    updatedAt: "",
+    PageId: -1,
+    content: JSON.stringify(newBracketConfig),
+    type: "BRACKET",
+};
 export default function AdminPagePage({ pageId, isNewPage }: Props) {
     const context = connectContext();
     const router = connectRouter()!;
@@ -62,17 +82,21 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
         context.setContext({ pages: data });
         router.navigate(`/Admin/Page`);
     };
-    const handleAddComponent = () => {
+    const handleAddComponent = (type: string) => {
         if (!page) return;
-        const newComponent: PageComponent = {
-            id: -1,
-            createdAt: "",
-            updatedAt: "",
-            PageId: -1,
-            content: "",
-            type: "TWITCH_STREAM",
-        };
-        const components = page?.components || [];
+
+        let newComponent = null;
+        switch (type) {
+            case "TWITCH_STREAM":
+                newComponent = newTwitchStream;
+                break;
+            case "BRACKET":
+                newComponent = newBracket;
+                break;
+            default:
+                return;
+        }
+        const components = page.components || [];
         components.push(newComponent);
         setPage({ ...page, components });
     };
@@ -170,10 +194,13 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                             return (
                                 <BracketManager
                                     key={idx}
-                                    index={idx}
                                     component={component}
-                                    changeComponent={handleChangeComponent}
-                                    removeComponent={handleRemoveComponent}
+                                    changeComponent={(value: string) =>
+                                        handleChangeComponent(idx, value)
+                                    }
+                                    removeComponent={() =>
+                                        handleRemoveComponent(idx)
+                                    }
                                 />
                             );
                         }
@@ -181,9 +208,17 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                     })}
             </div>
             <br />
-            <Button onClick={handleAddComponent} botPad>
-                Add Twitch Stream
-            </Button>
+            <div className={"row children--margin-right-10"}>
+                <Button
+                    onClick={() => handleAddComponent("TWITCH_STREAM")}
+                    botPad
+                >
+                    Add Twitch Stream
+                </Button>
+                <Button onClick={() => handleAddComponent("BRACKET")} botPad>
+                    Add Bracket
+                </Button>
+            </div>
             <br />
             <div className={"flex-row --right-pad-10"}>
                 <Button onClick={handleSavePage}>Save</Button>

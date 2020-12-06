@@ -21,12 +21,16 @@ const newTwitchStream: PageComponent = {
     content: "",
     type: "TWITCH_STREAM",
 };
+const newBracketConfig = {
+    version: "v1",
+    data: [{ header: "", rows: [] }],
+};
 const newBracket: PageComponent = {
     id: -1,
     createdAt: "",
     updatedAt: "",
     PageId: -1,
-    content: '{"new": true}',
+    content: JSON.stringify(newBracketConfig),
     type: "BRACKET",
 };
 export default function NewPageForm() {
@@ -144,10 +148,13 @@ export default function NewPageForm() {
                             return (
                                 <BracketManager
                                     key={idx}
-                                    index={idx}
                                     component={component}
-                                    changeComponent={handleChangeComponent}
-                                    removeComponent={handleRemoveComponent}
+                                    changeComponent={(value: string) =>
+                                        handleChangeComponent(idx, value)
+                                    }
+                                    removeComponent={() =>
+                                        handleRemoveComponent(idx)
+                                    }
                                 />
                             );
                         }

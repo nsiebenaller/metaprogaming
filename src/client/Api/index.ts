@@ -6,6 +6,7 @@ export * from "./game";
 export * from "./image";
 export * from "./role";
 export * from "./user";
+export * from "./template";
 
 export async function fetchLeaderboard(SeasonId: number): Promise<any> {
     const params = { params: { SeasonId } };

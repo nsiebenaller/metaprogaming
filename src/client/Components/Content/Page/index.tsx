@@ -79,22 +79,95 @@ interface BracketProps {
 }
 function Bracket({ pageComponent }: BracketProps) {
     const bracket = JSON.parse(pageComponent.content);
+    console.log(bracket);
 
     return (
-        <div className={"row"}>
-            {Object.keys(bracket).map((slot: string, slotIndex: number) => (
-                <div
-                    className={"col justify-content-center"}
-                    key={`${slotIndex}`}
-                >
-                    {bracket[slot].map((team: string, teamIndex: number) => (
-                        <React.Fragment key={`${slotIndex}-${teamIndex}`}>
-                            <div className={"page-bracket-team"}>{team}</div>
-                            {teamIndex % 2 === 1 && <hr className={"spacer"} />}
-                        </React.Fragment>
-                    ))}
-                </div>
-            ))}
+        <div className={"col"}>
+            {bracket.version === "v1" && (
+                <>
+                    <div className={"row"}>
+                        {bracket.data.map(
+                            (column: any, columnIndex: number) => (
+                                <div
+                                    key={columnIndex}
+                                    className={"page-bracket-header"}
+                                    dangerouslySetInnerHTML={{
+                                        __html: column.header,
+                                    }}
+                                />
+                            )
+                        )}
+                    </div>
+                    <div className={"row"}>
+                        {bracket.data.map(
+                            (column: any, columnIndex: number) => {
+                                return (
+                                    <div className={"col"} key={columnIndex}>
+                                        {column.rows.map(
+                                            (row: any, rowIndex: number) => {
+                                                if (row.type === "SPACE") {
+                                                    return (
+                                                        <hr
+                                                            key={`${columnIndex}-${rowIndex}`}
+                                                            className={"spacer"}
+                                                        />
+                                                    );
+                                                }
+                                                if (row.type === "TEAM") {
+                                                    return (
+                                                        <div
+                                                            key={`${columnIndex}-${rowIndex}`}
+                                                            className={
+                                                                "page-bracket-team"
+                                                            }
+                                                        >
+                                                            {row.content}
+                                                        </div>
+                                                    );
+                                                }
+                                                if (row.type === "TEXT") {
+                                                    return (
+                                                        <div
+                                                            key={`${columnIndex}-${rowIndex}`}
+                                                            dangerouslySetInnerHTML={{
+                                                                __html:
+                                                                    row.content,
+                                                            }}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            }
+                                        )}
+                                    </div>
+                                );
+                            }
+                        )}
+                    </div>
+                </>
+            )}
+            {bracket.version !== "v1" &&
+                Object.keys(bracket).map((slot: string, slotIndex: number) => (
+                    <div
+                        className={"col justify-content-center"}
+                        key={`${slotIndex}`}
+                    >
+                        {bracket[slot].map(
+                            (team: string, teamIndex: number) => (
+                                <React.Fragment
+                                    key={`${slotIndex}-${teamIndex}`}
+                                >
+                                    <div className={"page-bracket-team"}>
+                                        {team}
+                                    </div>
+                                    {teamIndex % 2 === 1 && (
+                                        <hr className={"spacer"} />
+                                    )}
+                                </React.Fragment>
+                            )
+                        )}
+                    </div>
+                ))}
         </div>
     );
 }

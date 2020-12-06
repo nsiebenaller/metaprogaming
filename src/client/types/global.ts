@@ -11,6 +11,14 @@ declare global {
         admin?: boolean;
     }
 
+    interface Template {
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+        content: string;
+    }
+
     interface Season {
         id: number;
         createdAt: string;
