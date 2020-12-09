@@ -12,6 +12,7 @@ type Dispatch = React.Dispatch<IContextReducerProps>;
 
 const Actions = {
     initialize,
+    loadOrganizations,
     loadRoles,
     loadGames,
     loadPages,
