@@ -3,7 +3,7 @@ import { ByName } from "../../utils/sort";
 import { connectContext, connectRouter } from "../../Store/Store";
 import GameItem from "./GameItem";
 import PageItem from "./PageItem";
-import config from "../../config.js";
+import config from "../../config";
 
 const isNECC = config.theme === "necc";
 export default function SideBar() {
