@@ -191,18 +191,32 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                                 </div>
                             );
                         } else if (component.type === "BRACKET") {
-                            return (
-                                <BracketManager
-                                    key={idx}
-                                    component={component}
-                                    changeComponent={(value: string) =>
-                                        handleChangeComponent(idx, value)
-                                    }
-                                    removeComponent={() =>
-                                        handleRemoveComponent(idx)
-                                    }
-                                />
-                            );
+                            const bracketConfig = JSON.parse(component.content);
+
+                            if (bracketConfig.version === "v1") {
+                                return (
+                                    <BracketManager
+                                        key={idx}
+                                        component={component}
+                                        changeComponent={(value: string) =>
+                                            handleChangeComponent(idx, value)
+                                        }
+                                        removeComponent={() =>
+                                            handleRemoveComponent(idx)
+                                        }
+                                    />
+                                );
+                            } else {
+                                return (
+                                    <OldBracket
+                                        key={idx}
+                                        component={component}
+                                        removeComponent={() =>
+                                            handleRemoveComponent(idx)
+                                        }
+                                    />
+                                );
+                            }
                         }
                         return null;
                     })}
@@ -224,6 +238,31 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                 <Button onClick={handleSavePage}>Save</Button>
                 <Button onClick={handleDeletePage}>delete</Button>
             </div>
+        </div>
+    );
+}
+
+function OldBracket(props: any) {
+    const bracket = JSON.parse(props.component.content);
+    return (
+        <div>
+            {Object.keys(bracket).map((slot: string, slotIndex: number) => (
+                <div
+                    className={"col justify-content-center"}
+                    key={`${slotIndex}`}
+                >
+                    {bracket[slot].map((team: string, teamIndex: number) => (
+                        <React.Fragment key={`${slotIndex}-${teamIndex}`}>
+                            <div className={"page-bracket-team"}>{team}</div>
+                            {teamIndex % 2 === 1 && <hr className={"spacer"} />}
+                        </React.Fragment>
+                    ))}
+                </div>
+            ))}
+            <br />
+            <button className={"sm-btn"} onClick={props.removeComponent}>
+                Delete Bracket
+            </button>
         </div>
     );
 }

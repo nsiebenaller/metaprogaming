@@ -18,6 +18,19 @@ declare global {
         name: string;
         content: string;
     }
+    interface BracketConfig {
+        version: string;
+        data: Array<BracketColumn>;
+    }
+    interface BracketColumn {
+        header: string;
+        rows: Array<BracketElement>;
+    }
+    type BracketElementType = "TEAM" | "SPACE" | "TEXT";
+    interface BracketElement {
+        type: BracketElementType;
+        content: string;
+    }
 
     interface Season {
         id: number;

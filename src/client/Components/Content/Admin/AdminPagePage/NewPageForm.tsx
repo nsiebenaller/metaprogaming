@@ -21,9 +21,9 @@ const newTwitchStream: PageComponent = {
     content: "",
     type: "TWITCH_STREAM",
 };
-const newBracketConfig = {
+const newBracketConfig: BracketConfig = {
     version: "v1",
-    data: [{ header: "", rows: [] }],
+    data: [{ header: "First Round", rows: [] }],
 };
 const newBracket: PageComponent = {
     id: -1,

@@ -1,14 +1,17 @@
 import { createTemplate, fetchTemplates } from "../../../../Api";
 import { Button, command, TextField } from "ebrap-ui";
 import React from "react";
+import BracketElement from "./BracketElement";
 
 interface Props {
     component: PageComponent;
     changeComponent: (value: string) => void;
     removeComponent: () => void;
 }
-function useBracketConfig(component: PageComponent): any {
-    const [content, setContent] = React.useState(JSON.parse(component.content));
+function useBracketConfig(component: PageComponent): BracketConfig {
+    const [content, setContent] = React.useState<BracketConfig>(
+        JSON.parse(component.content)
+    );
     React.useEffect(() => {
         setContent(JSON.parse(component.content));
     }, [component]);
@@ -17,9 +20,8 @@ function useBracketConfig(component: PageComponent): any {
 export default function BracketManager(props: Props) {
     const content = useBracketConfig(props.component);
     const removeComponent = async () => {
-        const confirm = await command.confirm(
-            "Are you sure you'd like to permanently delete this bracket?"
-        );
+        const query = "Are you sure you'd like to delete this bracket?";
+        const confirm = await command.confirm(query);
         if (confirm) props.removeComponent();
     };
     const saveAsTemplate = async () => {
@@ -46,155 +48,155 @@ export default function BracketManager(props: Props) {
 
     return (
         <div className={"box-content margin-bot-10"}>
-            <div className={"row"}>
-                {content.data.map((column: any, columnKey: number) => {
-                    return (
-                        <div className={"col"} key={columnKey}>
-                            <HeaderElement
-                                index={columnKey}
-                                content={content}
-                                changeComponent={props.changeComponent}
-                            />
-                            {column.rows.map((row: any, rowKey: number) => {
-                                if (row.type === "SPACE") {
-                                    return (
-                                        <SpaceElement
-                                            key={`${columnKey}-${rowKey}`}
-                                        />
-                                    );
-                                }
-                                if (row.type === "TEAM") {
-                                    const handleChange = (value: string) => {
-                                        content.data[columnKey].rows[
-                                            rowKey
-                                        ].content = value;
-                                        props.changeComponent(
-                                            JSON.stringify(content)
-                                        );
-                                    };
-                                    return (
-                                        <TeamElement
-                                            key={`${columnKey}-${rowKey}`}
-                                            value={row.content}
-                                            onChange={handleChange}
-                                        />
-                                    );
-                                }
-                                if (row.type === "TEXT") {
-                                    const handleChange = (value: string) => {
-                                        content.data[columnKey].rows[
-                                            rowKey
-                                        ].content = value;
-                                        props.changeComponent(
-                                            JSON.stringify(content)
-                                        );
-                                    };
-                                    return (
-                                        <TextElement
-                                            key={`${columnKey}-${rowKey}`}
-                                            value={row.content}
-                                            onChange={handleChange}
-                                        />
-                                    );
-                                }
-                                return null;
-                            })}
-                            <RowControls
-                                index={columnKey}
-                                content={content}
-                                changeComponent={props.changeComponent}
-                            />
-                        </div>
-                    );
-                })}
-                <ColumnControls
-                    content={content}
-                    changeComponent={props.changeComponent}
-                />
-            </div>
+            <BracketEditor
+                content={content}
+                changeComponent={props.changeComponent}
+            />
             <hr />
-            <button className={"sm-btn"} onClick={removeComponent}>
-                Delete Bracket
-            </button>
-            <button className={"sm-btn"} onClick={saveAsTemplate}>
-                Save as Template
-            </button>
-            <button className={"sm-btn"} onClick={loadFromTemplate}>
-                Load from Template
-            </button>
+            <div className={"children--margin-right-10"}>
+                <button className={"sm-btn"} onClick={removeComponent}>
+                    Delete Bracket
+                </button>
+                <button className={"sm-btn"} onClick={saveAsTemplate}>
+                    Save as Template
+                </button>
+                <button className={"sm-btn"} onClick={loadFromTemplate}>
+                    Load from Template
+                </button>
+            </div>
         </div>
     );
 }
 
-interface HeaderElementProps {
-    index: number;
-    content: any;
+interface BracketEditorProps {
+    content: BracketConfig;
     changeComponent: (value: string) => void;
 }
-function HeaderElement(props: HeaderElementProps) {
-    const thisColumn = props.content.data[props.index];
-
-    const handleChange = (value: string) => {
-        props.content.data[props.index].header = value;
-        props.changeComponent(JSON.stringify(props.content));
+function BracketEditor(props: BracketEditorProps) {
+    const { content, changeComponent } = props;
+    const handleElementChange = (col: number, row: number, value: string) => {
+        content.data[col].rows[row].content = value;
+        changeComponent(JSON.stringify(content));
+    };
+    const addColumn = () => {
+        content.data.push({ header: "", rows: [] });
+        changeComponent(JSON.stringify(props.content));
+    };
+    const removeColumn = () => {
+        if (content.data.length <= 1) return;
+        content.data.pop();
+        changeComponent(JSON.stringify(props.content));
     };
 
+    console.log(content);
+
     return (
-        <TextField
-            placeholder={"Header"}
-            value={thisColumn.header}
-            onChange={handleChange}
-        />
+        <div className={"row"}>
+            {content.data.map((col, key) => {
+                const onHeaderChange = (value: string) => {
+                    content.data[key].header = value;
+                    changeComponent(JSON.stringify(content));
+                };
+                const onElementChange = (row: number, value: string) => {
+                    handleElementChange(key, row, value);
+                };
+                const addElement = (type: BracketElementType) => {
+                    content.data[key].rows.push({ type, content: "text" });
+                    changeComponent(JSON.stringify(content));
+                };
+                const removeElement = () => {
+                    content.data[key].rows.pop();
+                    changeComponent(JSON.stringify(content));
+                };
+
+                return (
+                    <div className={"col"} key={key}>
+                        <HeaderElement
+                            value={col.header}
+                            onChange={onHeaderChange}
+                        />
+                        <BracketRowList
+                            rows={col.rows}
+                            handleElementChange={onElementChange}
+                        />
+                        <RowControls
+                            column={col}
+                            addElement={addElement}
+                            removeElement={removeElement}
+                        />
+                    </div>
+                );
+            })}
+            <ColumnControls
+                addColumn={addColumn}
+                removeColumn={removeColumn}
+                disableRemove={content.data.length <= 1}
+            />
+        </div>
     );
 }
 
-function SpaceElement() {
-    return <hr className={"spacer"} />;
+interface BracketRowListProps {
+    rows: Array<BracketElement>;
+    handleElementChange: (rowIndex: number, value: string) => void;
 }
-function TeamElement(props: any) {
+function BracketRowList(props: BracketRowListProps) {
+    const { rows, handleElementChange } = props;
     return (
-        <TextField
-            placeholder={"Team Name"}
-            value={props.value}
-            onChange={props.onChange}
-        />
+        <>
+            {rows.map((element: BracketElement, rowKey: number) => {
+                const handleChange = (value: string) => {
+                    handleElementChange(rowKey, value);
+                };
+                return (
+                    <BracketElement
+                        key={rowKey}
+                        element={element}
+                        handleChange={handleChange}
+                    />
+                );
+            })}
+        </>
     );
 }
-function TextElement(props: any) {
-    return (
-        <TextField
-            placeholder={"Text"}
-            value={props.value}
-            onChange={props.onChange}
-        />
+
+interface HeaderElementProps {
+    value: string;
+    onChange: (value: string) => void;
+}
+function HeaderElement(props: HeaderElementProps) {
+    const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+        props.onChange(e.currentTarget.textContent || "");
+    };
+    return React.useMemo(
+        () => (
+            <div
+                className={"page-bracket-header"}
+                dangerouslySetInnerHTML={{ __html: props.value }}
+                onInput={handleInput}
+                contentEditable
+            />
+        ),
+        []
     );
 }
 
 interface ColumnControlsProps {
-    content: any;
-    changeComponent: (value: string) => void;
+    addColumn: () => void;
+    removeColumn: () => void;
+    disableRemove: boolean;
 }
 function ColumnControls(props: ColumnControlsProps) {
-    const addColumn = () => {
-        props.content.data.push({ header: "", rows: [] });
-        props.changeComponent(JSON.stringify(props.content));
-    };
-    const removeColumn = () => {
-        if (props.content.data.length > 1) {
-            props.content.data.pop();
-            props.changeComponent(JSON.stringify(props.content));
-        }
-    };
-
     return (
-        <div className={"children--margin-right-10"}>
-            <button className={"sm-btn"} onClick={addColumn}>
+        <div className={"children--margin-bot-10"}>
+            <button className={"sm-btn"} onClick={props.addColumn}>
                 Add Column
             </button>
+            <br />
             <button
                 className={"sm-btn"}
-                onClick={removeColumn}
-                disabled={props.content.data.length === 1}
+                onClick={props.removeColumn}
+                disabled={props.disableRemove}
             >
                 Remove Column
             </button>
@@ -203,30 +205,18 @@ function ColumnControls(props: ColumnControlsProps) {
 }
 
 interface RowControlsProps {
-    index: number;
-    content: any;
-    changeComponent: (value: string) => void;
+    column: BracketColumn;
+    addElement: (type: BracketElementType) => void;
+    removeElement: () => void;
 }
 function RowControls(props: RowControlsProps) {
-    const thisColumn = props.content.data[props.index];
+    const addTeam = () => props.addElement("TEAM");
+    const addSpace = () => props.addElement("SPACE");
+    const addText = () => props.addElement("TEXT");
 
-    const addRow = (type: string) => {
-        thisColumn.rows.push({ type, content: "" });
-        props.content.data[props.index] = thisColumn;
-        props.changeComponent(JSON.stringify(props.content));
-    };
-    const addTeam = () => addRow("TEAM");
-    const addSpace = () => addRow("SPACE");
-    const addText = () => addRow("TEXT");
-    const removeRow = () => {
-        thisColumn.rows.pop();
-        props.content.data[props.index] = thisColumn;
-        props.changeComponent(JSON.stringify(props.content));
-    };
-
-    const disabledRemove = thisColumn.rows.length === 0;
+    const disabledRemove = props.column.rows.length === 0;
     return (
-        <div>
+        <div className={"children--margin-top-10"}>
             <button className={"sm-btn"} onClick={addTeam}>
                 Add Team
             </button>
@@ -241,7 +231,7 @@ function RowControls(props: RowControlsProps) {
             <br />
             <button
                 className={"sm-btn"}
-                onClick={removeRow}
+                onClick={props.removeElement}
                 disabled={disabledRemove}
             >
                 Remove
