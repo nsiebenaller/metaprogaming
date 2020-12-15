@@ -1,6 +1,6 @@
 # META Pro Gaming Site
 
-META Pro Gaming Site using NodeJS, Express, React with Typescript, and Webpack. It's configured to separate JavaScript, CSS and your files as assets in diffrent folders.
+META Pro Gaming Site using NodeJS, Express, React with Typescript, and Webpack.
 
 -   [express-react-typescript](#Express-React-Boilerplate)
     -   [Introduction](#introduction)
@@ -23,7 +23,7 @@ META Pro Gaming Site using NodeJS, Express, React with Typescript, and Webpack. 
 
 ## Introduction
 
-It's a really well-configured approach for building applications with full-stack JavaScript. It's configured for Back-end development with using MongoDB as Database, ExpressJS framework for web services and Front-end development using ReactJS library with Typescript language and Less preprocessor for stylesheets.
+META Pro Gaming Site utilizing full-stack JavaScript. It's configured for Back-end development using PSQL as Database, ExpressJS for web services and Front-end development using ReactJS library with Typescript language and Less preprocessor for stylesheets.
 
 ### Development mode
 
@@ -60,15 +60,15 @@ yarn start (or npm start)
 
 ### Folder Structure
 
-Source code for Back-end and Front-end placed at src directory. Server folder is for web services and Client folder is for UI source codes in development mood. For production mood, Webpack bundles everything inside the client folder and also all the assets files at assets folder into the dist folder.
+Source code for Back-end and Front-end placed at src directory. Server folder is for web services and Client folder is for UI source codes in development mode. For production mode, Webpack bundles everything inside the client folder and also all the assets files at assets folder into the dist folder.
 
 ### Typescript
 
-[Typescript](https://www.typescriptlang.org) is a typed superset that compiles to plain JavaScript. It's only for preventing miss-typing in development mood. In prodoction mood it's just plain JavaScript
+[Typescript](https://www.typescriptlang.org) is a typed superset that compiles to plain JavaScript. It's only for preventing miss-typing in development mode. In prodoction mode it's just plain JavaScript.
 
 ### Less
 
-[Less](http://lesscss.org/) is a backwards-compatible language extension for CSS. Less helps us to write CSS in a functional way and It's really easy to read and understand.
+[Less](http://lesscss.org/) is a backwards-compatible language extension for CSS. Less helps us to write CSS in a functional way.
 
 ### Babel
 
@@ -105,105 +105,11 @@ Babel requires plugins to do the transformation. Presets are the set of plugins 
 }
 ```
 
-[I am using Airbnb's Javascript Style Guide](https://github.com/airbnb/javascript) which is used by many JavaScript developers worldwide. Since we are going to write both client (browser) and server side (Node.js) code, I am setting the **env** to browser and node. Optionally, we can override the Airbnb's configurations to suit our needs. I have turned off [**no-console**](https://eslint.org/docs/rules/no-console), [**comma-dangle**](https://eslint.org/docs/rules/comma-dangle) and [**react/jsx-filename-extension**](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md) rules.
-
 ### Webpack
 
 [Webpack](https://webpack.js.org/) is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser.
 
 [webpack.config.js](https://webpack.js.org/configuration/) file is used to describe the configurations required for webpack. Below is the webpack.config.js file which I am using.
-
-```javascript
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
-
-const outputDirectory = "dist";
-
-module.exports = {
-    entry: ["babel-polyfill", "./src/client/index.tsx"],
-    output: {
-        path: path.join(__dirname, outputDirectory),
-        filename: "./js/[name].bundle.js",
-    },
-    devtool: "source-map",
-    module: {
-        rules: [
-            {
-                test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                },
-            },
-            {
-                test: /\.tsx?$/,
-                use: [
-                    {
-                        loader: "awesome-typescript-loader",
-                    },
-                ],
-                exclude: /node_modules/,
-            },
-            {
-                enforce: "pre",
-                test: /\.js$/,
-                loader: "source-map-loader",
-            },
-            {
-                test: /\.less$/,
-                use: [
-                    { loader: "style-loader" },
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            publicPath: "./Less",
-                            hmr: process.env.NODE_ENV === "development",
-                        },
-                    },
-                    { loader: "css-loader" },
-                    {
-                        loader: "less-loader",
-                        options: {
-                            strictMath: true,
-                            noIeCompat: true,
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                loader: "url-loader?limit=100000",
-            },
-        ],
-    },
-    resolve: {
-        extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json", ".less"],
-    },
-    devServer: {
-        port: 3000,
-        open: true,
-        proxy: {
-            "/api": "http://localhost:3000",
-        },
-    },
-    plugins: [
-        new CleanWebpackPlugin([outputDirectory]),
-        new HtmlWebpackPlugin({
-            template: "./public/index.html",
-            favicon: "./public/favicon.ico",
-            title: "Book Manager",
-        }),
-        new MiniCssExtractPlugin({
-            filename: "./css/[name].css",
-            chunkFilename: "./css/[id].css",
-        }),
-        new CopyPlugin([{ from: "./src/client/Assets", to: "assets" }]),
-    ],
-};
-```
 
 1.  **entry:** entry: ./src/client/index.tsx is where the application starts executing and Webpack starts bundling.
     Note: babel-polyfill is added to support async/await. Read more [here](https://babeljs.io/docs/en/babel-polyfill#usage-in-node-browserify-webpack).
@@ -291,5 +197,3 @@ This starts a server and listens on port 8080 for connections. The app responds 
     "editor.formatOnSave": true,
     "prettier.eslintIntegration": true
     ```
-
-Above, we have modified editor configurations. Alternatively, this can be configured at the project level by following [this article](https://medium.com/@netczuk/your-last-eslint-config-9e35bace2f99).
