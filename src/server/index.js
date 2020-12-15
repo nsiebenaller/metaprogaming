@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const awsManager = require("./managers/awsManager");
+const fileManager = require("./managers/fileManager");
 
 // Configure AWS-SDK
 const AWS = awsManager.configure();
@@ -44,6 +45,18 @@ router.use((req, res, next) => {
 // REGISTER OUR ROUTES -------------------------------
 buildRouter(router);
 app.use("/api", router);
+
+// Handle S3 file requests
+app.get("/s3/*", async (req, res) => {
+    const key = req.originalUrl.replace("/s3/", "");
+    try {
+        const resp = await fileManager.getFile(key);
+        return res.send(resp.Body);
+    } catch (err) {
+        console.error(err);
+        return res.send(undefined);
+    }
+});
 
 app.get("*", (req, res) => {
     const index = path.join(__dirname, "..", "..", "public", "index.html");

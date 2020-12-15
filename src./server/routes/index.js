@@ -1,7 +1,7 @@
 const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 
-const gameRouter = require("./game");
+const GameRouter = require("./gameRouter");
 const imageRouter = require("./image");
 const matchRouter = require("./match");
 const playerRouter = require("./player");
@@ -17,7 +17,7 @@ const userRouter = require("./user");
 const seasonRouter = require("./season");
 
 module.exports = (router) => {
-    gameRouter(router);
+    GameRouter(router);
     imageRouter(router);
     matchRouter(router);
     playerRouter(router);

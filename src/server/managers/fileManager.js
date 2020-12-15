@@ -44,6 +44,20 @@ function removeFile(Key) {
     });
 }
 
+function getFile(Key) {
+    return new Promise((resolve, reject) => {
+        const params = {
+            Bucket: "metaprogaming",
+            Key: Key.replace(Bucket, ""),
+        };
+        console.log(params);
+        s3.getObject(params, (err, data) => {
+            if (err) reject(err);
+            resolve(data);
+        });
+    });
+}
+
 function getExt(fileName) {
     try {
         const re = /(?:\.([^.]+))?$/;
@@ -59,4 +73,5 @@ module.exports = {
     uploadFile,
     removeFile,
     getExt,
+    getFile,
 };

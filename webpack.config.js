@@ -82,10 +82,12 @@ module.exports = {
             index: "./public/",
             disableDotRule: true,
         },
-        proxy: {
-            "/api": "http://localhost:3000",
-            "/images": "http://localhost:3000",
-        },
+        proxy: [
+            {
+                context: ["/api", "/images", "/s3"],
+                target: "http://localhost:3000",
+            },
+        ],
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods":
