@@ -53,8 +53,30 @@ export default function TopBar() {
         await Axios.get("/api/logout");
     };
 
+    const openMobileMenu = () => {
+        const sidePanel = document.getElementsByClassName("side-panel")[0]
+        sidePanel.className = "side-panel mobile-side-panel"
+        const content = document.getElementsByClassName("content")[0]
+        content.className = "content mobile-content"
+        const handleSidePanelClick = () => {
+            sidePanel.removeEventListener("click", handleSidePanelClick)
+            content.removeEventListener("click", handleContentClick)
+            sidePanel.className = "side-panel"
+            content.className = "content"
+        }
+        const handleContentClick = () => {
+            sidePanel.removeEventListener("click", handleSidePanelClick)
+            content.removeEventListener("click", handleSidePanelClick)
+            sidePanel.className = "side-panel"
+            content.className = "content"
+        }
+        sidePanel.addEventListener("click", handleSidePanelClick)        
+        content.addEventListener("click", handleContentClick)
+    }   
+
     return (
         <div className={"top-bar"}>
+            <Button className={"main-menu-btn"} colorHex={"#021938"} textHex={"white"} hoverHex={"#021938"} onClick={openMobileMenu}>Menu</Button>
             <Navigation goBack={goBack} goForward={goForward} goHome={goHome} />
             <div className={"right-side"}>
                 <div className={"action-btns"}>

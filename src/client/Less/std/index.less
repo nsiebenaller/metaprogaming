@@ -5,6 +5,29 @@
 @import "./color.less";
 @import "./depth.less";
 
+// mobile support
+.main-menu-btn {
+    display: none !important;
+    margin-right: 10px;
+}
+@media screen {
+    @media (max-width: 900px) {
+        .main-menu-btn {
+            display: block !important;
+        }
+    }
+}
+
+.mobile-side-panel {
+    display: block !important;
+    position: fixed !important;
+    z-index: 2 !important;
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+}
+.mobile-content {
+    opacity: 0.5;
+}
+
 .btn-group {
     display: flex;
     flex-direction: row;
