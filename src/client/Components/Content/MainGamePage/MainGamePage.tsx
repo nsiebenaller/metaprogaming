@@ -114,7 +114,7 @@ export default function MainGamePage({ gameId }: Props) {
                 setLoading={setLoading}
                 setLeaderboard={setLeaderboard}
             />
-            <div className={"flex-row"}>
+            <div className={"flex-row flex-wrap"}>
                 <MatchList
                     matches={gameMatches}
                     loggedIn={loggedIn}
