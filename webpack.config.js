@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const outputDirectory = "dist";
 
 module.exports = {
-    entry: ["babel-polyfill", "./src/client/index.tsx"],
+    entry: "./src/client/index.tsx",
     output: {
         publicPath: "/",
         path: path.join(__dirname, outputDirectory),
@@ -20,16 +20,20 @@ module.exports = {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: "babel-loader",
+                    loader: "swc-loader",
+                    options: {
+                        sync: true,
+                    },
                 },
             },
             {
-                test: /\.tsx?$/,
-                use: [
-                    {
-                        loader: "ts-loader",
+                test: /\.ts(x?)$/,
+                use: {
+                    loader: "swc-loader",
+                    options: {
+                        sync: true,
                     },
-                ],
+                },
                 exclude: /node_modules/,
             },
             {
@@ -98,8 +102,10 @@ module.exports = {
         new CleanWebpackPlugin([outputDirectory]),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
-            THEME: JSON.stringify(process.env.THEME),
-            BUCKET: JSON.stringify(process.env.BUCKET),
+            "process.env": {
+                THEME: JSON.stringify(process.env.THEME),
+                BUCKET: JSON.stringify(process.env.BUCKET),
+            },
         }),
         new MiniCssExtractPlugin({
             filename: "./css/[name].css",
