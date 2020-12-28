@@ -4,6 +4,7 @@ import { connectContext, connectRouter } from "../../Store/Store";
 import GameItem from "./GameItem";
 import PageItem from "./PageItem";
 import config from "../../config.js";
+import { Row } from "../../Styles/flex";
 
 const isNECC = config.theme === "necc";
 export default function SideBar() {

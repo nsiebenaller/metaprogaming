@@ -59,7 +59,7 @@ module.exports = (router) => {
                 });
             }
 
-            if (userWithUsername(username)) {
+            if (await userWithUsername(username)) {
                 return res.json({
                     success: false,
                     messages: [
@@ -69,7 +69,7 @@ module.exports = (router) => {
             }
 
             if (email && email !== "") {
-                if (userWithEmail(email)) {
+                if (await userWithEmail(email)) {
                     return res.json({
                         success: false,
                         messages: [`User with email (${email}) already exists`],
@@ -110,7 +110,7 @@ module.exports = (router) => {
             // Create Patch User
             const props = {};
             if (username && username !== userWithId.username) {
-                if (userWithUsername(username)) {
+                if (await userWithUsername(username)) {
                     return res.json({
                         success: false,
                         messages: [
@@ -121,7 +121,7 @@ module.exports = (router) => {
                 props.username = username;
             }
             if (email && email !== userWithId.email) {
-                if (userWithEmail(email)) {
+                if (await userWithEmail(email)) {
                     return res.json({
                         success: false,
                         messages: [`User with email (${email}) already exists`],
