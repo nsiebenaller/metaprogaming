@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const AdmZip = require("adm-zip");
+const archiver = require("archiver");
 const package = require("../package.json");
 
 async function deploy() {
     // Increment package version
+    console.log("Incrementing package version");
     const v = package.version.split(".");
     const nextVersion = `${v[0]}.${v[1]}.${parseInt(v[2]) + 1}`;
     package.version = nextVersion;
@@ -24,8 +25,10 @@ async function deploy() {
         return;
     }
 
-    const zip = new AdmZip();
+    // Zip required files
     const rootDir = __dirname + "/../";
+    const buildPath = rootDir + `build/build_${nextVersion}.zip`;
+    const archive = createZip(buildPath);
 
     // Folders
     const ebextDir = rootDir + ".ebextensions";
@@ -35,31 +38,87 @@ async function deploy() {
     const srcDir = rootDir + "src";
 
     // Files
-    const envFile = rootDir + ".env";
-    const sqlFile = rootDir + ".sequelizerc";
-    const swcFile = rootDir + ".swcrc";
-    const nodemonFile = rootDir + "nodemon.json";
-    const packageFile = rootDir + "package.json";
-    const tsconfigFile = rootDir + "tsconfig.json"; // may not be necessary
-    const webpackFile = rootDir + "webpack.config.js";
+    const envFile = ".env";
+    const sqlFile = ".sequelizerc";
+    const swcFile = ".swcrc";
+    const nodemonFile = "nodemon.json";
+    const packageFile = "package.json";
+    const tsconfigFile = "tsconfig.json"; // may not be necessary
+    const webpackFile = "webpack.config.js";
 
     // Add Folders
-    zip.addLocalFolder(ebextDir);
-    zip.addLocalFolder(platformDir);
-    zip.addLocalFolder(distDir);
-    zip.addLocalFolder(publicDir);
-    zip.addLocalFolder(srcDir);
+    addFolder(archive, ebextDir);
+    addFolder(archive, platformDir);
+    addFolder(archive, distDir);
+    addFolder(archive, publicDir);
+    addFolder(archive, srcDir);
 
     // Add Files
-    zip.addLocalFile(envFile);
-    zip.addLocalFile(sqlFile);
-    zip.addLocalFile(swcFile);
-    zip.addLocalFile(nodemonFile);
-    zip.addLocalFile(packageFile);
-    zip.addLocalFile(tsconfigFile);
-    zip.addLocalFile(webpackFile);
+    addFile(archive, envFile);
+    addFile(archive, sqlFile);
+    addFile(archive, swcFile);
+    addFile(archive, nodemonFile);
+    addFile(archive, packageFile);
+    addFile(archive, tsconfigFile);
+    addFile(archive, webpackFile);
 
-    const buildPath = rootDir + `build/build_${nextVersion}.zip`;
-    zip.writeZip(buildPath);
+    // finalize the archive (ie we are done appending files but streams have to finish yet)
+    await archive.finalize();
+    console.log(`Zip has been created: "${buildPath}"`);
 }
 deploy();
+
+function createZip(zipPath) {
+    // create a file to stream archive data to.
+    const output = fs.createWriteStream(zipPath);
+    const archive = archiver("zip");
+
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on("close", function () {
+        console.log(archive.pointer() + " total bytes");
+        console.log(
+            "archiver has been finalized and the output file descriptor has closed."
+        );
+    });
+
+    // This event is fired when the data source is drained no matter what was the data source.
+    // It is not part of this library but rather from the NodeJS Stream API.
+    // @see: https://nodejs.org/api/stream.html#stream_event_end
+    output.on("end", function () {
+        console.log("Data has been drained");
+    });
+
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on("warning", function (err) {
+        if (err.code === "ENOENT") {
+            // log warning
+        } else {
+            // throw error
+            throw err;
+        }
+    });
+
+    // good practice to catch this error explicitly
+    archive.on("error", function (err) {
+        throw err;
+    });
+
+    // pipe archive data to the file
+    archive.pipe(output);
+
+    return archive;
+}
+
+function addFolder(archive, folderPath) {
+    archive.directory(folderPath, getFolderName(folderPath));
+}
+
+function addFile(archive, file) {
+    archive.file(file, { name: file });
+}
+
+function getFolderName(folderPath) {
+    const parts = path.normalize(folderPath).split("\\");
+    return parts[parts.length - 1];
+}
