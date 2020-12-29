@@ -2,7 +2,7 @@ import React from "react";
 import * as FileUtil from "../../../utils/file";
 
 let index = 0;
-let interval: number | null = null;
+let interval: any | null = null;
 
 function useMainBannerState(images: Array<Image>) {
     const [mainBanner, setMainBanner] = React.useState<string>("");

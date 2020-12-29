@@ -1,16 +1,21 @@
 import "./types/global";
 import React from "react";
 import ReactDOM from "react-dom";
-import config from "./config";
+import config, { configure } from "./config";
 import styleLoader from "./styleLoader";
 import App from "./Components/app";
 import Store from "./Store/Store";
 
-styleLoader.load(config.theme || "");
+async function initialize() {
+    await configure();
 
-ReactDOM.render(
-    <Store>
-        <App />
-    </Store>,
-    document.getElementById("root")
-);
+    styleLoader.load(config.theme || "");
+
+    ReactDOM.render(
+        <Store>
+            <App />
+        </Store>,
+        document.getElementById("root")
+    );
+}
+initialize();

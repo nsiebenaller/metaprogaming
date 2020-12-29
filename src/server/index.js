@@ -45,6 +45,12 @@ router.use((req, res, next) => {
 // REGISTER OUR ROUTES -------------------------------
 buildRouter(router);
 app.use("/api", router);
+app.get("/api/env", async (req, res) => {
+    res.json({
+        theme: process.env.THEME,
+        bucket: process.env.BUCKET,
+    });
+});
 
 // Handle S3 file requests
 app.get("/s3/*", async (req, res) => {
@@ -66,18 +72,3 @@ app.get("*", (req, res) => {
 // START THE SERVER -------------------------------
 app.listen(port);
 console.log(`App listening on ${port}`);
-
-// app.get("/api/file", (req, res) => {
-//     const Key = req.query.fileName;
-//     const params = {
-//         Bucket: "metaprogaming",
-//         Key,
-//     };
-//     s3.getObject(params, (err, data) => {
-//         if (err) {
-//             return res.send(null);
-//         }
-//         res.write(data.Body, "binary");
-//         res.end(null, "binary");
-//     });
-// });
