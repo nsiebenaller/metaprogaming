@@ -36,20 +36,38 @@ module.exports = (router) => {
     router
         .route("/Match")
         .get(async (req, res) => {
-            const { id, seasonId } = req.query;
+            const { id, SeasonId, GameId, GameTypeId } = req.query;
 
-            if (seasonId) {
-                return res.json(await getMatchesForSeason(seasonId));
+            if (id) {
+                return res.json(
+                    await db.Match.findAll({
+                        where: { id },
+                        include: MatchJoins,
+                    })
+                );
             }
 
-            const whereClause = id ? { where: { id } } : {};
+            if (SeasonId) {
+                return res.json(await getMatchesForSeason(SeasonId));
+            }
 
-            const matches = await db.Match.findAll({
-                ...whereClause,
-                include: MatchJoins,
-            });
+            if (GameId) {
+                const where = { where: { GameId } };
+                if (GameTypeId) where.where.GameTypeId = GameTypeId;
 
-            res.json(matches);
+                return res.json(
+                    await db.Match.findAll({
+                        ...where,
+                        include: MatchJoins,
+                    })
+                );
+            }
+
+            res.json(
+                await db.Match.findAll({
+                    include: MatchJoins,
+                })
+            );
         })
         .post(tokenChecker, async (req, res) => {
             const result = await db.Match.create(req.body);

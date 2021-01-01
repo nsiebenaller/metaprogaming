@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { connectContext } from "../../../Store/Store";
 import {
-    getMatches,
     updateMatch,
     deleteMatch,
     fetchLeaderboard,
+    getMatchesForGame,
 } from "../../../Api";
 import Banner from "./Banner";
 import GameTypeMenu from "./GameTypeMenu";
@@ -12,6 +12,7 @@ import SeasonPicker from "./SeasonPicker";
 import MatchList from "./MatchList";
 import Leaderboard from "./Leaderboard";
 import { OptionFormat } from "ebrap-ui";
+import OptionUtil from "ebrap-ui/dist/helpers/OptionUtil";
 import Axios from "axios";
 
 type SelectedOption = OptionFormat | undefined;
@@ -37,16 +38,16 @@ export default function MainGamePage({ gameId }: Props) {
                 context.setContext({ selectedGame: game });
                 if (game.gameTypes.length > 0) setGameType(game.gameTypes[0]);
             }
-        } else {
-            setGameType(selectedGame.gameTypes[0]);
+            return;
         }
         const loadMatches = async () => {
-            const data = await getMatches();
+            setMatches([]);
+            const data = await getMatchesForGame(selectedGame.id, gameType?.id);
             setMatches(data);
             setLoading(false);
         };
         loadMatches();
-    }, [gameId, games, selectedGame]);
+    }, [gameId, games, selectedGame, gameType]);
     React.useEffect(() => {
         if (selectedGame) {
             if (selectedGame.gameTypes.length > 0) {
@@ -78,6 +79,7 @@ export default function MainGamePage({ gameId }: Props) {
             },
         });
         if (!data || data.length === 0) {
+            setLeaderboard([]);
             return;
         }
         const currentSeason = data[0];
@@ -85,12 +87,7 @@ export default function MainGamePage({ gameId }: Props) {
         setLeaderboard(leaderboard);
     };
 
-    const gameMatches = filterMatches(
-        matches,
-        selectedGame.id,
-        gameType?.id,
-        currentWeek
-    );
+    const gameMatches = loading ? [] : filterMatches(matches, currentWeek);
     const loggedIn = !!user;
 
     return (
@@ -133,23 +130,18 @@ export default function MainGamePage({ gameId }: Props) {
 
 function filterMatches(
     matches: Array<Match>,
-    gameId: number,
-    gameTypeId?: number,
     currentWeek?: SelectedOption
 ): Array<Match> {
+    if (!currentWeek) return matches;
+    if (OptionUtil.valueOf(currentWeek) === "All") return matches;
+
     const week = (currentWeek as unknown) as Week;
     return matches.filter((match) => {
-        const gameFlag = match.GameId === gameId;
-        const gameTypeFlag =
-            !gameTypeId || !match.GameTypeId || match.GameTypeId === gameTypeId;
-        if (!week || !week.id) {
-            return gameFlag && gameTypeFlag;
-        }
         const date = match.date ? new Date(match.date).getTime() : null;
         const start = new Date(week.start).getTime();
         const end = new Date(week.end).getTime();
-        const weekFlag = !date || (start < date && date < end);
 
-        return gameFlag && gameTypeFlag && weekFlag;
+        const weekFlag = !date || (start < date && date < end);
+        return weekFlag;
     });
 }

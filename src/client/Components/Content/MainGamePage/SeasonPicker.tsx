@@ -50,6 +50,7 @@ export default function SeasonPicker({
             setCurrentWeek(undefined);
             setSeason(undefined);
             setLoading(false);
+            setLeaderboard([]);
             return;
         }
         const currentSeason = data[0];
