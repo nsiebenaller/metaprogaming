@@ -26,7 +26,7 @@ export async function checkUser(): Promise<any> {
 
 export async function getSeasons(
     GameId: number,
-    GameTypeId: number | null
+    GameTypeId?: number | null
 ): Promise<any> {
     const params = { params: { GameId, GameTypeId } };
     const { data } = await Axios.get("/api/Season", params);
@@ -50,8 +50,16 @@ export async function createSeason(
     return data;
 }
 
-export async function setActiveSeason(id: number): Promise<any> {
-    const { data } = await Axios.patch("/api/Season", { id });
+export async function setActiveSeason(
+    GameId: number,
+    GameTypeId?: number,
+    id?: number
+): Promise<any> {
+    const { data } = await Axios.patch("/api/Season", {
+        GameId,
+        GameTypeId,
+        id,
+    });
     return data;
 }
 

@@ -43,18 +43,27 @@ module.exports = (router) => {
         })
         .patch(tokenChecker, async (req, res) => {
             const { body } = req;
+            const { GameId, GameTypeId, id } = body;
 
-            const { GameId, GameTypeId } = await db.Season.findOne({
-                where: { id: body.id },
-            });
+            if (!GameId) {
+                res.json({
+                    success: false,
+                    messages: ["GameId is a required field"],
+                });
+                return;
+            }
+
             await db.Season.update(
                 { active: false },
                 { where: { GameId: GameId, GameTypeId: GameTypeId || null } }
             );
-            await db.Season.update(
-                { active: true },
-                { where: { id: body.id } }
-            );
+
+            if (id) {
+                await db.Season.update(
+                    { active: true },
+                    { where: { id: body.id } }
+                );
+            }
 
             res.json({ success: true });
         })

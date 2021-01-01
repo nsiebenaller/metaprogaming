@@ -132,6 +132,41 @@ body {
     padding: 10px;
     margin-bottom: 10px;
     background: @grey-800;
+    border-radius: 5px;
+    width: 500px;
+    display: flex;
+    flex-direction: row;
+    .season-active-indicator {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: @grey-700;
+        border-radius: 10px;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: @transition;
+        &:hover {
+            background: @grey-600;
+        }
+        svg {
+            width: 32px;
+            height: 32px;
+        }
+        &.active {
+            color: @green-A400;
+            svg {
+                fill: @green-A400;
+            }
+        }
+        &.inactive {
+            color: @grey-400;
+            svg {
+                fill: @grey-400;
+            }
+        }
+    }
 }
 
 .outline-btn {

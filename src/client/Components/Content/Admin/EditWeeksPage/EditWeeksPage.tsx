@@ -26,7 +26,7 @@ export default function EditWeeksPage() {
     };
     const selectGameType = async (gameType: SelectedGameType) => {
         setGameType(gameType);
-        if (!selectedGame) return;
+        if (!selectedGame || !gameType) return;
         const data = await getSeasons(selectedGame.id, gameType?.id || null);
         setSeasons(data);
     };
@@ -38,10 +38,14 @@ export default function EditWeeksPage() {
         const data = await getSeasons(selectedGame.id, gameTypeId);
         setSeasons(data);
     };
-    const setActive = async (id: number) => {
-        await setActiveSeason(id);
+    const toggleActive = async (
+        GameId: number,
+        GameTypeId?: number,
+        seasonId?: number
+    ) => {
+        await setActiveSeason(GameId, GameTypeId, seasonId);
         if (!selectedGame) return;
-        const gameTypeId = selectedGameType ? selectedGameType.id : null;
+        const gameTypeId = selectedGameType ? selectedGameType.id : undefined;
         const data = await getSeasons(selectedGame.id, gameTypeId);
         setSeasons(data);
     };
@@ -75,7 +79,7 @@ export default function EditWeeksPage() {
                     season={s}
                     game={selectedGame}
                     removeSeason={removeSeason}
-                    setActive={setActive}
+                    toggleActive={toggleActive}
                 />
             ))}
         </div>
