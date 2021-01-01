@@ -6,7 +6,7 @@ function load(theme: string) {
             break;
         case "army":
             console.log("Load army theme");
-            import("./Less/necc_theme/index.less");
+            import("./Less/army_theme/index.less");
             break;
         default:
             console.log("Load meta theme");

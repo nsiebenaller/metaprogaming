@@ -1,143 +1,106 @@
 @import "../std/index.less";
 
-@import "./components/Admin/Admin.less";
+// SideBar.tsx
+.side-panel {
+    background: black;
+    .logo-container {
+        background: black;
+    }
 
-@import "./components/sidePanel.less";
-@import "./components/mainPage.less";
-@import "./components/orgPage.less";
+    .menu-item {
+        color: @grey-200;
+        &:hover {
+            background: @meta-green;
+        }
+        &.active {
+            background: @meta-green;
+            color: #f1f8e9;
+        }
+    }
+}
 
-@import "./components/adminGamePage.less";
+// TopBar.tsx
+.top-bar {
+    box-shadow: @shadow-2;
+    background: @grey-900;
 
-@import "./components/calendar.less";
-@import "./components/gamePage.less";
-@import "./components/leaderboard.less";
-@import "./components/topBar.less";
-@import "./components/loginPage.less";
-@import "./components/weekItem.less";
-
-// index.tsx
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    position: fixed;
-    margin: 0;
-    width: 100%;
-    height: 100%;
-
-    #root {
-        width: 100%;
-        height: 100%;
-        .app {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            position: relative;
+    .right-side {
+        > * {
             color: white;
         }
-    }
-}
-
-// Content.tsx
-.content {
-    flex: 1;
-    box-shadow: @shadow-5;
-    overflow: auto;
-    background: @grey-900;
-    display: flex;
-    flex-direction: column;
-    .content-main {
-        padding: 25px 50px 100px 50px;
-    }
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-    &.--right-pad-10 {
-        > * {
-            margin-right: 10px;
+        .action-btns {
+            > * {
+                color: white;
+            }
+            button {
+                color: @grey-600;
+                &:hover {
+                    color: @grey-300;
+                }
+            }
         }
-    }
-    &.--bot-pad-10 {
-        > * {
-            margin-bottom: 10px;
-        }
-    }
-    &.--vert-center {
-        align-items: center;
-    }
-}
 
-.flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
-.children--bot-pad-10 {
-    > * {
-        margin-bottom: 10px;
-    }
-}
-.children--right-pad-10 {
-    > * {
-        margin-right: 10px;
-    }
-}
-
-.pos-rel {
-    position: relative;
-}
-
-.vert-center {
-    align-items: center;
-}
-
-.cursor-pointer {
-    cursor: pointer;
-}
-
-@media screen {
-    @media (max-width: 1300px) {
-        .img-carousel {
-            justify-content: flex-start !important;
-            flex-wrap: wrap !important;
-        }
-    }
-    @media (max-width: 1000px) {
-        .division-row {
-            flex-direction: column !important;
-        }
-    }
-    @media (max-width: 900px) {
-        .division-row {
-            align-items: center !important;
-        }
-        .img-carousel {
-            justify-content: center !important;
+        .user-container {
+            background: @meta-green;
+            color: white;
+            svg {
+                fill: white;
+            }
         }
     }
 }
 
-.season-item {
-    position: relative;
-    box-shadow: @shadow-2;
-    padding: 10px;
-    margin-bottom: 10px;
+// MainPage.tsx
+.main-page {
+    h1 {
+        color: white;
+        text-shadow: 2px 2px 3px black;
+    }
+    .games-container {
+        border-bottom: 1px solid @grey-200;
+        .game {
+            .name {
+                color: @grey-600;
+            }
+            &:hover .name {
+                color: black;
+            }
+            &:hover .img {
+                box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+    .orgs-container {
+        .org {
+            color: white;
+            background: @grey-800;
+            border: 1px solid transparent;
+            .org-arrow {
+                fill: white;
+            }
+            &:hover {
+                background: @grey-700;
+                box-shadow: @shadow-4;
+                border: 1px solid transparent;
+            }
+        }
+    }
+}
+
+// GameTypeMenu.tsx
+.game-variants {
     background: @grey-800;
-}
-
-.outline-btn {
-    border: 1px solid @meta-green;
-    background: transparent;
-    border-radius: 5px;
-    color: @meta-green;
-    padding: 5px 10px;
-    transition: @transition;
-    &:hover {
-        cursor: pointer;
-        background: #33691e;
+    box-shadow: @shadow-1;
+    .game-var {
+        color: @grey-500;
+        &:hover {
+            color: @grey-100;
+        }
+        &.active {
+            color: @grey-100;
+            background: @meta-green;
+        }
     }
 }
