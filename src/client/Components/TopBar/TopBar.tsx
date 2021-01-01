@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "ebrap-ui";
+import { Button, Icon } from "ebrap-ui";
 import { connectContext } from "@Store";
 import Axios from "axios";
 import Navigation from "./Navigation/Navigation";
@@ -54,29 +54,37 @@ export default function TopBar() {
     };
 
     const openMobileMenu = () => {
-        const sidePanel = document.getElementsByClassName("side-panel")[0]
-        sidePanel.className = "side-panel mobile-side-panel"
-        const content = document.getElementsByClassName("content")[0]
-        content.className = "content mobile-content"
+        const sidePanel = document.getElementsByClassName("side-panel")[0];
+        sidePanel.className = "side-panel mobile-side-panel";
+        const content = document.getElementsByClassName("content")[0];
+        content.className = "content mobile-content";
         const handleSidePanelClick = () => {
-            sidePanel.removeEventListener("click", handleSidePanelClick)
-            content.removeEventListener("click", handleContentClick)
-            sidePanel.className = "side-panel"
-            content.className = "content"
-        }
+            sidePanel.removeEventListener("click", handleSidePanelClick);
+            content.removeEventListener("click", handleContentClick);
+            sidePanel.className = "side-panel";
+            content.className = "content";
+        };
         const handleContentClick = () => {
-            sidePanel.removeEventListener("click", handleSidePanelClick)
-            content.removeEventListener("click", handleSidePanelClick)
-            sidePanel.className = "side-panel"
-            content.className = "content"
-        }
-        sidePanel.addEventListener("click", handleSidePanelClick)        
-        content.addEventListener("click", handleContentClick)
-    }   
+            sidePanel.removeEventListener("click", handleSidePanelClick);
+            content.removeEventListener("click", handleSidePanelClick);
+            sidePanel.className = "side-panel";
+            content.className = "content";
+        };
+        sidePanel.addEventListener("click", handleSidePanelClick);
+        content.addEventListener("click", handleContentClick);
+    };
 
     return (
         <div className={"top-bar"}>
-            <Button className={"main-menu-btn"} colorHex={"#021938"} textHex={"white"} hoverHex={"#021938"} onClick={openMobileMenu}>Menu</Button>
+            <Button
+                className={"main-menu-btn"}
+                colorHex={"#424242"}
+                textHex={"white"}
+                hoverHex={"#616161"}
+                onClick={openMobileMenu}
+            >
+                <Icon iconName={"Menu"} />
+            </Button>
             <Navigation goBack={goBack} goForward={goForward} goHome={goHome} />
             <div className={"right-side"}>
                 <div className={"action-btns"}>
