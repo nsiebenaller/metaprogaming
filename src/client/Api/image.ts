@@ -18,3 +18,11 @@ export async function deleteImage(id: number): Promise<any> {
     const { data } = await Axios.delete("/api/Image", { params: { id } });
     return data;
 }
+
+export async function updateImageMetaData(
+    id: number,
+    metadata: string
+): Promise<any> {
+    const { data } = await Axios.patch("/api/Image", { id, metadata });
+    return data;
+}

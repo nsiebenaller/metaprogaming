@@ -174,6 +174,7 @@ declare global {
         updatedAt: string;
         src: string;
         type: string;
+        metadata: string;
     }
 
     interface ApiResponse {

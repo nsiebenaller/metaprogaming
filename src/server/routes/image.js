@@ -40,6 +40,11 @@ module.exports = (router) => {
 
             res.json({ success: true });
         })
+        .patch(tokenChecker, async (req, res) => {
+            const { id, ...props } = req.body;
+            await db.Image.update(props, { where: { id } });
+            res.json({ success: true, id });
+        })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
             if (!id) {

@@ -1,5 +1,5 @@
 type HasName = Organization | Team | Game | GameType;
-type HasId = Organization | Team | Game | GameType | User;
+type HasId = Organization | Team | Game | GameType | User | Image;
 
 export function ByName(a: HasName, b: HasName): number {
     if (a.name < b.name) {

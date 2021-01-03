@@ -1,10 +1,10 @@
 import React from "react";
 import { connectContext } from "../../../../Store/Store";
-import * as FileUtil from "../../../../utils/file";
-import { Button, command } from "ebrap-ui";
-import { fetchImages, createImage, deleteImage } from "../../../../Api";
+import { command } from "ebrap-ui";
+import { fetchImages, deleteImage, updateImageMetaData } from "../../../../Api";
 import ImageItem from "./ImageItem";
 import NewImageItem from "./NewImageItem";
+import { ById } from "../../../../utils/sort";
 
 type ImageMap = Map<string, Array<Image>>;
 
@@ -51,6 +51,13 @@ export default function AdminImagePage() {
         });
     };
 
+    const handleSaveMetaData = async (id: number, metadata: string) => {
+        await updateImageMetaData(id, metadata);
+        context.loadImages();
+    };
+
+    images.sort(ById);
+
     return (
         <div>
             <h2>Manage Images</h2>
@@ -63,9 +70,10 @@ export default function AdminImagePage() {
                         <div className={"flex-row --right-pad-10"}>
                             {images.map((image, idx) => (
                                 <ImageItem
-                                    key={idx}
+                                    key={image.id}
                                     image={image}
                                     deleteImage={handleDeleteImage}
+                                    saveMetaData={handleSaveMetaData}
                                 />
                             ))}
                             <NewImageItem type={type} />
