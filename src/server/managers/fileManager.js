@@ -12,7 +12,6 @@ function uploadFile(file) {
             Bucket: "metaprogaming",
             Key: key,
             Body: file.data,
-            ACL: "public-read-write",
         };
         s3.putObject(params, (perr, pres) => {
             if (perr) {
@@ -20,7 +19,7 @@ function uploadFile(file) {
                 resolve({ success: false, key: `${Bucket}${key}` });
             } else {
                 console.log("Successfully uploaded data");
-                resolve({ success: true, key: `${Bucket}${key}` });
+                resolve({ success: true, key: `/s3/${key}` });
             }
         });
     });
@@ -50,12 +49,19 @@ function getFile(Key) {
             Bucket: "metaprogaming",
             Key: Key.replace(Bucket, ""),
         };
-        console.log(params);
         s3.getObject(params, (err, data) => {
             if (err) reject(err);
             resolve(data);
         });
     });
+}
+
+function pipeFile(Key, pipeTo) {
+    const params = {
+        Bucket: "metaprogaming",
+        Key: Key.replace(Bucket, ""),
+    };
+    s3.getObject(params).createReadStream().pipe(pipeTo);
 }
 
 function getExt(fileName) {
@@ -74,4 +80,5 @@ module.exports = {
     removeFile,
     getExt,
     getFile,
+    pipeFile,
 };

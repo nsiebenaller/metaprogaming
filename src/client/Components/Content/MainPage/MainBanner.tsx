@@ -83,7 +83,7 @@ export default function MainBanner({ images }: Props) {
     };
 
     return (
-        <Row css={{ display: "inline-flex" }}>
+        <Row css={{ display: "inline-flex", width: "100%" }}>
             <Icon
                 className={"nav-arrow left"}
                 iconName={"ChevronLeft"}
@@ -116,10 +116,14 @@ interface BannerLinkProps {
 function BannerLink({ link, children }: BannerLinkProps) {
     if (link) {
         return (
-            <a href={link} style={{ display: "flex" }} title={link}>
+            <a
+                href={link}
+                style={{ display: "flex", width: "100%" }}
+                title={link}
+            >
                 {children}
             </a>
         );
     }
-    return <Row>{children}</Row>;
+    return <Row css={{ width: "100%" }}>{children}</Row>;
 }

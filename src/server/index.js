@@ -56,8 +56,7 @@ app.get("/api/env", async (req, res) => {
 app.get("/s3/*", async (req, res) => {
     const key = req.originalUrl.replace("/s3/", "");
     try {
-        const resp = await fileManager.getFile(key);
-        return res.send(resp.Body);
+        fileManager.pipeFile(key, res);
     } catch (err) {
         console.error(err);
         return res.send(undefined);
