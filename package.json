@@ -8,15 +8,15 @@
         "node": "12.6.0"
     },
     "scripts": {
-        "migrate": "sequelize db:migrate",
-        "bundle": "webpack --mode production",
-        "predeploy": "npm run bundle",
-        "deploy": "node ./scripts/deploy.js",
-        "prestart": "npm run migrate",
-        "start": "node src/server/index.js",
         "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
         "dev:client": "webpack-dev-server --mode development --devtool inline-source-map --config webpack.config.js",
-        "dev:server": "nodemon src/server/index.js"
+        "dev:server": "nodemon src/server/index.js",
+        "deploy": "node ./scripts/deploy.js",
+        "predeploy": "npm run bundle",
+        "bundle": "webpack --mode production",
+        "start": "node src/server/index.js",
+        "prestart": "npm run migrate",
+        "migrate": "sequelize db:migrate"
     },
     "author": "Nicholas Siebenaller",
     "license": "ISC",

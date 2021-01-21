@@ -1,12 +1,14 @@
 import Axios from "axios";
-export * from "./match";
-export * from "./page";
-export * from "./org";
+
 export * from "./game";
 export * from "./image";
+export * from "./match";
+export * from "./org";
+export * from "./page";
+export * from "./player";
 export * from "./role";
-export * from "./user";
 export * from "./template";
+export * from "./user";
 
 export async function fetchLeaderboard(SeasonId: number): Promise<any> {
     const params = { params: { SeasonId } };

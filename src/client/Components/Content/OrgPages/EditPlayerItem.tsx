@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { TextField, Button, Multiselect } from "ebrap-ui";
+import { TextField, Button, Multiselect, command } from "ebrap-ui";
 import { connectContext } from "../../../Store/Store";
+import { updatePlayer } from "../../../Api";
 
 interface Props {
     player: Player;
@@ -27,29 +28,12 @@ export default function EditPlayerItem({
         let RoleIds = new Array();
         if (currentPlayer.roles) RoleIds = currentPlayer.roles.map(getId);
 
-        const gameRequest = {
-            PlayerId: currentPlayer.id,
-            GameIds,
-        };
-        const roleRequest = {
-            PlayerId: currentPlayer.id,
-            RoleIds,
-        };
-        const requests = [
-            axios.patch("/api/Player", currentPlayer),
-            axios.post("/api/PlayerGames", gameRequest),
-            axios.post("/api/PlayerRoles", roleRequest),
-        ];
-
-        const [
-            { data: resp1 },
-            { data: resp2 },
-            { data: resp3 },
-        ] = await Promise.all(requests);
-        if (!resp1.success || !resp2.success || !resp3.success) {
-            window.alert("Error saving player!");
+        const response = await updatePlayer(currentPlayer);
+        if (!response.success) {
+            await command.alert("Error saving player");
+            return;
         }
-        window.alert("Success!");
+        await command.snackbar("Player Saved!");
         refreshOrg();
     };
     const remove = async () => {
