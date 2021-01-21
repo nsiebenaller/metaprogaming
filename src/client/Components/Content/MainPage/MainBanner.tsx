@@ -118,12 +118,12 @@ function BannerLink({ link, children }: BannerLinkProps) {
         return (
             <a
                 href={link}
-                style={{ display: "flex", width: "100%" }}
+                style={{ display: "flex", width: "100%", alignItems: "flex-start" }}
                 title={link}
             >
                 {children}
             </a>
         );
     }
-    return <Row css={{ width: "100%" }}>{children}</Row>;
+    return <Row css={{ width: "100%", alignItems: "flex-start" }}>{children}</Row>;
 }

@@ -104,7 +104,7 @@ export default function TopBar() {
 
                 {!context.user && (
                     <React.Fragment>
-                        <Button color={"grey-800"} onClick={login}>
+                        <Button className={"top-bar-btn"} color={"grey-800"} onClick={login}>
                             Login
                         </Button>
                     </React.Fragment>
