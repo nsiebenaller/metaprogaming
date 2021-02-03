@@ -30,20 +30,24 @@ const PlayerAndJoins = {
 
 module.exports = (router) => {
     router.route("/login").post(async (req, res) => {
-        const { username, password } = req.body;
-        if (!username || !password) return res.send({ success: false });
+        try {
+            const { username, password } = req.body;
+            if (!username || !password) return res.send({ success: false });
 
-        const user = await db.User.findOne({
-            where: { username },
-            include: [PlayerAndJoins],
-        });
-        if (!user) return res.send({ success: false });
-        const success = await compare(password, user.password);
-        if (!success) return res.send({ success: false });
+            const user = await db.User.findOne({
+                where: { username },
+                include: [PlayerAndJoins],
+            });
+            if (!user) return res.send({ success: false });
+            const success = await compare(password, user.password);
+            if (!success) return res.send({ success: false });
 
-        const token = getToken(user);
-        res.cookie("meta_token", token);
-        res.send({ success: true });
+            const token = getToken(user);
+            res.cookie("meta_token", token);
+            res.send({ success: true });
+        } catch (err) {
+            res.send({ success: false, messages: [err] });
+        }
     });
     router.route("/logout").get(async (req, res) => {
         const token = revokeToken();
