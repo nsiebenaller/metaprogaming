@@ -164,7 +164,6 @@ export default function AdminPagePage({ pageId, isNewPage }: Props) {
                     onChange={(content: string) =>
                         setPage({ ...page, content })
                     }
-                    noResize
                 />
             </div>
             <div>

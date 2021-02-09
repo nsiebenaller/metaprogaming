@@ -1,6 +1,6 @@
-import { Row } from "../../../../Styles/flex";
-import { Button, Icon, TextField } from "ebrap-ui";
+import { Icon, TextField } from "ebrap-ui";
 import React from "react";
+import * as css from "./styles";
 
 interface Props {
     image: Image;
@@ -18,7 +18,7 @@ export default function ImageItem({ image, deleteImage, saveMetaData }: Props) {
     return (
         <div className={"image-item"}>
             <img src={image.src} />
-            <Row space={"5px"}>
+            <css.Row>
                 <TextField
                     placeholder={"Link (ex: https://google.com)"}
                     value={link}
@@ -30,15 +30,15 @@ export default function ImageItem({ image, deleteImage, saveMetaData }: Props) {
                     onClick={handleSave}
                     cursorPointer
                 />
-            </Row>
-            <Row direction={"row-reverse"}>
+            </css.Row>
+            <css.Row>
                 <Icon
                     className={"delete-icon"}
                     iconName={"Delete"}
                     onClick={handleDelete}
                     cursorPointer
                 />
-            </Row>
+            </css.Row>
         </div>
     );
 }

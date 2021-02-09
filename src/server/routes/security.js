@@ -1,11 +1,10 @@
-const db = require("../models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { tokenChecker } = require("../tokenChecker");
 
 const secret = process.env.SECRET || "secret"; // set secret for jwt
 
-const PlayerAndJoins = {
+const PlayerAndJoins = (db) => ({
     model: db.Player,
     as: "players",
     through: { attributes: [] },
@@ -26,7 +25,7 @@ const PlayerAndJoins = {
             through: { attributes: [] },
         },
     ],
-};
+});
 
 module.exports = (router) => {
     router.route("/login").post(async (req, res) => {
@@ -34,9 +33,9 @@ module.exports = (router) => {
             const { username, password } = req.body;
             if (!username || !password) return res.send({ success: false });
 
-            const user = await db.User.findOne({
+            const user = await req.db.User.findOne({
                 where: { username },
-                include: [PlayerAndJoins],
+                include: [PlayerAndJoins(req.db)],
             });
             if (!user) return res.send({ success: false });
             const success = await compare(password, user.password);
@@ -60,9 +59,9 @@ module.exports = (router) => {
             return res.json({ ...token });
         }
         const { id } = token.user;
-        const user = await db.User.findOne({
+        const user = await req.db.User.findOne({
             where: { id },
-            include: [PlayerAndJoins],
+            include: [PlayerAndJoins(req.db)],
         });
         if (!user) {
             return res.json({ verified: false });

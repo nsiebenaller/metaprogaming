@@ -118,7 +118,6 @@ export default function NewPageForm() {
                     onChange={(content: string) =>
                         setNewPage({ ...newPage, content })
                     }
-                    noResize
                 />
             </div>
             <div>

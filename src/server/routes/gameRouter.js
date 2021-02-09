@@ -1,18 +1,17 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 const { uploadFile, removeFile, getExt } = require("../managers/fileManager");
 
-const GameType = {
+const GameType = (db) => ({
     model: db.GameType,
     as: "gameTypes",
-};
+});
 
 module.exports = (router) => {
     router
         .route("/Game")
         .get(async (req, res) => {
-            const games = await db.Game.findAll({
-                include: [GameType],
+            const games = await req.db.Game.findAll({
+                include: [GameType(req.db)],
             });
             res.json(games);
         })
@@ -22,7 +21,7 @@ module.exports = (router) => {
 
             let game = {};
             try {
-                game = await db.Game.create({ name });
+                game = await req.db.Game.create({ name });
             } catch (e) {
                 console.error(e);
                 return res.json({ success: false, messages: [] });
@@ -62,7 +61,7 @@ module.exports = (router) => {
             if (imageResp && imageResp.success) {
                 imageKey = imageResp.key;
             }
-            await db.Game.update(
+            await req.db.Game.update(
                 { banner: bannerKey, image: imageKey },
                 { where: { id: game.id } }
             );
@@ -79,7 +78,7 @@ module.exports = (router) => {
 
             let game = {};
             try {
-                game = await db.Game.findOne({ where: { id } });
+                game = await req.db.Game.findOne({ where: { id } });
             } catch (e) {
                 console.error(e);
                 return res.json({ success: false, messages: [] });
@@ -120,7 +119,7 @@ module.exports = (router) => {
             let bannerKey = "";
             if (bannerResp && bannerResp.success) {
                 bannerKey = bannerResp.key;
-                await db.Game.update(
+                await req.db.Game.update(
                     { banner: bannerKey },
                     { where: { id: game.id } }
                 );
@@ -129,14 +128,14 @@ module.exports = (router) => {
             let imageKey = "";
             if (imageResp && imageResp.success) {
                 imageKey = imageResp.key;
-                await db.Game.update(
+                await req.db.Game.update(
                     { image: imageKey },
                     { where: { id: game.id } }
                 );
             }
 
             if (name) {
-                await db.Game.update({ name }, { where: { id: game.id } });
+                await req.db.Game.update({ name }, { where: { id: game.id } });
             }
 
             res.json({ success: true });
@@ -150,26 +149,26 @@ module.exports = (router) => {
                 });
             }
 
-            await db.Game.destroy({ where: { id } });
+            await req.db.Game.destroy({ where: { id } });
             res.json({ success: true });
         });
 
     router
         .route("/GameType")
         .post(async (req, res) => {
-            const result = await db.GameType.create(req.body);
+            const result = await req.db.GameType.create(req.body);
             res.json({ success: true, id: result.id });
         })
         .patch(tokenChecker, async (req, res) => {
             const { id, ...props } = req.body;
             if (!id) return res.json({ success: false });
-            await db.GameType.update(props, { where: { id } });
+            await req.db.GameType.update(props, { where: { id } });
             res.json({ success: true });
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
             if (!id) return res.json({ success: false });
-            await db.GameType.destroy({ where: { id } });
+            await req.db.GameType.destroy({ where: { id } });
             res.json({ success: true });
         });
 };

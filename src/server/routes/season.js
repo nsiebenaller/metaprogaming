@@ -1,4 +1,3 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 const { Op } = require("sequelize");
 
@@ -13,11 +12,11 @@ module.exports = (router) => {
             if (GameTypeId) whereClause.where.GameTypeId = GameTypeId;
             if (active) whereClause.where.active = true;
 
-            const seasons = await db.Season.findAll({
+            const seasons = await req.db.Season.findAll({
                 ...whereClause,
                 include: [
                     {
-                        model: db.Week,
+                        model: req.db.Week,
                         as: "weeks",
                     },
                 ],
@@ -28,13 +27,13 @@ module.exports = (router) => {
         .post(tokenChecker, async (req, res) => {
             const { body } = req;
 
-            const { id } = await db.Season.create(body);
+            const { id } = await req.db.Season.create(body);
 
             let start = new Date(body.startDate);
             let end = nextWeek(start);
             for (let i = 0; i < body.numWeeks; i++) {
                 const name = `Week ${i + 1}`;
-                await db.Week.create({ name, start, end, SeasonId: id });
+                await req.db.Week.create({ name, start, end, SeasonId: id });
                 start = end;
                 end = nextWeek(start);
             }
@@ -53,13 +52,13 @@ module.exports = (router) => {
                 return;
             }
 
-            await db.Season.update(
+            await req.db.Season.update(
                 { active: false },
                 { where: { GameId: GameId, GameTypeId: GameTypeId || null } }
             );
 
             if (id) {
-                await db.Season.update(
+                await req.db.Season.update(
                     { active: true },
                     { where: { id: body.id } }
                 );
@@ -69,7 +68,7 @@ module.exports = (router) => {
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
-            await db.Season.destroy({ where: { id } });
+            await req.db.Season.destroy({ where: { id } });
             res.json({ success: true });
         });
     router.route("/Leaderboard").get(async (req, res) => {
@@ -80,9 +79,9 @@ module.exports = (router) => {
                 message: "SeasonId is a required field",
             });
         }
-        const season = await db.Season.findOne({
+        const season = await req.db.Season.findOne({
             where: { id: SeasonId },
-            include: [{ model: db.Week, as: "weeks" }],
+            include: [{ model: req.db.Week, as: "weeks" }],
         });
         if (!season) {
             return res.json({
@@ -113,7 +112,7 @@ module.exports = (router) => {
 
         // Seed Leaderboard teams
         let leaderboard = {};
-        const allMatches = await db.Match.findAll({
+        const allMatches = await req.db.Match.findAll({
             where: {
                 [Op.or]: [
                     {
@@ -131,19 +130,19 @@ module.exports = (router) => {
             },
             include: [
                 {
-                    model: db.Organization,
+                    model: req.db.Organization,
                     as: "awayOrg",
                 },
                 {
-                    model: db.Organization,
+                    model: req.db.Organization,
                     as: "homeOrg",
                 },
                 {
-                    model: db.Team,
+                    model: req.db.Team,
                     as: "awayTeam",
                 },
                 {
-                    model: db.Team,
+                    model: req.db.Team,
                     as: "homeTeam",
                 },
             ],

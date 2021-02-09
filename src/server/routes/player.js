@@ -1,15 +1,14 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 
 module.exports = (router) => {
     router
         .route("/Player")
         .get(async (req, res) => {
-            const players = await db.Player.findAll();
+            const players = await req.db.Player.findAll();
             res.json(players);
         })
         .post(tokenChecker, async (req, res) => {
-            const result = await db.Player.create(req.body);
+            const result = await req.db.Player.create(req.body);
             res.json({ success: true, id: result.id });
         })
         .patch(tokenChecker, async (req, res) => {
@@ -17,7 +16,7 @@ module.exports = (router) => {
             const { id, ...props } = request;
 
             // Find Player
-            const player = await db.Player.findOne({
+            const player = await req.db.Player.findOne({
                 where: { id: id },
             });
             if (!player) {
@@ -28,22 +27,22 @@ module.exports = (router) => {
             }
 
             // Update Player Fields
-            await db.Player.update(props, { where: { id } });
+            await req.db.Player.update(props, { where: { id } });
 
             // Update Player Join Fields
-            await syncPlayerGames(player, request);
-            await syncPlayerRoles(player, request);
+            await syncPlayerGames(player, request, req.db);
+            await syncPlayerRoles(player, request, req.db);
 
             res.json({ success: true, messages: [] });
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
-            await db.Player.destroy({ where: { id } });
+            await req.db.Player.destroy({ where: { id } });
             res.json({ success: true });
         });
 };
 
-async function syncPlayerGames(player, request) {
+async function syncPlayerGames(player, request, db) {
     if (!request || request.games === undefined || request.games === null) {
         return;
     }
@@ -55,7 +54,7 @@ async function syncPlayerGames(player, request) {
     const games = await db.Game.findAll({ where: { id: gameIds } });
     player.setGames(games);
 }
-async function syncPlayerRoles(player, request) {
+async function syncPlayerRoles(player, request, db) {
     if (!request || request.roles === undefined || request.roles === null) {
         return;
     }

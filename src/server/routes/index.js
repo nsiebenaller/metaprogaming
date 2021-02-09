@@ -1,4 +1,3 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 
 const GameRouter = require("./gameRouter");
@@ -34,22 +33,22 @@ function TemplateRouter(router) {
     router
         .route("/Template")
         .get(async (req, res) => {
-            const results = await db.Template.findAll();
+            const results = await req.db.Template.findAll();
             res.json(results);
         })
         .post(tokenChecker, async (req, res) => {
             const { name, content } = req.body;
-            const result = await db.Template.create({ name, content });
+            const result = await req.db.Template.create({ name, content });
             res.json({ success: true, id: result.id });
         })
         .patch(tokenChecker, async (req, res) => {
             const { id, ...props } = req.body;
-            await db.Template.update(props, { where: { id } });
+            await req.db.Template.update(props, { where: { id } });
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
-            await db.Template.destroy({ where: { id } });
+            await req.db.Template.destroy({ where: { id } });
             res.json({ success: true });
         });
 }

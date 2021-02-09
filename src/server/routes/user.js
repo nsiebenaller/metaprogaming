@@ -1,10 +1,9 @@
-const db = require("../models");
 const bcrypt = require("bcryptjs");
 const { tokenChecker } = require("../tokenChecker");
 
 const saltRounds = 10;
 
-const PlayerAndJoins = {
+const PlayerAndJoins = (db) => ({
     model: db.Player,
     as: "players",
     through: { attributes: [] },
@@ -25,7 +24,7 @@ const PlayerAndJoins = {
             through: { attributes: [] },
         },
     ],
-};
+});
 
 module.exports = (router) => {
     router
@@ -37,7 +36,7 @@ module.exports = (router) => {
             if (id) whereClause.where.id = id;
             if (email) whereClause.where.email = email;
 
-            const users = await db.User.findAll({
+            const users = await req.db.User.findAll({
                 ...whereClause,
                 include: [PlayerAndJoins],
             });
@@ -78,7 +77,7 @@ module.exports = (router) => {
             }
 
             const encryptedPassword = await encrypt(password);
-            await db.User.create({
+            await req.db.User.create({
                 username,
                 email,
                 password: encryptedPassword,
@@ -97,7 +96,7 @@ module.exports = (router) => {
                 });
             }
 
-            const userWithId = await db.User.findOne({
+            const userWithId = await req.db.User.findOne({
                 where: { id },
             });
             if (!userWithId) {
@@ -134,7 +133,7 @@ module.exports = (router) => {
             }
             props.admin = admin;
 
-            await db.User.update(props, { where: { id } });
+            await req.db.User.update(props, { where: { id } });
 
             res.json({
                 success: true,
@@ -149,7 +148,7 @@ module.exports = (router) => {
                 });
             }
 
-            const user = await db.User.findOne({
+            const user = await req.db.User.findOne({
                 where: { id },
                 include: [PlayerAndJoins],
             });
@@ -187,7 +186,7 @@ module.exports = (router) => {
             }
 
             // Find user
-            const user = await db.User.findOne({
+            const user = await req.db.User.findOne({
                 where: { id: userId },
             });
             if (!user) {
@@ -203,7 +202,7 @@ module.exports = (router) => {
                 gamerTag: player.gamerTag,
                 discord: player.discord,
             };
-            const newPlayer = await db.Player.create(playerInput);
+            const newPlayer = await req.db.Player.create(playerInput);
             if (!newPlayer) {
                 return res.json({
                     success: false,
@@ -217,7 +216,7 @@ module.exports = (router) => {
             // Set Organizations for Player
             if (player.organizations) {
                 const ids = player.organizations.map((x) => x.id);
-                const orgs = await db.Organization.findAll({
+                const orgs = await req.db.Organization.findAll({
                     where: { id: ids },
                 });
                 newPlayer.setOrganizations(orgs);
@@ -226,14 +225,14 @@ module.exports = (router) => {
             // Set Games for Player
             if (player.games) {
                 const ids = player.games.map((x) => x.id);
-                const games = await db.Game.findAll({ where: { id: ids } });
+                const games = await req.db.Game.findAll({ where: { id: ids } });
                 newPlayer.setGames(games);
             }
 
             // Set Roles for Player
             if (player.roles) {
                 const ids = player.roles.map((x) => x.id);
-                const roles = await db.Role.findAll({ where: { id: ids } });
+                const roles = await req.db.Role.findAll({ where: { id: ids } });
                 newPlayer.setRoles(roles);
             }
 
@@ -256,7 +255,7 @@ function encrypt(text) {
 }
 
 async function deletePlayer(id) {
-    const player = await db.Player.findOne({
+    const player = await req.db.Player.findOne({
         where: { id },
     });
     if (!player) {
@@ -275,7 +274,7 @@ async function deletePlayer(id) {
 }
 
 async function userWithUsername(username) {
-    const match = await db.User.findAll({
+    const match = await req.db.User.findAll({
         where: { username },
     });
     if (match.length > 0) {
@@ -285,7 +284,7 @@ async function userWithUsername(username) {
 }
 
 async function userWithEmail(email) {
-    const match = await db.User.findAll({
+    const match = await req.db.User.findAll({
         where: { email },
     });
     if (match.length > 0) {

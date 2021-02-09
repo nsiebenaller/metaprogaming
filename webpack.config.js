@@ -76,6 +76,7 @@ module.exports = {
         extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json", ".less"],
         alias: {
             "@Store": path.resolve(__dirname, "src/client/Store/Store.tsx"),
+            "@": path.resolve(__dirname, "src/client/"),
         },
     },
     devServer: {

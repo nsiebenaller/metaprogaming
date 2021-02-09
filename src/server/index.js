@@ -6,6 +6,7 @@ const path = require("path");
 const fileUpload = require("express-fileupload");
 const awsManager = require("./managers/awsManager");
 const fileManager = require("./managers/fileManager");
+const databases = require("./models");
 
 // Configure AWS-SDK
 const AWS = awsManager.configure();
@@ -16,10 +17,10 @@ if (AWS === null) {
 
 const buildRouter = require("./routes");
 
-const app = express(); // define our app using express
-const port = process.env.PORT || 3000; // set our port
+const app = express();
+const port = process.env.PORT || 3000;
 
-// configure middleware
+// Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
@@ -27,12 +28,14 @@ app.use(express.static("public"));
 app.use(express.static("dist"));
 app.use(cookieParser());
 
-// ROUTES FOR OUR API
+// Setup router
 const router = express.Router();
 
-// middleware to use for all requests
-router.use((req, res, next) => {
+// Setup middleware for all requests
+router.use((req, _res, next) => {
     if (!req.files) req.files = {};
+    const db = req.get("db") || "default";
+    req.db = databases[db] || databases["default"];
 
     Object.keys(req.files).forEach((key) => {
         const file = req.files[key];
@@ -42,7 +45,7 @@ router.use((req, res, next) => {
     next();
 });
 
-// REGISTER OUR ROUTES -------------------------------
+// Build router
 buildRouter(router);
 app.use("/api", router);
 app.get("/api/env", async (req, res) => {

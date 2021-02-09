@@ -1,7 +1,8 @@
 import { Icon } from "ebrap-ui";
 import React from "react";
-import * as FileUtil from "../../../utils/file";
-import { Row } from "../../../Styles/flex";
+import Image from "@/Shared/Image";
+import * as FileUtil from "@/utils/file";
+import * as css from "./styles";
 
 let index = 0;
 let interval: any | null = null;
@@ -66,6 +67,7 @@ export default function MainBanner({ images }: Props) {
         images
     );
     const showBanner = mainBanner !== "";
+    const showControls = showBanner && images.length > 1;
 
     const handlePrev = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -83,29 +85,34 @@ export default function MainBanner({ images }: Props) {
     };
 
     return (
-        <Row css={{ display: "inline-flex", width: "100%" }}>
-            <Icon
-                className={"nav-arrow left"}
-                iconName={"ChevronLeft"}
-                color={"grey-200"}
-                onClick={handlePrev}
-                cursorPointer
-            />
+        <css.Row>
+            {showControls && (
+                <Icon
+                    className={"nav-arrow left"}
+                    iconName={"ChevronLeft"}
+                    color={"grey-200"}
+                    onClick={handlePrev}
+                    cursorPointer
+                />
+            )}
+
             <BannerLink link={mainLink}>
-                <img
+                <Image
                     className={"main-banner"}
                     src={mainBanner}
                     style={{ display: showBanner ? "inline" : "none" }}
                 />
             </BannerLink>
-            <Icon
-                className={"nav-arrow right"}
-                iconName={"ChevronRight"}
-                color={"grey-200"}
-                onClick={handleNext}
-                cursorPointer
-            />
-        </Row>
+            {showControls && (
+                <Icon
+                    className={"nav-arrow right"}
+                    iconName={"ChevronRight"}
+                    color={"grey-200"}
+                    onClick={handleNext}
+                    cursorPointer
+                />
+            )}
+        </css.Row>
     );
 }
 
@@ -118,12 +125,16 @@ function BannerLink({ link, children }: BannerLinkProps) {
         return (
             <a
                 href={link}
-                style={{ display: "flex", width: "100%", alignItems: "flex-start" }}
+                style={{
+                    display: "flex",
+                    width: "100%",
+                    alignItems: "flex-start",
+                }}
                 title={link}
             >
                 {children}
             </a>
         );
     }
-    return <Row css={{ width: "100%", alignItems: "flex-start" }}>{children}</Row>;
+    return <css.BannerLinkWrapper>{children}</css.BannerLinkWrapper>;
 }

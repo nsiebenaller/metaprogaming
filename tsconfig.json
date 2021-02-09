@@ -18,13 +18,14 @@
         "noEmit": false,
         "baseUrl": "src",
         "paths": {
+            "@/*": ["client/*"],
             "@Store": ["client/Store/Store.tsx"]
         }
     },
     "include": [
         "./src/client/types/index.d.ts",
         "./src/client/**/*.ts",
-        "./src/client/**/*.tsx",
+        "./src/client/**/*.tsx"
     ],
     "exclude": ["node_modules", ".vscode"]
 }

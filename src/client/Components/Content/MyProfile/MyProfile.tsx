@@ -88,14 +88,12 @@ function displayRoles(players: Array<Player>): React.ReactNode {
                 </b>
             ))}
             {" for "}
-            {x.games
-                ?.map((g, gidx) => (
-                    <b key={gidx}>
-                        {g.name}
-                        {comma(gidx, x.games?.length)}
-                    </b>
-                ))
-                .join(", ") || <em>no games</em>}
+            {x.games?.map((g, gidx) => (
+                <b key={gidx}>
+                    {g.name}
+                    {comma(gidx, x.games?.length)}
+                </b>
+            )) || <em>no games</em>}
             {comma(idx, players.length)}
         </span>
     ));

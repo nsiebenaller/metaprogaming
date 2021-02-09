@@ -1,8 +1,8 @@
 import React from "react";
-import { connectContext, connectRouter } from "../../../Store/Store";
-import * as Util from "../../../utils/file";
-import * as Sec from "../../../utils/security";
 import { Icon } from "ebrap-ui";
+import { connectContext, connectRouter } from "@Store";
+import * as Sec from "@/utils/security";
+import Image from "@/Shared/Image";
 
 interface Props {
     org: Organization;
@@ -25,7 +25,7 @@ export default function OrgImage({ org }: Props) {
 
     return (
         <div className={"card org"} onClick={editTeam}>
-            <img className={"img"} src={org.image} />
+            <Image className={"img"} src={org.image} />
             <div className={"name"}>{org.name}</div>
             <Icon className={"org-arrow"} iconName={"ChevronRight"} />
         </div>

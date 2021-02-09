@@ -1,4 +1,3 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 const { uploadFile, removeFile, getExt } = require("../managers/fileManager");
 
@@ -10,54 +9,54 @@ module.exports = (router) => {
             let orgs = [];
 
             if (!id) {
-                orgs = await db.Organization.findAll({
+                orgs = await req.db.Organization.findAll({
                     include: [
                         {
-                            model: db.Player,
+                            model: req.db.Player,
                             as: "players",
                             through: { attributes: [] },
                             include: [
                                 {
-                                    model: db.Game,
+                                    model: req.db.Game,
                                     as: "games",
                                     through: { attributes: [] },
                                 },
                                 {
-                                    model: db.Role,
+                                    model: req.db.Role,
                                     as: "roles",
                                     through: { attributes: [] },
                                 },
                             ],
                         },
                         {
-                            model: db.Team,
+                            model: req.db.Team,
                             as: "teams",
                         },
                     ],
                 });
             } else {
-                orgs = await db.Organization.findAll({
+                orgs = await req.db.Organization.findAll({
                     where: { id },
                     include: [
                         {
-                            model: db.Player,
+                            model: req.db.Player,
                             as: "players",
                             through: { attributes: [] },
                             include: [
                                 {
-                                    model: db.Game,
+                                    model: req.db.Game,
                                     as: "games",
                                     through: { attributes: [] },
                                 },
                                 {
-                                    model: db.Role,
+                                    model: req.db.Role,
                                     as: "roles",
                                     through: { attributes: [] },
                                 },
                             ],
                         },
                         {
-                            model: db.Team,
+                            model: req.db.Team,
                             as: "teams",
                         },
                     ],
@@ -76,7 +75,7 @@ module.exports = (router) => {
                     messages: ["name is a required field!"],
                 });
             }
-            const org = await db.Organization.create({ name });
+            const org = await req.db.Organization.create({ name });
 
             // Upload files to S3
             if (image) {
@@ -99,7 +98,7 @@ module.exports = (router) => {
                     });
                 }
                 const img = resp.key;
-                await db.Organization.update(
+                await req.db.Organization.update(
                     { image: img },
                     { where: { id: org.id } }
                 );
@@ -115,7 +114,7 @@ module.exports = (router) => {
                 return res.json({ success: false, messages: [] });
             }
 
-            const organization = await db.Organization.findOne({
+            const organization = await req.db.Organization.findOne({
                 where: { id },
             });
             if (!organization) {
@@ -149,7 +148,7 @@ module.exports = (router) => {
                 }
                 img = resp.key;
             }
-            await db.Organization.update(
+            await req.db.Organization.update(
                 { name, image: img },
                 { where: { id } }
             );
@@ -157,7 +156,7 @@ module.exports = (router) => {
         })
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
-            await db.Organization.destroy({ where: { id } });
+            await req.db.Organization.destroy({ where: { id } });
             res.json({ success: true });
         });
 };

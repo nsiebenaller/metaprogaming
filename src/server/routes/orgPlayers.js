@@ -1,15 +1,14 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 
 module.exports = (router) => {
     router
         .route("/OrganizationPlayers")
         .post(tokenChecker, async (req, res) => {
-            const org = await db.Organization.findOne({
+            const org = await req.db.Organization.findOne({
                 where: { id: req.body.OrganizationId },
             });
             if (!org) return res.json({ success: false });
-            const player = await db.Player.findOne({
+            const player = await req.db.Player.findOne({
                 where: { id: req.body.PlayerId },
             });
             if (!player) return res.json({ success: false });
@@ -18,22 +17,22 @@ module.exports = (router) => {
         })
         .delete(tokenChecker, async (req, res) => {
             const { PlayerId, OrganizationId } = req.query;
-            const org = await db.Organization.findOne({
+            const org = await req.db.Organization.findOne({
                 where: { id: OrganizationId },
                 include: [
                     {
-                        model: db.Player,
+                        model: req.db.Player,
                         as: "players",
                         through: { attributes: [] },
                     },
                 ],
             });
             if (!org) return res.json({ success: false });
-            const player = await db.Player.findOne({
+            const player = await req.db.Player.findOne({
                 where: { id: PlayerId },
                 include: [
                     {
-                        model: db.Organization,
+                        model: req.db.Organization,
                         as: "organizations",
                         through: { attributes: [] },
                     },

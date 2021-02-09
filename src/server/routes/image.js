@@ -1,4 +1,3 @@
-const db = require("../models");
 const { tokenChecker } = require("../tokenChecker");
 const { uploadFile, removeFile, Bucket } = require("../managers/fileManager");
 
@@ -6,7 +5,7 @@ module.exports = (router) => {
     router
         .route("/Image")
         .get(async (req, res) => {
-            const images = await db.Image.findAll();
+            const images = await req.db.Image.findAll();
             res.json(images);
         })
         .post(tokenChecker, async (req, res) => {
@@ -36,13 +35,13 @@ module.exports = (router) => {
                 src: resp.key,
                 type: type,
             };
-            await db.Image.create(image);
+            await req.db.Image.create(image);
 
             res.json({ success: true });
         })
         .patch(tokenChecker, async (req, res) => {
             const { id, ...props } = req.body;
-            await db.Image.update(props, { where: { id } });
+            await req.db.Image.update(props, { where: { id } });
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {
@@ -54,7 +53,7 @@ module.exports = (router) => {
                 });
             }
 
-            const image = await db.Image.findOne({ where: { id } });
+            const image = await req.db.Image.findOne({ where: { id } });
             if (!image) {
                 return res.json({
                     success: false,
@@ -71,7 +70,7 @@ module.exports = (router) => {
                 });
             }
 
-            await db.Image.destroy({ where: { id } });
+            await req.db.Image.destroy({ where: { id } });
             res.json({ success: true });
         });
 };
