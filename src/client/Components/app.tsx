@@ -1,5 +1,5 @@
 import React from "react";
-import SideBar from "./SidePanel/SideBar";
+import SideBar from "./global/SidePanel/SideBar";
 import Content from "./Content/Content";
 import { connectContext } from "@Store";
 

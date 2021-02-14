@@ -7,7 +7,7 @@ import LoginPage from "./LoginPage/LoginPage";
 import MainPage from "./MainPage/MainPage";
 import OrgPages from "./OrgPages";
 import MainGamePage from "./MainGamePage/MainGamePage";
-import TopBar from "../TopBar/TopBar";
+import TopBar from "../global/TopBar/TopBar";
 import MyProfile from "./MyProfile/MyProfile";
 import Page from "./Page";
 

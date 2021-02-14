@@ -1,12 +1,24 @@
 import React from "react";
-import { ByName } from "../../utils/sort";
-import { connectContext, connectRouter } from "../../Store/Store";
+import { ByName } from "../../../utils/sort";
+import { connectContext, connectRouter } from "../../../Store/Store";
 import GameItem from "./GameItem";
 import PageItem from "./PageItem";
-import config from "../../config";
+import config from "../../../config";
 
-const isNECC = config.theme === "necc";
+const vertBanner = "/images/vert-banner.png";
+const vertBanner2020png = "/images/vert_logo_2020.png";
+const vertBanner2020svg = "/images/vert_logo_2020.svg";
+
+const companyLogo = "/images/meta-logo-no-bg.png";
+const companyLogo2020png = "/images/company_logo_2020.png";
+const companyLogo2020svg = "/images/company_logo_2020.svg";
+
+const VERT_BANNER = vertBanner2020svg;
+const COMPANY_LOGO = companyLogo2020svg;
+
 export default function SideBar() {
+    const isNECC = config.theme === "necc";
+
     const context = connectContext();
     const router = connectRouter();
     const { games, pages, selectedGame, selectedPage } = context;
@@ -35,10 +47,7 @@ export default function SideBar() {
     return (
         <div className="side-panel">
             <div className={"logo-container"} onClick={navToMeta}>
-                <img
-                    className={"side-panel-logo"}
-                    src={"/images/meta-logo-no-bg.png"}
-                />
+                <img className={"side-panel-logo"} src={COMPANY_LOGO} />
             </div>
             {isNECC && (
                 <div className={"conference-item"}>
@@ -69,7 +78,7 @@ export default function SideBar() {
             <div className={"vert-banner"}>
                 <img
                     className={"vert-banner-img"}
-                    src={"/images/vert-banner.png"}
+                    src={VERT_BANNER}
                     onClick={goHome}
                 />
             </div>
