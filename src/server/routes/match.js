@@ -1,6 +1,6 @@
 const { tokenChecker } = require("../tokenChecker");
 
-const MatchJoins = (db) => [
+const withOrgsAndTeams = (db) => [
     {
         model: db.Organization,
         as: "awayOrg",
@@ -31,63 +31,18 @@ const MatchJoins = (db) => [
     },
 ];
 
-module.exports = (router) => {
-    router
-        .route("/Match")
-        .get(async (req, res) => {
-            const { id, SeasonId, GameId, GameTypeId } = req.query;
+async function getMatchesWhere(db, where) {
+    return await db.Match.findAll({
+        where,
+        include: withOrgsAndTeams(db),
+    });
+}
 
-            if (id) {
-                return res.json(
-                    await req.db.Match.findAll({
-                        where: { id },
-                        include: MatchJoins(db),
-                    })
-                );
-            }
-
-            if (SeasonId) {
-                return res.json(await getMatchesForSeason(SeasonId));
-            }
-
-            if (GameId) {
-                const where = { where: { GameId } };
-                if (GameTypeId) where.where.GameTypeId = GameTypeId;
-
-                return res.json(
-                    await req.db.Match.findAll({
-                        ...where,
-                        include: MatchJoins,
-                    })
-                );
-            }
-
-            res.json(
-                await req.db.Match.findAll({
-                    include: MatchJoins,
-                })
-            );
-        })
-        .post(tokenChecker, async (req, res) => {
-            const result = await req.db.Match.create(req.body);
-            res.json({ success: true, id: result.id });
-        })
-        .patch(tokenChecker, async (req, res) => {
-            const { id, ...props } = req.body;
-            await req.db.Match.update(props, { where: { id } });
-            res.json({ success: true, id });
-        })
-        .delete(tokenChecker, async (req, res) => {
-            await req.db.Match.destroy({ where: { id: req.query.id } });
-            res.json({ success: true });
-        });
-};
-
-async function getMatchesForSeason(seasonId) {
+async function getMatchesForSeason(db, seasonId) {
     // Find Season
-    const season = await req.db.Season.findOne({
+    const season = await db.Season.findOne({
         where: { id: seasonId },
-        include: [{ model: req.db.Week, as: "weeks" }],
+        include: [{ model: db.Week, as: "weeks" }],
     });
     if (!season) {
         return [];
@@ -110,13 +65,54 @@ async function getMatchesForSeason(seasonId) {
     }
 
     // Find Relevant Matches
-    const seasonMatches = await req.db.Match.findAll({
+    const seasonMatches = await db.Match.findAll({
         where: {
             date: { [Op.between]: [seasonStart, seasonEnd] },
             GameTypeId: season.GameTypeId,
             GameId: season.GameId,
         },
-        include: MatchJoins,
+        include: MatchJoins(db),
     });
     return seasonMatches;
 }
+
+module.exports = (router) => {
+    router
+        .route("/Match")
+        .get(async ({ db, query }, res) => {
+            const { id, SeasonId, GameId, GameTypeId } = query;
+
+            if (id) {
+                const matches = await getMatchesWhere(db, { id });
+                return res.json(matches);
+            }
+
+            if (SeasonId) {
+                const matches = await getMatchesForSeason(db, SeasonId);
+                return res.json(matches);
+            }
+
+            if (GameId) {
+                const where = { GameId };
+                if (GameTypeId) where.GameTypeId = GameTypeId;
+                const matches = await getMatchesWhere(db, where);
+                return res.json(matches);
+            }
+
+            const matches = await getMatchesWhere(db, {});
+            res.json(matches);
+        })
+        .post(tokenChecker, async ({ db, body }, res) => {
+            const result = await db.Match.create(body);
+            res.json({ success: true, id: result.id });
+        })
+        .patch(tokenChecker, async ({ db, body }, res) => {
+            const { id, ...props } = body;
+            await db.Match.update(props, { where: { id } });
+            res.json({ success: true, id });
+        })
+        .delete(tokenChecker, async ({ db, query }, res) => {
+            await db.Match.destroy({ where: { id: query.id } });
+            res.json({ success: true });
+        });
+};

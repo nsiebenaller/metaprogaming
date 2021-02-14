@@ -5,6 +5,14 @@ const s3 = new AWS.S3();
 const Bucket = process.env.BUCKET;
 const Dir = process.env.ROOT_DIR || process.env.THEME || "generic";
 
+function uploadFileWithName(file, fileName) {
+    const ext = getExt(file.name);
+    if (!ext) return { success: false, key: null };
+    const key = `${Dir}/${fileName}.${ext}`;
+    file.name = key;
+    return uploadFile(file);
+}
+
 function uploadFile(file) {
     return new Promise((resolve) => {
         const key = `${Dir}/${file.name}`;
@@ -13,7 +21,7 @@ function uploadFile(file) {
             Key: key,
             Body: file.data,
         };
-        s3.putObject(params, (perr, pres) => {
+        s3.putObject(params, (perr, _pres) => {
             if (perr) {
                 console.log("Error uploading data: ", perr);
                 resolve({ success: false, key: `${Bucket}${key}` });
@@ -31,7 +39,7 @@ function removeFile(Key) {
             Bucket: "metaprogaming",
             Key: Key.replace(Bucket, ""),
         };
-        s3.deleteObject(params, (err, data) => {
+        s3.deleteObject(params, (err, _data) => {
             if (err) {
                 console.log("Error deleting data: ", err);
                 resolve({ success: false, messages: [err] });
@@ -76,6 +84,7 @@ function getExt(fileName) {
 }
 
 module.exports = {
+    uploadFileWithName,
     uploadFile,
     removeFile,
     getExt,

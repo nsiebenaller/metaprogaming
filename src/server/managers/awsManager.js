@@ -17,6 +17,7 @@ function configure() {
         awsSdk.config.update({
             accessKeyId: ACCESS_KEY_ID,
             secretAccessKey: SECRET_ACCESS_KEY,
+            region: "us-east-1",
         });
         AWS = awsSdk;
     }

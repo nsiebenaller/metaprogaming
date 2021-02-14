@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const { tokenChecker } = require("../tokenChecker");
+const mailer = require("../managers/emailManager");
 
 const saltRounds = 10;
 
@@ -27,6 +28,15 @@ const PlayerAndJoins = (db) => ({
 });
 
 module.exports = (router) => {
+    // router.route("/test-email").get(async (req, res) => {
+    //     await mailer.sendEmail(
+    //         ["nicholaspaulsiebenaller@gmail.com"],
+    //         "hello from local",
+    //         "Hello i am the full message"
+    //     );
+    //     res.json({ message: "i did it" });
+    // });
+
     router
         .route("/User")
         .get(async (req, res) => {
@@ -38,7 +48,7 @@ module.exports = (router) => {
 
             const users = await req.db.User.findAll({
                 ...whereClause,
-                include: [PlayerAndJoins],
+                include: [PlayerAndJoins(req.db)],
             });
 
             res.json(
@@ -58,7 +68,7 @@ module.exports = (router) => {
                 });
             }
 
-            if (await userWithUsername(username)) {
+            if (await userWithUsername(username, req.db)) {
                 return res.json({
                     success: false,
                     messages: [
@@ -68,7 +78,7 @@ module.exports = (router) => {
             }
 
             if (email && email !== "") {
-                if (await userWithEmail(email)) {
+                if (await userWithEmail(email, req.db)) {
                     return res.json({
                         success: false,
                         messages: [`User with email (${email}) already exists`],
@@ -109,7 +119,7 @@ module.exports = (router) => {
             // Create Patch User
             const props = {};
             if (username && username !== userWithId.username) {
-                if (await userWithUsername(username)) {
+                if (await userWithUsername(username, req.db)) {
                     return res.json({
                         success: false,
                         messages: [
@@ -120,7 +130,7 @@ module.exports = (router) => {
                 props.username = username;
             }
             if (email && email !== userWithId.email) {
-                if (await userWithEmail(email)) {
+                if (await userWithEmail(email, req.db)) {
                     return res.json({
                         success: false,
                         messages: [`User with email (${email}) already exists`],
@@ -150,7 +160,7 @@ module.exports = (router) => {
 
             const user = await req.db.User.findOne({
                 where: { id },
-                include: [PlayerAndJoins],
+                include: [PlayerAndJoins(req.db)],
             });
             if (!user) {
                 return res.json({
@@ -161,7 +171,7 @@ module.exports = (router) => {
 
             const promises = [];
             user.players.forEach((player) => {
-                promises.push(deletePlayer(player.id));
+                promises.push(deletePlayer(player.id, req.db));
             });
             await Promise.all(promises);
 
@@ -242,7 +252,7 @@ module.exports = (router) => {
         .patch(tokenChecker, async (req, res) => {})
         .delete(tokenChecker, async (req, res) => {
             const { id } = req.query;
-            return res.json(deletePlayer(id));
+            return res.json(deletePlayer(id, req.db));
         });
 };
 
@@ -254,8 +264,8 @@ function encrypt(text) {
     });
 }
 
-async function deletePlayer(id) {
-    const player = await req.db.Player.findOne({
+async function deletePlayer(id, db) {
+    const player = await db.Player.findOne({
         where: { id },
     });
     if (!player) {
@@ -273,8 +283,8 @@ async function deletePlayer(id) {
     return { success: true, messages: [] };
 }
 
-async function userWithUsername(username) {
-    const match = await req.db.User.findAll({
+async function userWithUsername(username, db) {
+    const match = await db.User.findAll({
         where: { username },
     });
     if (match.length > 0) {
@@ -283,8 +293,8 @@ async function userWithUsername(username) {
     return false;
 }
 
-async function userWithEmail(email) {
-    const match = await req.db.User.findAll({
+async function userWithEmail(email, db) {
+    const match = await db.User.findAll({
         where: { email },
     });
     if (match.length > 0) {

@@ -148,6 +148,7 @@ module.exports = (router) => {
             ],
         });
 
+        const now = new Date().getTime();
         allMatches.forEach((match) => {
             const awayScore = match.firstTeamScore || 0;
             const homeScore = match.secondTeamScore || 0;
@@ -167,15 +168,23 @@ module.exports = (router) => {
                 orgName: match.homeOrg ? match.homeOrg.name : "",
             };
 
-            if (awayWin) {
-                leaderboard = addWin(leaderboard, awayTeam);
-                leaderboard = addLoss(leaderboard, homeTeam);
-            } else if (homeWin) {
-                leaderboard = addLoss(leaderboard, awayTeam);
-                leaderboard = addWin(leaderboard, homeTeam);
-            } else if (tie) {
-                leaderboard = addTie(leaderboard, awayTeam);
-                leaderboard = addTie(leaderboard, homeTeam);
+            // Check if match has happened yet
+            const matchTime = new Date(match.date).getTime();
+            if (now >= matchTime) {
+                if (awayWin) {
+                    leaderboard = addWin(leaderboard, awayTeam);
+                    leaderboard = addLoss(leaderboard, homeTeam);
+                } else if (homeWin) {
+                    leaderboard = addLoss(leaderboard, awayTeam);
+                    leaderboard = addWin(leaderboard, homeTeam);
+                } else if (tie) {
+                    leaderboard = addTie(leaderboard, awayTeam);
+                    leaderboard = addTie(leaderboard, homeTeam);
+                }
+            } else {
+                // match is in the future, add team if not exists
+                leaderboard = addTeam(leaderboard, awayTeam);
+                leaderboard = addTeam(leaderboard, homeTeam);
             }
         });
 

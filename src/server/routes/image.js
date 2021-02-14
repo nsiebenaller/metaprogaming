@@ -4,8 +4,8 @@ const { uploadFile, removeFile, Bucket } = require("../managers/fileManager");
 module.exports = (router) => {
     router
         .route("/Image")
-        .get(async (req, res) => {
-            const images = await req.db.Image.findAll();
+        .get(async ({ db }, res) => {
+            const images = await db.Image.findAll();
             res.json(images);
         })
         .post(tokenChecker, async (req, res) => {
@@ -39,9 +39,9 @@ module.exports = (router) => {
 
             res.json({ success: true });
         })
-        .patch(tokenChecker, async (req, res) => {
-            const { id, ...props } = req.body;
-            await req.db.Image.update(props, { where: { id } });
+        .patch(tokenChecker, async ({ db, body }, res) => {
+            const { id, ...props } = body;
+            await db.Image.update(props, { where: { id } });
             res.json({ success: true, id });
         })
         .delete(tokenChecker, async (req, res) => {

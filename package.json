@@ -1,6 +1,6 @@
 {
     "name": "metaprogaming",
-    "version": "1.0.10",
+    "version": "1.0.13",
     "description": "Meta Pro Gaming Site",
     "main": "src/server/index.js",
     "engines": {
